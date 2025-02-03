@@ -33,12 +33,14 @@ INSTALLED_APPS = [
     
     #Aplicações
     'Entidades',
+    'Entradas_Produtos',
    
     'Menu',
     'Pedidos',
     'produto',
-    'Entradas_Produtos',
+    
     'Saidas_Produtos',
+    'Ordemservico',
     
 ]
 

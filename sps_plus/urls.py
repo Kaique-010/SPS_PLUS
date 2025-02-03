@@ -12,7 +12,7 @@ urlpatterns = [
     path('', include ('Entidades.urls')),
     path('', include('Pedidos.urls')),
     path('', include ('produto.urls')),
-    #path('', include ('Ordemservico.urls')),
+    path('', include ('Ordemservico.urls')),
     #path('', include ('Ordemproducao.urls')),
     path('', include ('Entradas_Produtos.urls')),
     path('', include ('Saidas_Produtos.urls')),

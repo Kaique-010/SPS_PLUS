@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load static %}
+{% load form_tags %}
+
+{% block content %}
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'Ordemservico/styles.css' %}">
+
+<div class="container mt-5">
+    <div class="card">
+    <h2>Criar Ordem de Serviço</h2>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="{{ form.orde_empr.id_for_label }}" class="form-label">{{ form.orde_empr.label }}</label>
+                    {{ form.orde_empr|add_class:"form-control" }}
+                    {{ form.orde_empr.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_fili.id_for_label }}" class="form-label">{{ form.orde_fili.label }}</label>
+                    {{ form.orde_fili|add_class:"form-control" }}
+                    {{ form.orde_fili.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_nume.id_for_label }}" class="form-label">{{ form.orde_nume.label }}</label>
+                    {{ form.orde_nume|add_class:"form-control" }}
+                    {{ form.orde_nume.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_data_aber.id_for_label }}" class="form-label">{{ form.orde_data_aber.label}}</label>
+                    {{ form.orde_data_aber|add_class:"form-control" }}
+                    {{ form.orde_data_aber.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_hora_aber.id_for_label }}" class="form-label">{{ form.orde_hora_aber.label}}</label>
+                    {{ form.orde_hora_aber|add_class:"form-control" }}
+                    {{ form.orde_hora_aber.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_tota.id_for_label }}" class="form-label">{{ form.orde_tota.label }}</label>
+                    {{ form.orde_tota|add_class:"form-control" }}
+                    {{ form.orde_tota.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_enti.id_for_label }}" class="form-label">{{ form.orde_enti.label }}</label>
+                    {{ form.orde_enti|add_class:"form-control" }}
+                    {{ form.orde_enti.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_mode.id_for_label }}" class="form-label">{{ form.orde_mode.label }}</label>
+                    {{ form.orde_mode|add_class:"form-control" }}
+                    {{ form.orde_mode.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_care.id_for_label }}" class="form-label">{{ form.orde_care.label }}</label>
+                    {{ form.orde_care|add_class:"form-control" }}
+                    {{ form.orde_care.errors }}
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="{{ form.orde_seri.id_for_label }}" class="form-label">{{ form.orde_seri.label }}</label>
+                    {{ form.orde_seri|add_class:"form-control" }}
+                    {{ form.orde_seri.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_aces.id_for_label }}" class="form-label">{{ form.orde_aces.label }}</label>
+                    {{ form.orde_aces|add_class:"form-control" }}
+                    {{ form.orde_aces.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_prev.id_for_label }}" class="form-label">{{ form.orde_prev.label }}</label>
+                    {{ form.orde_prev|add_class:"form-control" }}
+                    {{ form.orde_prev.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_marc.id_for_label }}" class="form-label">{{ form.orde_marc.label }}</label>
+                    {{ form.orde_marc|add_class:"form-control" }}
+                    {{ form.orde_marc.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_seto.id_for_label }}" class="form-label">{{ form.orde_seto.label }}</label>
+                    {{ form.orde_seto|add_class:"form-control" }}
+                    {{ form.orde_seto.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_tecn.id_for_label }}" class="form-label">{{ form.orde_tecn.label }}</label>
+                    {{ form.orde_tecn|add_class:"form-control" }}
+                    {{ form.orde_tecn.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.orde_obse.id_for_label }}" class="form-label">{{ form.orde_obse.label }}</label>
+                    {{ form.orde_obse|add_class:"form-control" }}
+                    {{ form.orde_obse.errors }}
+                </div>
+            </div>
+        </div>
+        
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'os.html' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
