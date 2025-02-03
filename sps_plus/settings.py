@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     
     'Saidas_Produtos',
     'Ordemservico',
+    'orcamentos',
     
 ]
 

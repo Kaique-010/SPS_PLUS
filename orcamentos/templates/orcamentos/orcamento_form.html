@@ -1,0 +1,260 @@
+<!-- templates/orcamento_form.html -->
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Cadastrar Orçamento{% endblock %}
+
+{% block content %}
+<br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="{% static 'orcamentos/style.css' %}" />
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title text-center">Orçamento de Venda <i class="bi bi-file-earmark-text fs-4"></i></h3>
+            <hr />
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Navegação das abas -->
+                <ul class="nav nav-tabs" id="orcamentoTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="dadosOrcamentoTab" data-toggle="tab" href="#dadosOrcamento"
+                            role="tab" aria-controls="dadosOrcamento" aria-selected="true">Dados do Orçamento</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="dadosComplementaresTab" data-toggle="tab" href="#dadosComplementares"
+                            role="tab" aria-controls="dadosComplementares" aria-selected="false">Dados Complementares</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="orcamentoTabsContent">
+                    <!-- Aba Dados do Orçamento -->
+                    <div class="tab-pane fade show active" id="dadosOrcamento" role="tabpanel"
+                        aria-labelledby="dadosOrcamentoTab">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.orca_empr.id_for_label }}">Empresa</label>
+                                    {{ form.orca_empr }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.orca_fili.id_for_label }}">Filial</label>
+                                    {{ form.orca_fili }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="{{ form.orca_codi.id_for_label }}">Nº Orçamento</label>
+                                    {{ form.orca_codi }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.orca_aber.id_for_label }}">Data de Abertura</label>
+                                    {{ form.orca_aber }}
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="{{ form.orca_vali.id_for_label }}">Validade</label>
+                                    {{ form.orca_vali }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-8">
+                                <label for="{{ form.orca_enti.id_for_label }}">Entidade (Cliente)</label>
+                                {{ form.orca_enti }}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.orca_vend.id_for_label }}">Vendedor</label>
+                                {{ form.orca_vend }}
+                            </div>
+                        </div>
+                        <h5>Itens do Orçamento</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Código da Peça</th>
+                                    <th>Quantidade</th>
+                                    <th>Preço Unitário</th>
+                                    <th>Total</th>
+                                    <th>Observação</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="itens-orcamento">
+                                {{ pecas_formset.management_form }}
+                                {% for form in pecas_formset %}
+                                <tr class="item-row">
+                                    <td>
+                                        {{ form.peca_codi }}
+                                    </td>
+                                    <td>
+                                        <input type="number" name="{{ form.prefix }}-peca_quan" class="form-control quantidade"
+                                               min="1" value="1" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="{{ form.prefix }}-peca_unit" class="form-control preco-unitario"
+                                               step="0.01" value="0.00" required>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="{{ form.prefix }}-peca_tota" class="form-control total" value="0.00" readonly>
+                                    </td>
+                                    <td>
+                                        {{ form.peca_comp }}
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger remove-item">Remover</button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <button type="button" class="btn btn-primary" id="add-item">Adicionar Item</button>
+                        <br><br>
+                        <div class="form-row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="id_orca_valo_tota">Total do Orçamento</label>
+                                    <input type="text" name="{{ form.orca_valo_tota.name }}" id="id_orca_valo_tota"
+                                           class="form-control" value="{{ form.orca_valo_tota.value }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aba Dados Complementares -->
+                    <div class="tab-pane fade" id="dadosComplementares" role="tabpanel"
+                    aria-labelledby="dadosComplementaresTab">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.orca_cond.id_for_label }}">Condição</label>
+                                {{ form.orca_cond }}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.orca_resp.id_for_label }}">Responsável</label>
+                                {{ form.orca_resp }}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.orca_tipo_fret.id_for_label }}">Tipo de Frete</label>
+                                {{ form.orca_tipo_fret }}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.orca_tipo_impo.id_for_label }}">Tipo de Imposto</label>
+                                {{ form.orca_tipo_impo }}
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="{{ form.orca_praz_entr.id_for_label }}">Prazo de Entrega</label>
+                                {{ form.orca_praz_entr }}
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="{{ form.orca_obse.id_for_label }}">Observações</label>
+                                {{ form.orca_obse }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <br><br>
+                <button type="submit" class="btn btn-success">Criar Orçamento</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        var totalForms = $('#id_pecas-TOTAL_FORMS');
+
+        // Atualiza o total do orçamento com base nos itens
+        function atualizarTotalOrcamento() {
+            let total = 0.00;
+
+            $('#itens-orcamento .item-row').each(function () {
+                const quantidade = parseFloat($(this).find('input[name$="-peca_quan"]').val()) || 0;
+                const precoUnitario = parseFloat($(this).find('input[name$="-peca_unit"]').val()) || 0;
+                const totalPeca = quantidade * precoUnitario;
+                $(this).find('input[name$="-peca_tota"]').val(totalPeca.toFixed(2)); // Atualiza total da peça
+                total += totalPeca;
+            });
+
+            $('#id_orca_valo_tota').val(total.toFixed(2)); // Atualiza o campo total
+        }
+
+        // Adicionar um novo item
+        $('#add-item').click(function () {
+            var currentFormCount = parseInt(totalForms.val());
+            var newRow = `
+                <tr class="item-row">
+                    <td>
+                        <input type="text" name="pecas-${currentFormCount}-peca_codi" class="form-control" required>
+                    </td>
+                    <td>
+                        <input type="number" name="pecas-${currentFormCount}-peca_quan" class="form-control quantidade" min="1" value="1" required>
+                    </td>
+                    <td>
+                        <input type="text" name="pecas-${currentFormCount}-peca_unit" class="form-control preco-unitario" step="0.01" value="0.00" required>
+                    </td>
+                    <td>
+                        <input type="text" name="pecas-${currentFormCount}-peca_tota" class="form-control total" value="0.00" readonly>
+                    </td>
+                    <td>
+                        <input type="text" name="pecas-${currentFormCount}-peca_comp" class="form-control">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-item">Remover</button>
+                    </td>
+                </tr>
+            `;
+            $('#itens-orcamento').append(newRow);
+            totalForms.val(currentFormCount + 1); // Atualiza o contador de formas
+            atualizarTotalOrcamento(); // Atualiza o total
+        });
+
+        // Remover um item
+        $('#itens-orcamento').on('click', '.remove-item', function () {
+            $(this).closest('tr').remove();
+            atualizarTotalOrcamento(); // Atualiza o total
+        });
+
+        // Atualiza o total ao mudar a quantidade ou preço
+        $('#itens-orcamento').on('input', 'input', function () {
+            atualizarTotalOrcamento(); // Atualiza o total
+        });
+    });
+</script>
+
+{% endblock %}

@@ -16,7 +16,7 @@ urlpatterns = [
     #path('', include ('Ordemproducao.urls')),
     path('', include ('Entradas_Produtos.urls')),
     path('', include ('Saidas_Produtos.urls')),
-    #path('', include ('orcamentos.urls')),
+    path('', include ('orcamentos.urls')),
     
 ]
 
