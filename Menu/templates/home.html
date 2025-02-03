@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Métricas{% endblock %}
+
+{% block content %}
+<br><br><br><br><br>
+<style>
+    h2 {
+        text-align: center;
+        color: rgb(255, 255, 255);
+    }
+
+    .btn-primary {
+
+        text-align: center;
+        background-color: rgb(84, 126, 104);
+    }
+    
+    .btn-primary:hover{
+        background-color: #000000;
+    }
+    .card {
+        background:linear-gradient(#0a2b2e,#000000);
+        border-radius: 25px;
+        box-shadow: 0 10px 16px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.02); /* Efeito de zoom ao passar o mouse */
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2); /* Sombra mais intensa */
+    }
+
+    .card-body {
+        backdrop-filter: blur(55px); /* Efeito de desfoque */
+        padding: 20px;
+    }
+
+    .form-select, 
+    .form-control {
+        border-radius: 10px;
+    }
+    /* Aumentando o container */
+    .container {
+        max-width: 75%; /* Aumenta a largura do container */
+    }
+</style>
+
+<div class="container mt-12">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="mb-4"><i class="bi bi-graph-up fs-3"></i> OVERVIEW </h2>
+
+            <form method="get" action="{% url 'dashboard' %}">
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="vendedor" class="form-label">Vendedor</label>
+                        <select id="vendedor" name="vendedor" class="form-select">
+                            <option value="">Todos os Vendedores</option>
+                            {% for vendedor in vendedores %}
+                            <option value="{{ vendedor.id }}" {% if vendedor.id|stringformat:"s" == vendedor %}selected{% endif %}>
+                                {{ vendedor.nome }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="data_inicio" class="form-label">Data Início</label>
+                        <input type="date" id="data_inicio" name="data_inicio" class="form-control" value="{{ data_inicio }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="data_fim" class="form-label">Data Fim</label>
+                        <input type="date" id="data_fim" name="data_fim" class="form-control" value="{{ data_fim }}">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </div>
+            </form>
+            <div class="row mt-4">
+                <div class="col-lg-6">
+                    <h2>Pedidos por Vendedor</h2>
+                    <canvas id="totalPedidosChart"></canvas>
+                </div>
+                <div class="col-lg-6">
+                    <h2>Valor Pedidos por Vendedor</h2>
+                    <canvas id="totalValorPedidoChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+        <script>
+            const labels = JSON.parse('{{ labels|safe }}');
+            const totalPedidos = JSON.parse('{{ total_pedidos|safe }}');
+            const totalValorPedido = JSON.parse('{{ total_valor_pedido|safe }}');
+
+            const totalPedidosCtx = document.getElementById('totalPedidosChart').getContext('2d');
+            new Chart(totalPedidosCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total de Pedidos',
+                        data: totalPedidos,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            const totalValorPedidoCtx = document.getElementById('totalValorPedidoChart').getContext('2d');
+            new Chart(totalValorPedidoCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Valor dos Pedidos',
+                        data: totalValorPedido,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
+    </div>
+    {% endblock %}

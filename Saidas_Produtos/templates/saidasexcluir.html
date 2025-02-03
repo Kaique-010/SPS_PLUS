@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Editar saídas
+{% endblock %}
+
+{% block content %}
+
+<div class="container-mt-4">
+    <h3 class="display-8"> Excluir Saídas</h3>
+</div>
+    <div class="card">
+        <div class="card-body">
+            <p class="card-text">Tem Certeza Que Deseja Excluir a Saída <strong>{{ object.produto }}</strong></p>
+            <form method="post" class="form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-danger mt-3"> Excluir saída </button>
+            </form>
+        </div>  
+    </div>  
+    <a href="{% url 'saidaslistas'%}" class="btn btn-secondary mt2">Voltar Para saídas</a>
+</div>  
+
+{% endblock %}

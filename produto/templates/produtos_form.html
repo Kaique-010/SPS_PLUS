@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Cadastrar Produto{% endblock %}
+
+{% block content %}
+<br><br><br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'produtos/styles.css' %}">
+
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title">Cadastrar Produto <i class="bi bi-box fs-4"></i></h3>
+      <br>
+
+      <!-- Mensagens de Sucesso e Erro -->
+      {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+        {% endfor %}
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Dados Cadastrais -->
+        <h5>Dados Cadastrais</h5>
+        <br>
+
+        <center>
+          <div class="col-md-2">
+            <div class="form-group">
+              <label for="{{ form.prod_empr.id_for_label }}">Empresa</label>
+              {{ form.prod_empr }}
+            </div>
+          </div>
+        </center>
+
+        <!-- Código do Produto e Nome -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.produto_codigo.id_for_label }}">Código Produto</label>
+              {{ form.produto_codigo }}
+              {% if form.produto_codigo.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.produto_codigo.errors|striptags }}
+                {% if produto.codigo_produto %}<p>Número do Produto: {{ produto.codigo_produto }}</p>{% endif %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.nome_produto.id_for_label }}">Nome do Produto</label>
+              {{ form.nome_produto }}
+              {% if form.nome_produto.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.nome_produto.errors|striptags }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Unidade de Medida e Grupo -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.unidade_medida.id_for_label }}">Unidade de Medida</label>
+              {{ form.unidade_medida }}
+              {% if form.unidade_medida.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.unidade_medida.errors|striptags }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.grupo.id_for_label }}">Grupo</label>
+              {{ form.grupo }}
+              {% if form.grupo.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.grupo.errors|striptags }}
+              </div>
+              {% endif %}
+              <a href="{% url 'grupo_create' %}" class="btn btn-plus" title="Adicionar Novo Grupo">
+                <i class="bi bi-plus-circle"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subgrupo e Família -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.subgrupo.id_for_label }}">Subgrupo</label>
+              {{ form.subgrupo }}
+              {% if form.subgrupo.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.subgrupo.errors|striptags }}
+              </div>
+              {% endif %}
+              <a href="{% url 'subgrupo_create' %}" class="btn btn-plus" title="Adicionar Novo SubGrupo">
+                <i class="bi bi-plus-circle"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.familia.id_for_label }}">Família</label>
+              {{ form.familia }}
+              {% if form.familia.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.familia.errors|striptags }}
+              </div>
+              {% endif %}
+              <a href="{% url 'familia_produto_create' %}"class="btn btn-plus" title="Adicionar Nova Família">
+                <i class="bi bi-plus-circle"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informações Adicionais -->
+        <h5>Informações Adicionais</h5>
+        <br>
+
+        <!-- Local e NCM -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.local.id_for_label }}">Local</label>
+              {{ form.local }}
+              {% if form.local.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.local.errors|striptags }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.ncm.id_for_label }}">NCM</label>
+              {{ form.ncm }}
+              {% if form.ncm.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.ncm.errors|striptags }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Marca e Código do Fabricante -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.marca.id_for_label }}">Marca</label>
+              {{ form.marca }}
+              {% if form.marca.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.marca.errors|striptags }}
+              </div>
+              {% endif %}
+              <a href="{% url 'marca_create' %}" class="btn btn-plus" title="Adicionar Nova Marca">
+                <i class="bi bi-plus-circle"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.codigo_fabricante.id_for_label }}">Código do Fabricante</label>
+              {{ form.codigo_fabricante }}
+              {% if form.codigo_fabricante.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.codigo_fabricante.errors|striptags }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Foto -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.foto.id_for_label }}">Foto</label>
+              {{ form.foto }}
+              {% if form.foto.errors %}
+              <div class="alert alert-danger mt-1">
+                {{ form.foto.errors|striptags }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Botões de Salvar e Voltar -->
+        <div class="d-flex justify-content-between mt-3">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <a href="{% url 'produtos_lista.html' %}" class="btn btn-secondary mt-2">Voltar Para a Lista de Produtos</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

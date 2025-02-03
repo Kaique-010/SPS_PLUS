@@ -1,0 +1,76 @@
+{% extends 'base.html' %} {% load static %} {% block title %} Lista de Entradas
+{% endblock %} {% block content %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'Saidas_Produtos/styles.css' %}" />
+<div class="container">
+  <div class="card text-center">
+    <div class="card-header">
+      <h3>Entradas de Estoque</h3>
+    </div>
+    <div class="row mt-4">
+      <div class="col-md-8">
+        <form method="get" action="{% url 'entradaslistas' %}" class="input-group search-bar">
+          <input type="text" class="form-control" name="produto" placeholder="Buscar por Produto"
+            value="{{ request.GET.produto }}" />
+          <button class="btn btn-primary" type="submit">
+            <i class="bi bi-search"></i> Pesquisar
+          </button>
+        </form>
+      </div>
+      <div class="col-md-4 text-end">
+        <a href="{% url 'entradascriar' %}" class="btn btn-success">
+          <i class="bi bi-plus"></i> Nova Entrada
+        </a>
+      </div>
+    </div>
+
+    <!-- Tabela -->
+    <div class="table-responsive">
+      <table class="table table-hover table-bordered align-middle">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Produto</th>
+            <th>Responsável</th>
+            <th>Quantidade</th>
+            <th>Documento</th>
+            <th>Data de Entrada</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for entrada in entradas %}
+          <tr>
+            <td>{{ entrada.id }}</td>
+            <td>{{ entrada.produto_codigo}}</td>
+            <td>{{ entrada.entidade }}</td>
+            <td>{{ entrada.quantidade }}</td>
+            <td>{{ entrada.documento }}</td>
+            <td>{{ entrada.criado }}</td>
+            <td>
+              <div class="btn-group" role="group">
+                <a href="{% url 'entradasdetalhe' entrada.id %}" class="btn btn-info btn-sm">
+                  <i class="bi bi-eye"></i>
+                </a>
+                <a href="{% url 'entradaseditar' entrada.id %}" class="btn btn-warning btn-sm">
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{% url 'entradasexcluir' entrada.id %}" class="btn btn-danger btn-sm">
+                  <i class="bi bi-trash"></i>
+                </a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" class="empty-state">Nenhuma entrada encontrada.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginação -->
+    {% include 'parcials/pagination.html' %}
+  </div>
+  {% endblock %}

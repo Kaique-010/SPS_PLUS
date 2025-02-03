@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Editar entradas
+{% endblock %}
+
+{% block content %}
+
+<div class="container-mt-4">
+    <h3 class="display-8"> Editar entradas</h3>
+</div>
+    <div class="card">
+        <div class="card-body">
+            <form method="post" class="form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary"> Salvar Edição</button>
+            </form>
+        </div>  
+    </div>  
+    <a href="{% url 'entradaslistas'%}" class="btn btn-secondary mt2">Voltar Para entradas</a>
+</div>  
+
+{% endblock %}

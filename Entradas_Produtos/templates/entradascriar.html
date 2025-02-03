@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Registrar Entradas
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'Saidas_Produtos/styles.css' %}" />
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="display-8"> Registrar Entrada <i class="bi bi-arrow-down-up"></i></h3>
+      <form method="post" class="form">
+        {% csrf_token %}
+        <div class="row">
+
+          <div class="col-md-6">
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.data.id_for_label }}">Data</label>
+              {{ form.data }}
+            </div>
+          </div>
+        </div>
+        <br><br>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="{{ form.entidade.id_for_label }}">Entidade Responsável</label>
+              {{ form.entidade }}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="{{ form.produto_codigo.id_for_label }}">Produto</label>
+              {{ form.produto_codigo }}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.quantidade.id_for_label }}">Quantidade</label>
+              {{ form.quantidade }}
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group">
+              <label for="{{ form.documento.id_for_label }}">Documento</label>
+              {{ form.documento }}
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="{{ form.observacoes.id_for_label }}">Observações</label>
+              {{ form.observacoes }}
+            </div>
+          </div>
+        </div>
+        <div class="container-button">
+          <button type="submit" class="btn btn-primary"> Salvar Entrada</button>
+          <a href="{% url 'entradaslistas'%}" class="btn btn-secondary mt2">Voltar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+</div>
+
+{% endblock %}

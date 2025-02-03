@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lista de Entidades{% endblock %}
+
+{% block content %}
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'Entidades/styles.css' %}">
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <center>
+                <h2 class="mb-4">
+                    <i class="bi bi-person-gear fs-3"></i> Lista de Entidades
+                </h2>
+            </center>
+            <!-- Mensagens de Sucesso e Erro -->
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            <div class="container-search">
+                <form method="get" class="search-form mb-4">
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label for="enti_nome"></label>
+                            <input type="text" id="enti_nome" name="enti_nome" class="form-control"
+                                value="{{ request.GET.enti_nome }}" placeholder="Filtrar por nome">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="enti_clie"></label>
+                            <input type="text" id="enti_clie" name="enti_clie" class="form-control"
+                                value="{{ request.GET.enti_clie }}" placeholder="Filtrar por ID">
+                        </div>
+                        <div class="form-group col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="container-fluid"></div>
+            <div class="col md-4">
+                <div class="row mb-4"></div>
+                <a href="{% url 'entidade_form' %}" class="btn btn-success-custom float-end">
+                    <i class="bi bi-plus"></i> Nova pessoa
+                </a>
+            </div>
+        </div>
+        <div class="container">
+            {% if entidades %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Ações</th>
+                            <th>ID </th>
+                            <th>Nome</th>
+                            <th>Classificação</th>
+                            <th>CPF</th>
+                            <th>CNPJ</th>
+                            <th>Cidade</th>
+                            <th>Estado</th>
+                            <th>Telefone</th>
+                            <th>Celular</th>
+                            <th>Email</th>
+                            <th>Email Empresa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entidade in entidades %}
+                        <tr>
+                            <td>
+                                {% if entidade.enti_clie %}
+                                <a href="{% url 'entidade_update' pk=entidade.enti_clie %}" class="btn btn-sm"
+                                    style="background-color: #7ab1ec; color: white;">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'entidade_delete' pk=entidade.enti_clie %}" class="btn btn-sm"
+                                    style="background-color: #e7a0a7; color: white;">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                {% else %}
+                                <span class="text-muted">Sem ações</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ entidade.enti_clie }}</td>
+                            <td>{{ entidade.enti_nome }}</td>
+                            <td>{{ entidade.enti_tipo_enti }}</td>
+                            <td>{{ entidade.enti_cpf }}</td>
+                            <td>{{ entidade.enti_cnpj }}</td>
+                            <td>{{ entidade.enti_cida }}</td>
+                            <td>{{ entidade.enti_esta }}</td>
+                            <td>{{ entidade.enti_fone }}</td>
+                            <td>{{ entidade.enti_celu }}</td>
+                            <td>{{ entidade.enti_emai }}</td>
+                            <td>{{ entidade.enti_emai_empr }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if page_obj.has_other_pages %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="?page=1{% if nome %}&nome={{ nome }}{% endif %}{% if id_cliente %}&id_cliente={{ id_cliente }}{% endif %}">
+                            Primeira
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link"
+                            href="?page={{ page_obj.previous_page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_cliente %}&id_cliente={{ id_cliente }}{% endif %}">
+                            Anterior
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for page_number in page_obj.paginator.page_range %}
+                    {% if page_number <= page_obj.number|add:3 and page_number >= page_obj.number|add:-3 %}
+                        {% if page_obj.number == page_number %}
+                        <li class="page-item active">
+                            <a class="page-link"
+                                href="?page={{ page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_cliente %}&id_cliente={{ id_cliente }}{% endif %}">
+                                {{ page_number }}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_cliente %}&id_cliente={{ id_cliente }}{% endif %}">
+                                {{ page_number }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_obj.next_page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_cliente %}&id_cliente={{ id_cliente }}{% endif %}">
+                                Próxima
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="?page={{ page_obj.paginator.num_pages }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_cliente %}&id_cliente={{ id_cliente }}{% endif %}">
+                                Última
+                            </a>
+                        </li>
+                        {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            {% else %}
+            <p>Não há entidades para exibir.</p>
+            {% endif %}
+            <a href="{% url 'exportar_entidades' %}" class="btn btn-success mb-2">Exportar para Excel</a>
+            </main>
+        </div>
+        <center>
+            <footer>
+                <p>&copy; {{ current_year }} Spartacus Sistemas</p>
+            </footer>
+        </center>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+
+{% block title %}Cadastrar Entidade{% endblock %}
+
+{% block content %}
+
+<style>
+  h3 {
+    text-align: center;
+    font-size: 2rem;
+  }
+
+  .crm-icon {
+    font-size: 2rem;
+    margin-right: 10px;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.85rem;
+  }
+
+  .table thead th {
+    font-size: 0.90rem;
+  }
+
+  .card {
+    background-color: black;
+  }
+</style>
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+      <h3 class="card-title">Cadastrar Entidade <i class="bi bi-person-check fs-4"></i></h3>
+      <br>
+      <!-- Mensagens de Sucesso e Erro -->
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div id="pessoal" class="tab-content active">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_empr.id_for_label }}">Empresa</label>
+                {{ form.enti_empr }}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_clie.id_for_label }}">Cliente Número</label>
+                {{ form.enti_clie }} 
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_nome.id_for_label }}">Nome completo</label>
+                {{ form.enti_nome }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_fant.id_for_label }}">Nome Fantasia</label>
+                {{ form.enti_fant }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_cpf.id_for_label }}">CPF</label>
+                {{ form.enti_cpf }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_cnpj.id_for_label }}">CNPJ</label>
+                {{ form.enti_cnpj }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_insc_esta.id_for_label }}">Inscrição Estadual</label>
+                {{ form.enti_insc_esta }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_cep.id_for_label }}">CEP</label>
+                {{ form.enti_cep }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_ende.id_for_label }}">Endereço</label>
+                {{ form.enti_ende }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_nume.id_for_label }}">Número</label>
+                {{ form.enti_nume }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_cida.id_for_label }}">Cidade</label>
+                {{ form.enti_cida }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_esta.id_for_label }}">Estado</label>
+                {{ form.enti_esta }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_fone.id_for_label }}">Telefone</label>
+                {{ form.enti_fone }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_celu.id_for_label }}">Celular</label>
+                {{ form.enti_celu }}
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_emai.id_for_label }}">Email Pessoal</label>
+                {{ form.enti_emai }}
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="{{ form.enti_emai_empr.id_for_label }}">Email da Empresa</label>
+                {{ form.enti_emai_empr }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% if form.errors %}
+        <div class="alert alert-danger">
+          <ul>
+            {% for field, errors in form.errors.items %}
+            <li>{{ field.label }}: {{ errors|striptags }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+    <a href="{% url 'entidades' %}" class="btn btn-secondary mt-3">Voltar Para a lista de Pessoas</a>
+  </div>
+</div>
+
+{% endblock %}

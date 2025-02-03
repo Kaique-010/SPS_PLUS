@@ -1,0 +1,100 @@
+<!-- pedidos_necessitam_contato.html -->
+{% extends 'base.html' %}
+
+{% block title %}Pedidos Necessitam Contato{% endblock %}
+
+{% block content %}
+<style>
+    h2 {
+        text-align: center;
+        font-size: 2rem;
+    }
+
+    .crm-icon {
+        font-size: 2rem;
+        margin-right: 10px;
+    }
+
+    .table th, .table td {
+        font-size: 0.85rem;
+    }
+
+    .table thead th {
+        font-size: 0.90rem;
+    }
+
+    .bi-phone-flip {
+        color: #1e90ff;
+    }
+
+    .filter-form {
+        margin-bottom: 20px;
+    }
+</style>
+
+<br><br><br>
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="mb-4">
+                <i class="bi bi-phone-flip fs-3"></i> Necessitam Contato
+            </h2> 
+
+            <!-- Formulário de Filtros -->
+            <form method="get" class="filter-form row">
+                <div class="col-md-4">
+                    <input type="text" name="pedido_id" class="form-control" placeholder="ID do Pedido" value="{{ filtro_id_pedido|default_if_none:'' }}">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="cliente" class="form-control" placeholder="Cliente" value="{{ filtro_cliente|default_if_none:'' }}">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" name="vendedor" class="form-control" placeholder="Vendedor" value="{{ filtro_vendedor|default_if_none:'' }}">
+                </div>
+                <div class="col-md-12 mt-3 text-center">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID Pedido</th>
+                            <th>Cliente</th>
+                            <th>Data do Último Pedido</th>
+                            <th>Notas</th>
+                            <th>Vendedor</th>
+                            <th>Contactar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pedido in pedidos_necessitam_contato %}
+                            <tr>
+                                <td>{{ pedido.pedi_nume }}</td>
+                                <td>{{ pedido.cliente }}</td>
+                                <td>{{ pedido.pedi_data }}</td>
+                                <td>{{ pedido.notas_contato|default:"" }}</td>
+                                <td>{{ pedido.vendedor }}</td>
+                                <td>
+                                    <form method="post" action="{% url 'marcar_contato_realizado' pedido.pedi_nume %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success">Contactar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">Nenhum pedido necessita de contato no momento.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Inclui o template de paginação -->
+            {% include '_page.html' with page_obj=pedidos_necessitam_contato %}
+        </div>
+    </div>
+</div>
+{% endblock %}

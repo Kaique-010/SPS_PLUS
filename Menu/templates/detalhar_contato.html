@@ -1,0 +1,35 @@
+<!-- Detalhar Contato -->
+
+{% extends 'base.html' %}
+
+{% block title %}Detalhes do Contato{% endblock %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<div class="container mt-5">
+    
+    <h2 class="mb-4">Realizar Contato   REF: Pedido {{ pedido.pedi_nume }}</h2>
+    <div class="card p-4">
+        <!-- Exibindo os dados retornados pela consulta SQL -->
+        <p><strong>Cliente:</strong> {{ pedido.enti_nome }}</p>
+        <p><strong>Telefone:</strong> {{ pedido.enti_fone }}</p>
+        <p><strong>Email1:</strong> {{ pedido.enti_emai }}</p>
+        <p><strong>Email2:</strong> {{ pedido.enti_emai_empr }}</p>
+        <p><strong>Data do Pedido:</strong> {{ pedido.pedi_data }}</p>
+   
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="notas"><strong>Notas sobre o contato:</strong></label>
+                <textarea id="notas" name="notas" class="form-control" rows="6">{{ pedido.notas_contato }}</textarea>
+            </div>
+        </div>
+            <button type="submit" class="btn btn-primary mt-3">Salvar Notas</button>
+        </form>
+   
+    
+    <a href="{% url 'pedidos_necessitam_contato' %}" class="btn btn-secondary mt-3">Voltar</a>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Editar entradas
+{% endblock %}
+
+{% block content %}
+
+<div class="container-mt-4">
+    <h3 class="display-8"> Excluir entrada</h3>
+</div>
+    <div class="card">
+        <div class="card-body">
+            <p class="card-text">Tem Certeza Que Deseja Excluir a entrada <strong>{{ object.produto }}</strong></p>
+            <form method="post" class="form">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-danger mt-3"> Excluir entrada </button>
+            </form>
+        </div>  
+    </div>  
+    <a href="{% url 'entradaslistas'%}" class="btn btn-secondary mt2">Voltar Para entradas</a>
+</div>  
+
+{% endblock %}

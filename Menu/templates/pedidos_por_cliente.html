@@ -1,0 +1,119 @@
+<!-- Pedidos Por Clientes -->
+{% extends 'base.html' %}
+{% block title %}Pedidos{% endblock %}
+{% block content %}
+<style>
+    h2 {
+        text-align: center;
+        font-size: 2rem;
+        /* Ajuste o tamanho do texto se necessário */
+    }
+
+    .crm-icon {
+        font-size: 2rem;
+        /* Ajuste o tamanho do ícone para combinar com o tamanho do texto */
+        margin-right: 10px;
+        /* Espaçamento entre o ícone e o texto */
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.85rem;
+        /* Ajuste o tamanho da fonte das células da tabela */
+    }
+
+    .table thead th {
+        font-size: 0.90rem;
+        /* Ajuste o tamanho da fonte dos cabeçalhos da tabela */
+    }
+</style>
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="mb-4">
+                <i class="bi bi-patch-check crm-icon"></i> Pedidos Por Clientes
+            </h2>
+
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+            {% endif %}
+            <form method="get" class="mb-4">
+                <div class="form-row">
+                    <div class="form-group col-md-3">
+                        <input type="text" id="nome_cliente" name="nome_cliente" class="form-control"
+                            value="{{ nome_cliente }}" placeholder="Filtrar por nome do cliente">
+                    </div>
+                    <div class="form-group col-md-3">
+                        <input type="number" id="num_pedido" name="num_pedido" class="form-control"
+                            value="{{ num_pedido }}" placeholder="Filtrar por número do pedido">
+                    </div>
+                    <div class="form-group col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </div>
+            </form>
+            <div class="form-group col-md-3 d-flex align-items-end">
+                <a href="{% url 'pedidocriar.html' %}" class="btn btn-success float-end">
+                    <i class="bi bi-plus"></i> Novo Pedido
+                </a>
+            </div>
+
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Total de Pedidos</th>
+                            <th>Números dos Pedidos</th>
+                            <th>Valor dos Pedidos</th>
+                            <th>Datas dos Pedidos</th>
+                            <th>Financeiro</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in clientes_pedidos %}
+                        <tr>
+                            <td>{{ cliente.nome_cliente }}</td>
+                            <td>{{ cliente.total_pedidos }}</td>
+                            <td>
+                                {% for numero in cliente.numeros_pedidos %}
+                                <a href="{% url 'pedido_detalhe' numero %}">{{ numero }}</a>{% if not forloop.last %},
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ cliente.total_valor_pedidos }}</td>
+                            <td>
+                                <ul class="list-unstyled">
+                                    {% for data in cliente.datas_pedidos %}
+                                    <li>{{ data|date:"d/m/Y" }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>{{ cliente.tipo_financeiro }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">Nenhum dado encontrado</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inclui o template de paginação -->
+    {% include '_pagination.html' with page_obj=page_obj nome_cliente=nome_cliente num_pedido=num_pedido %}
+</div>
+{% endblock %}

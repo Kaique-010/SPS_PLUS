@@ -1,0 +1,151 @@
+h2 {
+  text-align: center;
+}
+
+p {
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+  font-size: 2rem;
+}
+
+.crm-icon {
+  font-size: 2rem;
+  margin-right: 10px;
+}
+
+.table th,
+.table td {
+  font-size: 0.7rem; /* Tamanho menor para células */
+  padding: 0.4rem; /* Ajuste o padding conforme necessário */
+  line-height: 1.2; /* Melhora a legibilidade com altura da linha ajustada */
+}
+
+.table thead th {
+  font-size: 0.8rem; /* Tamanho menor para cabeçalhos */
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-form .form-row {
+  display: flex;
+  justify-content: center;
+  width: 70%;
+  margin-left: 130px;
+}
+
+.search-form .form-group {
+  margin: 1px;
+}
+
+.btn-sm:hover {
+  background-color: #ffe46c; /* Cor ao passar o mouse */
+}
+
+/* Estilo do botão primário */
+.btn-primary {
+  background-color: #84dcc6;
+  /* Altere para a cor desejada */
+  border-color: #84dcc6;
+  /* Altere para a cor desejada */
+}
+
+.btn-primary:hover {
+  background-color: #6abfae;
+  /* Cor ao passar o mouse */
+  border-color: #6abfae;
+  /* Cor da borda ao passar o mouse */
+}
+
+.card {
+  background: linear-gradient(rgb(226, 247, 254), rgb(206, 206, 206));
+  border: 2px solid rgb(26, 112, 138);
+  /* Borda do cartão */
+  border-radius: 8px;
+  /* Opcional: para bordas arredondadas */
+  padding: 20px;
+  /* Opcional: para adicionar algum espaço interno */
+}
+
+.form-control {
+  background-color: #95a3b3;
+  /* Altere para a cor desejada */
+  border: 2px solid rgb(26, 112, 138);
+  /* Borda dos campos de formulário */
+  border-radius: 4px;
+  /* Opcional: para bordas arredondadas */
+  width: 100%;
+  height: 35px;
+}
+
+h3 {
+  text-align: center;
+  font-size: 2rem;
+}
+
+h5 {
+  text-align: center;
+  font-size: 1rem;
+  font-variant: small-caps;
+}
+
+.bi-person-check {
+  font-size: 2rem;
+  margin-right: 10px;
+  color: rgb(26, 112, 138);
+}
+
+.table th,
+.table td {
+  font-size: 0.85rem;
+}
+
+.table thead th {
+  font-size: 0.9rem;
+}
+
+/* Estilo do botão primário */
+.btn-primary {
+  background-color: #84dcc6;
+  /* Altere para a cor desejada */
+  border-color: #84dcc6;
+  /* Altere para a cor desejada */
+  color: black;
+}
+
+.btn-primary:hover {
+  background-color: #6abfae;
+  /* Cor ao passar o mouse */
+  border-color: #6abfae;
+  /* Cor da borda ao passar o mouse */
+}
+
+/* Estilos do Botão de Sucesso*/
+
+.btn-success-custom {
+  background-color: cornflowerblue;
+  color: black;
+}
+
+.btn-success-custom:hover {
+  background-color: #ffe46c;
+  color: rgb(179, 101, 101);
+}
+
+@media (max-width: 768px) {
+  .search-form .form-col {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.7rem;
+  }
+}

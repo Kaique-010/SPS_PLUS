@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhes do Contato{% endblock %}
+
+{% block content %}
+<br>
+<br>
+<br>
+<div class="container mt-5">
+    <h2 class="mb-4">Detalhes do Contato para o Pedido {{ contato.Pedido }}</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <!-- Exibindo os dados retornados pela consulta SQL -->
+            <p><strong>Nome Cliente:</strong> {{ contato.Nome_Cliente }}</p>
+            <p><strong>Telefone:</strong> {{ contato.Telefone }}</p>
+            <p><strong>Email1:</strong> {{ contato.Email1 }}</p>
+            <p><strong>Email2:</strong> {{ contato.Email2 }}</p>
+            <p><strong>Data do Pedido:</strong> {{ contato.Data_do_Pedido }}</p>
+        </div>
+    </div>
+    
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="notas"><strong>Notas sobre o contato:</strong></label>
+            <textarea id="notas" name="notas" class="form-control" rows="6">{{ contato.Notas }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Salvar Notas</button>
+    </form>
+
+    <a href="{% url 'crm_home' %}" class="btn btn-secondary mt-3">Voltar</a>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+Lista de Saídas
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'Saidas_produtos/styles.css' %}">
+
+<<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <div class="card-saida">
+                <h3>Saídas de Estoque</h3>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <form method="get" action="{% url 'saidaslistas' %}" class="input-group search-bar">
+                        <input type="text" class="form-control" name="produto" placeholder="Buscar por Produto"
+                            value="{{ request.GET.produto }}">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i> Pesquisar
+                        </button>
+                    </form>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{% url 'saidascriar' %}" class="btn btn-success">
+                        <i class="bi bi-plus"></i> Nova Saída
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tabela -->
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Produto</th>
+                            <th>Responsável</th>
+                            <th>Quantidade</th>
+                            <th>Documento</th>
+                            <th>Data de Saída</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for saida in saidas %}
+                        <tr>
+                            <td>{{ saida.id }}</td>
+                            <td>{{ saida.produto_codigo }}</td>
+                            <td>{{ saida.entidade }}</td>
+                            <td>{{ saida.quantidade }}</td>
+                            <td>{{ saida.documento }}</td>
+                            <td>{{ saida.criado }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'saidasdetalhe' saida.id %}" class="btn btn-info btn-sm">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'saidaseditar' saida.id %}" class="btn btn-warning btn-sm">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'saidasexcluir' saida.id %}" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="empty-state">
+                                Nenhuma saída encontrada.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginação -->
+            {% include 'parcials/pagination.html' %}
+        </div>
+    </div>
+    {% endblock %}

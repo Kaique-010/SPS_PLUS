@@ -1,0 +1,33 @@
+<!-- Entidades -->
+
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Exclusão{% endblock %}
+
+{% block content %}
+
+<style>
+    h2 {
+        text-align: center;
+        font-size: 2rem;
+    }
+
+    p {
+    text-align: center;
+  }
+
+  form {
+    text-align: center;
+  }
+</style>
+<br><br><br>
+<h2 class="mb-4">
+  <i class="bi bi-person-gear fs-3"></i> Exclusão de Entidades
+</h2>
+  <p>Você tem certeza de que deseja excluir "{{ entidade.enti_nome }}"?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Excluir</button>
+    <a href="{% url 'entidades' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+{% endblock %}

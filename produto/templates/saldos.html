@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Extrato de Produtos{% endblock %}
+
+{% block content %}
+<style>
+    h2 {
+        text-align: center;
+        color: rgb(255, 255, 255);
+    }
+
+    h1 {
+        text-align: center;
+        color: rgb(255, 255, 255);
+        margin-bottom: 20px;
+    }
+
+    .btn-primary {
+        text-align: center;
+        background-color: rgb(84, 126, 104);
+    }
+    
+    .btn-primary:hover {
+        background-color: #000000;
+    }
+
+    .card {
+        background: linear-gradient(#0a2b2e, #000000);
+        border-radius: 25px; /* Bordas arredondadas */
+        box-shadow: 0 10px 16px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+        transform: scale(1.02); /* Efeito de zoom ao passar o mouse */
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2); /* Sombra mais intensa */
+    }
+
+    .card-body {
+        backdrop-filter: blur(20px); /* Efeito de desfoque */
+        padding: 20px; /* Adiciona padding */
+    }
+
+    .form-select, 
+    .form-control {
+        border-radius: 10px;
+    }
+
+    /* Aumentando o container */
+    .container {
+        max-width: 75%; /* Aumenta a largura do container */
+        margin-top: 90px;  
+    }
+
+    /* Ajustando o gráfico */
+    canvas {
+        max-height: 240px; /* Altura do gráfico */
+    }
+
+    /* Melhorando a aparência da lista de saldos */
+    .list-group-item {
+        background-color: transparent; /* Fundo transparente */
+        color: rgb(255, 255, 255); /* Texto em branco para itens da lista */
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); /* Sombra para destaque */
+    }
+</style>
+
+<div class="container mt-12">
+    <div class="card">
+        <div class="card-body">
+            <h1>Extrato de Entradas e Saídas</h1>
+            <div class="container-filtros">
+                <form method="GET" class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <label for="produto" class="form-label">Produto</label>
+                        <select name="produto" id="produto" class="form-select">
+                            <option value="">Todos os Produtos</option>
+                            {% for produto in produtos %}
+                            <option value="{{ produto }}" {% if produto_selecionado == produto %}selected{% endif %}>
+                                {{ produto }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="data_inicio" class="form-label">Data Início</label>
+                        <input type="date" name="data_inicio" id="data_inicio" class="form-control" value="">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="data_fim" class="form-label">Data Fim</label>
+                        <input type="date" name="data_fim" id="data_fim" class="form-control" value="">
+                    </div>
+                    <div class="col-md-2 d-grid">
+                        <button type="submit" class="btn btn-primary mt-4">Filtrar</button>
+                    </div>
+                </form>
+            </div>
+            <h2>Gráfico de Entradas e Saídas</h2>
+            <canvas id="entradaSaidaChart"></canvas>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+            <script>
+                const ctx = document.getElementById('entradaSaidaChart').getContext('2d');
+                const entradaSaidaChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: {{ produtos_filtrados | safe }},
+                        datasets: [
+                            {
+                                label: 'Entradas',
+                                data: {{ entradas_data | safe }},
+                                backgroundColor: 'rgba(20, 127, 160, 0.6)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Saídas',
+                                data: {{ saidas_data | safe }},
+                                backgroundColor: 'rgba(179, 47, 47, 0.6)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            </script>
+
+            <h2 class="mt-5">Saldo Atual por Produto</h2>
+            <ul class="list-group">
+                {% for produto, saldo in saldos.items %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ produto }}
+                    <span class="badge bg-success rounded-pill">{{ saldo }}</span>
+                </li>
+                {% empty %}
+                <li class="list-group-item">Nenhum saldo registrado.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

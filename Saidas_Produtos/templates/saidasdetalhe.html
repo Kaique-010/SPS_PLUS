@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Detalhe de saídas
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h3 class="display-8">Detalhes da Saídas</h3>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">{{ object.produto }}</h5>
+        </div>
+        <div class="card-body">
+            <p class="card-text">Responsável Saída:  <strong>{{ object.pessoa }}</strong></p>
+            <p class="card-text">Quantidade de Saída:  <strong>{{ object.quantidade}}</strong></p>
+            <p class="card-text">Documento:  <strong>{{ object.documento}}</strong></p>
+            <p class="card-text">Descrição:  {{ object.observacoes}}</p>
+        </div>
+    </div>
+<br>
+<a href="{% url 'saidaslistas' %}" class="btn btn-secondary mt2 float-end"><i class="bi bi-arrow-left"></i> Voltar à Lista
+</a>
+
+
+</div>
+<br>
+<br>
+<br>
+{% endblock %}
