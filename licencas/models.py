@@ -42,7 +42,18 @@ class Usuarios(models.Model):
 class Empresas(models.Model):
     empr_id = models.AutoField('ID', primary_key=True)
     empr_nome = models.CharField('Nome da Empresa', max_length=100)
+    empr_docu = models.CharField('Documento', max_length=14, blank=True, null=True)
+    empr_ie = models.CharField('Inscrição Estadual', max_length=11, blank=True, null=True)
+    empr_regi = models.CharField('Regime Tributação', max_length=50, choices=[('simples_nacional','Simples Nacional'), ('regime_normal', 'Regime Normal')])
+    empr_cep = models.CharField('CEP',max_length=8)
+    empr_ende = models.CharField('Endereço', max_length=100)
+    empr_nume = models.CharField('Numero', max_length=10)
+    empr_esta = models.CharField('Estado', max_length=2)
+    empr_bair = models.CharField('Bairro', max_length=100)
+    empr_cida = models.CharField('cidade', max_length=100)
+    empr_emai = models.EmailField('E-mail', blank=True, null=True)
     licenca = models.ForeignKey(Licencas, on_delete=models.CASCADE, related_name='empresas')
+   
 
     class Meta:
         db_table = 'empresas'
@@ -55,6 +66,16 @@ class Filiais(models.Model):
     fili_id = models.AutoField('ID', primary_key=True)
     fili_nome = models.CharField('Nome da Filial', max_length=100)
     empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, related_name='filiais')
+    fili_docu = models.CharField('Documento', max_length=14, blank=True, null=True)
+    fili_ie = models.CharField('Inscrição Estadual', max_length=11, blank=True, null=True)
+    fili_regi = models.CharField('Regime Tributação', max_length=50, choices=[('simples_nacional','Simples Nacional'), ('regime_normal', 'Regime Normal')])
+    fili_cep = models.CharField('CEP',max_length=8)
+    fili_ende = models.CharField('Endereço', max_length=100)
+    fili_nume = models.CharField('Numero', max_length=10)
+    fili_esta = models.CharField('Estado', max_length=2)
+    fili_bair = models.CharField('Bairro', max_length=100)
+    fili_cida = models.CharField('cidade', max_length=100)
+    fili_emai = models.EmailField('E-mail', blank=True, null=True)
 
     class Meta:
         db_table = 'filiais'

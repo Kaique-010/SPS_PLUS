@@ -1,15 +1,21 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Licenças</h1>
-<a href="{% url 'licenca_create' %}">Criar Nova Licença</a>
-<ul>
-  {% for licenca in object_list %}
-  <li>
-    <a href="{% url 'licenca_detail' licenca.pk %}">{{ licenca.nome }}</a> |
-    <a href="{% url 'licenca_update' licenca.pk %}">Editar</a> |
-    <a href="{% url 'licenca_delete' licenca.pk %}">Excluir</a>
-  </li>
-  {% empty %}
-  <li>Não há licenças cadastradas.</li>
-  {% endfor %}
-</ul>
+{%load static%}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
+<div class="container">
+  <h1>Licenças</h1>
+  <a href="{% url 'licenca_create' %}">Criar Nova Licença</a>
+  <ul>
+    {% for licenca in object_list %}
+    <li>
+      <a href="{% url 'licenca_detail' licenca.pk %}">{{ licenca.nome }}</a> |
+      <a href="{% url 'licenca_update' licenca.pk %}">Editar</a> |
+      <a href="{% url 'licenca_delete' licenca.pk %}">Excluir</a>
+    </li>
+    {% empty %}
+    <li>Não há licenças cadastradas.</li>
+    {% endfor %}
+  </ul>
+</div>
 {% endblock %}

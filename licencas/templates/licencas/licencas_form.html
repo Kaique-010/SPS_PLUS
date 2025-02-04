@@ -1,8 +1,14 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Criar Licença</h1>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Salvar</button>
-</form>
-<a href="{% url 'licenca_list' %}">Voltar para a lista de licenças</a>
+{%load static%}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'licencas/form_styles.css' %}" />
+<div class="container">
+  <h1>Criar Licença</h1>
+  <form method="post">
+    {% csrf_token %} {{ form.as_p }}
+    <button type="submit">Salvar</button>
+  </form>
+  <a href="{% url 'licenca_list' %}">Voltar para a lista de licenças</a>
+</div>
 {% endblock %}
