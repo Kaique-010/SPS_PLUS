@@ -1,8 +1,14 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Detalhes da Empresa</h1>
-<p><strong>Nome:</strong> {{ object.empr_nome }}</p>
-<p><strong>Licença:</strong> {{ object.licenca.lice_nome }}</p>
-<a href="{% url 'empresa_update' object.pk %}">Editar</a> |
-<a href="{% url 'empresa_delete' object.pk %}">Excluir</a> |
-<a href="{% url 'empresa_list' %}">Voltar para a lista de empresas</a>
+{%load static%}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
+<div class="container">
+    <h1>Detalhes da Empresa</h1>
+    <p><strong>Nome:</strong> {{ object.empr_nome }}</p>
+    <p><strong>Licença:</strong> {{ object.licenca.lice_nome }}</p>
+    <a href="{% url 'empresa_update' object.pk %}">Editar</a> |
+    <a href="{% url 'empresa_delete' object.pk %}">Excluir</a> |
+    <a href="{% url 'empresa_list' %}">Voltar para a lista de empresas</a>
+</div>
 {% endblock %}

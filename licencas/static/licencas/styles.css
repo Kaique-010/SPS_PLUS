@@ -1,4 +1,72 @@
 .container {
-  margin-top: 80px;
+  margin-top: 120px;
   text-align: center;
+}
+
+.table th,
+.table td {
+  font-size: 0.9rem;
+  font-weight: bolder;
+  padding: 0.5rem; 
+  line-height: 1; 
+}
+
+.table thead th {
+  font-size: 0.8rem;
+}
+
+.container-btn {
+  align-items: end;
+  justify-content: end;
+}
+
+h1 {
+  color: blanchedalmond;
+  margin-top: 40px;
+}
+
+.search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-form .form-row {
+  display: flex;
+  justify-content: center;
+  width: 70%;
+  margin-left: 130px;
+}
+
+.search-form .form-group {
+  margin: 1px;
+}
+
+@media (max-width: 768px) {
+  .container-search {
+    display: flex;
+    flex-direction: column; /* Empilhar os itens verticalmente */
+    align-items: center; /* Centralizar os elementos */
+    width: 80%;
+  }
+
+  .search-form .form-row {
+    flex-direction: column; /* Fazer os filtros ficarem um abaixo do outro */
+    width: 100%;
+  }
+
+  .search-form .form-group {
+    width: 100%; /* Faz os inputs ocuparem toda a largura disponível */
+    margin-bottom: 10px;
+  }
+
+  .search-form button {
+    width: 100%; /* Botão ocupa toda a largura */
+    margin-top: 10px;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.7rem;
+  }
 }

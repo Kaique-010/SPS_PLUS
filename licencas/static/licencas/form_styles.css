@@ -2,3 +2,33 @@
   margin-top: 150px;
   text-align: center;
 }
+
+h1 {
+  margin-bottom: 2rem;
+  color: bisque;
+}
+
+label {
+  font-weight: bold;
+  color: #f6f6f6;
+}
+
+.form-control {
+  border: 2px solid #aaa;
+  padding: 10px;
+  font-size: 20px;
+}
+
+.form-control:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(0, 86, 179, 0.5);
+}
+
+.form-group {
+  align-items: center;
+  gap: 100px; /* Espaço entre o checkbox e o texto */
+}
+
+.form-group label {
+  margin-bottom: 25; /* Evita espaçamento extra */
+}

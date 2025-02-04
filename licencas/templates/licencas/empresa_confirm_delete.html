@@ -1,9 +1,51 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Excluir Empresa</h1>
-<p>Tem certeza que deseja excluir a empresa "{{ object.empr_nome }}"?</p>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit">Sim, Excluir</button>
-</form>
-<a href="{% url 'empresa_list' %}">Cancelar</a>
+{% load static %}
+<style>
+  .container p {
+    color: antiquewhite;
+    font-weight: bold;
+  }
+
+  .btn-container {
+
+    gap: 50px;
+    margin-top: 20px;
+    align-items: center;
+  }
+
+  .btn-container form,
+  .btn-container a {
+    display: inline-block;
+  }
+
+  button {
+    background-color: rgb(20, 95, 23);
+    color: aliceblue;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+
+  button:hover {
+    background-color: rgb(15, 75, 18);
+  }
+</style>
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
+
+<div class="container">
+  <h1>Excluir Empresa</h1>
+  <p>Tem certeza que deseja excluir a empresa "{{ object.empr_nome }}"?</p>
+
+  <div class="btn-container">
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit">Sim, Excluir</button>
+    </form>
+    <a href="{% url 'empresa_list' %}" class="btn btn-info">Cancelar</a>
+  </div>
+</div>
 {% endblock %}
