@@ -1,0 +1,15 @@
+{% extends 'base.html' %} {% block content %}
+<h1>Filiais</h1>
+<a href="{% url 'filial_create' %}">Criar Nova Filial</a>
+<ul>
+  {% for filial in filiais %}
+  <li>
+    <a href="{% url 'filial_detail' filial.pk %}">{{ filial.fili_nome }}</a> |
+    <a href="{% url 'filial_update' filial.pk %}">Editar</a> |
+    <a href="{% url 'filial_delete' filial.pk %}">Excluir</a>
+  </li>
+  {% empty %}
+  <li>Não há filiais cadastradas.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

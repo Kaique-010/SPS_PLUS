@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     #Aplicações
     'Entidades',
     'Entradas_Produtos',
-   
+    'licencas',
     'Menu',
     'Pedidos',
     'produto',
@@ -126,6 +126,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'Saidas_Produtos/static'),
     os.path.join(BASE_DIR, 'Entradas_Produtos/static'),
     os.path.join(BASE_DIR, 'orcamentos/static'),
+    os.path.join(BASE_DIR, 'licencas/static'),
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

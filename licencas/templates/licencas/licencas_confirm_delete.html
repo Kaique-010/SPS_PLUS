@@ -1,0 +1,9 @@
+{% extends 'base.html' %} {% block content %}
+<h1>Confirmar Exclusão</h1>
+<p>Você tem certeza que deseja excluir a licença "{{ object.nome }}"?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Sim, excluir</button>
+</form>
+<a href="{% url 'licenca_list' %}">Cancelar</a>
+{% endblock %}

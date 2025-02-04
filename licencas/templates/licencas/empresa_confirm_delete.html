@@ -1,0 +1,9 @@
+{% extends 'base.html' %} {% block content %}
+<h1>Excluir Empresa</h1>
+<p>Tem certeza que deseja excluir a empresa "{{ object.empr_nome }}"?</p>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Sim, Excluir</button>
+</form>
+<a href="{% url 'empresa_list' %}">Cancelar</a>
+{% endblock %}
