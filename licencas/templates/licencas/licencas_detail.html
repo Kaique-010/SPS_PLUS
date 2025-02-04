@@ -1,9 +1,23 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Detalhes da Licença</h1>
-<p><strong>Nome:</strong> {{ object.nome }}</p>
-<p><strong>Data de Criação:</strong> {{ object.data_criacao }}</p>
-<p><strong>Status:</strong> {{ object.status }}</p>
-<a href="{% url 'licenca_update' object.pk %}">Editar</a> |
-<a href="{% url 'licenca_delete' object.pk %}">Excluir</a> |
-<a href="{% url 'licenca_list' %}">Voltar para a lista de licenças</a>
-{% endblock %} (licenca_confirm_delete.html
+{%load static%}
+<style>
+    a {
+        color: antiquewhite !important;
+    }
+
+    .container p {
+        color: aliceblue;
+    }
+</style>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
+<div class="container">
+    <h1>Detalhes da Licença</h1>
+    <p><strong>Nome:</strong> {{ licenca.lice_nome }}</p>
+    <p><strong>Data de Criação:</strong> {{ licenca.lice_nome }}</p>
+    <p><strong>Status:</strong> {{ object.status }}</p>
+    <a href="{% url 'licenca_update' object.pk %}" class="btn btn-info">Editar</a> |
+    <a href="{% url 'licenca_delete' object.pk %}" class="btn btn-danger">Excluir</a> |
+    <a href="{% url 'licenca_list' %}" class="btn btn-success">Voltar para a lista de licenças</a>
+</div>
+{% endblock %}

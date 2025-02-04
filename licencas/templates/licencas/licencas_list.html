@@ -1,21 +1,67 @@
-{% extends 'base.html' %} {% block content %}
-{%load static%}
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
 <link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
+
 <div class="container">
-  <h1>Licenças</h1>
-  <a href="{% url 'licenca_create' %}">Criar Nova Licença</a>
-  <ul>
-    {% for licenca in object_list %}
-    <li>
-      <a href="{% url 'licenca_detail' licenca.pk %}">{{ licenca.nome }}</a> |
-      <a href="{% url 'licenca_update' licenca.pk %}">Editar</a> |
-      <a href="{% url 'licenca_delete' licenca.pk %}">Excluir</a>
-    </li>
-    {% empty %}
-    <li>Não há licenças cadastradas.</li>
-    {% endfor %}
-  </ul>
+  <h1 class="my-4">Licenças</h1>
+  <div class="container-search">
+    <form method="get" class="search-form mb-4">
+      <div class="form-row">
+        <div class="form-group col-md-3">
+          <label for="lice_nome"></label>
+          <input type="text" id="lice_nome" name="lice_nome" class="form-control" value="{{ request.GET.lice_nome }}"
+            placeholder="Filtrar por nome">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="lice_id"></label>
+          <input type="number" id="lice_id" name="lice_id" class="form-control" value="{{ request.GET.lice_id }}"
+            placeholder="Filtrar por ID">
+        </div>
+        <div class="form-group col-md-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="container-btn">
+    <a href="{% url 'licenca_create' %}" class="btn btn-success mb-4 mt-2 float-end"><i class="bi bi-plus"></i> Nova
+      Licença</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>Ações</th>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Data de Criação</th>
+          <th>Ativa?</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for licenca in licencas %}
+        <tr>
+          <td>
+            <a href="{% url 'licenca_detail' licenca.pk %}" class="btn btn-primary btn-sm">Visualizar</a>
+            <a href="{% url 'licenca_update' licenca.pk %}" class="btn btn-warning btn-sm">Editar</a>
+            <a href="{% url 'licenca_delete' licenca.pk %}" class="btn btn-danger btn-sm">Excluir</a>
+          </td>
+          <td>{{ licenca.lice_id }}</td>
+          <td>{{ licenca.lice_nome }}</td>
+          <td>{{ licenca.lice_data_cria|date:"d/m/Y" }}</td>
+          <td>{% if licenca.lice_bloq %}Sim{% else %}Não{% endif %}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center">Não há licenças cadastradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
+
 {% endblock %}

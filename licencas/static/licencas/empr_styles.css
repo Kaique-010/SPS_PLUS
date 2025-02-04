@@ -1,0 +1,63 @@
+.container {
+  margin-top: 100px;
+  color: blanchedalmond;
+  text-align: center;
+  font-weight: bolder;
+}
+form {
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+  margin-bottom: 1rem;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  background-color: cadetblue;
+}
+
+/* Estilizando o botão */
+button {
+  background-color: #0e3966;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #4db64b;
+}
+
+input:placeholder-shown {
+  background-color: #374e70;
+}
+input::placeholder {
+  color: rgb(255, 255, 255);
+  font-style: italic;
+  font-size: medium;
+}
+
+search-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-form .form-row {
+  display: flex;
+  justify-content: center;
+  width: 70%;
+  margin-left: 130px;
+}
+
+.search-form .form-group {
+  margin: 1px;
+}

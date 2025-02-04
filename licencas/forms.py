@@ -3,14 +3,23 @@ from .models import Licencas, Usuarios, Empresas, Filiais
 
 
 class LicencasForm(forms.ModelForm):
+    lice_docu = forms.CharField(
+        max_length=14,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CNPJ/CPF'})
+    )
+    lice_nome = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome da Empresa'})
+    )
+
     class Meta:
         model = Licencas
-        fields = ['lice_docu', 'lice_nome', 'lice_emai', 'lice_bloq']
+        exclude = ['lice_data_cria']
+        fields = ['lice_docu', 'lice_nome', 'lice_emai', 'lice_bloq', 'lice_data_cria']
         widgets = {
-            'lice_docu': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CNPJ/CPF'}),
-            'lice_nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome da Empresa'}),
             'lice_emai': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-mail'}),
             'lice_bloq': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'lice_data_cria': forms.DateInput(attrs={'class': 'form-control'}),
         }
 
 
@@ -44,7 +53,7 @@ class EmpresasForm(forms.ModelForm):
             'empr_nume': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número'}),
             'empr_cida': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cidade'}),
             'empr_esta': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Estado', 'maxlength': '2'}),
-            'empr_bair': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Estado', 'maxlength': '100'}),
+            'empr_bair': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bairro', 'maxlength': '100'}),
             'empr_emai': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-mail'}),
         }
 

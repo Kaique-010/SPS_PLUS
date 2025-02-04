@@ -5,7 +5,8 @@ class Licencas(models.Model):
     lice_docu = models.CharField('Documento', max_length=60, blank=True, null=True)
     lice_nome = models.CharField('Nome Empresa', max_length=60, blank=True, null=True)
     lice_emai = models.EmailField('E-mail', max_length=150, blank=True, null=True)
-    lice_bloq = models.BooleanField('Ativa?', default=False)
+    lice_bloq = models.BooleanField('Ativa?   ', default=False)
+    lice_data_cria = models.DateField('Data de Criação', auto_now_add=True)
     field_log_data = models.DateField(db_column='_log_data', blank=True, null=True)
     field_log_time = models.TimeField(db_column='_log_time', blank=True, null=True)
 

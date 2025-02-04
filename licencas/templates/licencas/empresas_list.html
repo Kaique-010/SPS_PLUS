@@ -1,15 +1,69 @@
-{% extends 'base.html' %} {% block content %}
-<h1>Empresas</h1>
-<a href="{% url 'empresa_create' %}">Criar Nova Empresa</a>
-<ul>
-  {% for empresa in empresas %}
-  <li>
-    <a href="{% url 'empresa_detail' empresa.pk %}">{{ empresa.empr_nome }}</a>
-    | <a href="{% url 'empresa_update' empresa.pk %}">Editar</a> |
-    <a href="{% url 'empresa_delete' empresa.pk %}">Excluir</a>
-  </li>
-  {% empty %}
-  <li>Não há empresas cadastradas.</li>
-  {% endfor %}
-</ul>
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
+
+<div class="container">
+  <h1 class="my-4">Empresas</h1>
+
+  <!-- Formulário de pesquisa -->
+  <form method="GET" class="mb-4">
+    <div class="row">
+      <div class="col-md-4">
+        <label for="empr_nome">Nome da Empresa</label>
+        <input type="text" id="empr_nome" name="empr_nome" class="form-control" value="{{ empr_nome }}" />
+      </div>
+      <div class="col-md-4">
+        <label for="empr_docu">Documento (CNPJ/CPF)</label>
+        <input type="text" id="empr_docu" name="empr_docu" class="form-control" value="{{ empr_docu }}" />
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a href="{% url 'empresa_list' %}" class="btn btn-secondary ml-2">Limpar</a>
+      </div>
+    </div>
+  </form>
+
+  <div class="container-btn">
+    <a href="{% url 'empresa_create' %}" class="btn btn-success mb-4 mt-2 float-end">
+      <i class="bi bi-plus"></i> Nova Empresa
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>Ações</th>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Documento</th>
+          <th>Cidade</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for empresa in empresas %}
+        <tr>
+          <td>
+            <a href="{% url 'empresa_detail' empresa.pk %}" class="btn btn-primary btn-sm">Visualizar</a>
+            <a href="{% url 'empresa_update' empresa.pk %}" class="btn btn-warning btn-sm">Editar</a>
+            <a href="{% url 'empresa_delete' empresa.pk %}" class="btn btn-danger btn-sm">Excluir</a>
+          </td>
+          <td>{{ empresa.empr_id }}</td>
+          <td>{{ empresa.empr_nome }}</td>
+          <td>{{ empresa.empr_docu }}</td>
+          <td>{{ empresa.empr_cida }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">Não há empresas cadastradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 {% endblock %}

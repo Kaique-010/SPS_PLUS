@@ -1,8 +1,49 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Editar Empresa</h1>
-<form method="post">
-  {% csrf_token %} {{ form.as_p }}
-  <button type="submit">Salvar Alterações</button>
-</form>
-<a href="{% url 'empresa_list' %}">Cancelar</a>
+{%load static%}
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'licencas/empr_styles.css' %}" />
+<div class="container">
+  <h1>Editar Empresa</h1>
+
+  <form method="post" class="mt-4 p-4 ">
+    {% csrf_token %}
+    <div class="form-group">
+      {{ form.as_p }}
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+  </form>
+
+
+  <a href="{% url 'empresa_list' %}" class="btn btn-info ">Cancelar</a>
+</div>
+
+<script>
+  document.getElementById("id_empr_cep").addEventListener("blur", buscarCEP);
+  function buscarCEP() {
+    var cep = document.getElementById("id_empr_cep").value;
+
+    if (cep.length === 8) {
+      var url = "https://viacep.com.br/ws/" + cep + "/json/";
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.erro) {
+            document.getElementById("id_empr_ende").value = data.logradouro;
+            document.getElementById("id_empr_cida").value = data.localidade;
+            document.getElementById("id_empr_esta").value = data.uf;
+          } else {
+            alert("CEP não encontrado!");
+          }
+        })
+        .catch((error) => {
+          alert("Erro ao buscar o CEP. Tente novamente.");
+          console.error(error);
+        });
+    } else {
+      alert("CEP inválido. O CEP deve conter 8 dígitos.");
+    }
+  }
+</script>
 {% endblock %}
