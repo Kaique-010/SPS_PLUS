@@ -1,5 +1,6 @@
 from django import forms
-from produto.models import Produtos, GrupoProduto, SubgrupoProduto, FamiliaProduto, Marca
+from django.forms.models import inlineformset_factory
+from produto.models import Produtos, GrupoProduto, SubgrupoProduto, FamiliaProduto, Marca, Tabelaprecos
 
 class ProdutosForm(forms.ModelForm):
     class Meta:
@@ -129,3 +130,33 @@ class MarcaForm(forms.ModelForm):
             }),
             }
     
+
+
+class TabelaprecosForm(forms.ModelForm):
+    class Meta:
+        model = Tabelaprecos
+        fields = [
+            'tabe_fili', 'tabe_prco', 'tabe_icms', 'tabe_desc', 'tabe_vipi', 'tabe_pipi', 'tabe_fret', 
+            'tabe_desp', 'tabe_cust', 'tabe_marg', 'tabe_impo', 'tabe_avis', 'tabe_praz', 'tabe_apra', 
+            'tabe_vare', 'field_log_data', 'field_log_time', 'tabe_valo_st', 'tabe_perc_reaj', 'tabe_hist',
+            'tabe_cuge', 'tabe_entr', 'tabe_perc_st'
+        ]
+
+        widgets = {
+            'tabe_prco': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Preço de Compra'}),
+            'tabe_fret': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001', 'placeholder': '% Frete'}),
+            'tabe_desp': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001', 'placeholder': 'Despesas'}),
+            'tabe_cust': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Custo Gerencial'}),
+            'tabe_marg': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001', 'placeholder': '% a vista'}),
+            'tabe_avis': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Preço a vista'}),
+            'tabe_praz': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001', 'placeholder': 'Preço a Prazo'}),
+            'tabe_apra': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': '% a prazo'}),
+            'field_log_data': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'field_log_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
+            'tabe_perc_reaj': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Reajuste'}),
+            'tabe_hist': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Histórico'}),
+            'tabe_cuge': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Custo Geral'}),
+            'tabe_entr': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+TabelaprecosFormSet = inlineformset_factory(Produtos, Tabelaprecos, form=TabelaprecosForm, extra=1)
