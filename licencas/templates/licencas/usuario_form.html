@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block content %} {%load static%}
+
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
+<link rel="stylesheet" href="{% static 'licencas/usuario_styles.css' %}" />
+<div class="container">
+  <h2>Criar Novo Usuário <i class="bi-person-bounding-box fs-2"></i></h2>
+  <form method="POST">
+    {% csrf_token %}
+    <div class="mb-3">{{ form.as_p }}</div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+  </form>
+</div>
+{% endblock %}

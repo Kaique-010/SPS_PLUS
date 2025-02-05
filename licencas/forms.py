@@ -1,5 +1,6 @@
 from django import forms
 from .models import Licencas, Usuarios, Empresas, Filiais
+from django.contrib.auth.forms import UserCreationForm
 
 
 class LicencasForm(forms.ModelForm):
@@ -23,21 +24,7 @@ class LicencasForm(forms.ModelForm):
         }
 
 
-class UsuariosForm(forms.ModelForm):
-    class Meta:
-        model = Usuarios
-        fields = ['usua_nome', 'usua_login', 'usua_data_nasc', 'usua_sexo', 'usua_emai', 'usua_fone', 'usua_senh', 'usua_bloq', 'licenca']
-        widgets = {
-            'usua_nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome'}),
-            'usua_login': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Login'}),
-            'usua_data_nasc': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'usua_sexo': forms.Select(attrs={'class': 'form-select'}, choices=[('', 'Selecione...'), ('M', 'Masculino'), ('F', 'Feminino')]),
-            'usua_emai': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-mail'}),
-            'usua_fone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefone'}),
-            'usua_senh': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Senha', 'type': 'password'}),
-            'usua_bloq': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-            'licenca': forms.Select(attrs={'class': 'form-select'}),
-        }
+
 
 class EmpresasForm(forms.ModelForm):
     class Meta:
@@ -75,3 +62,37 @@ class FiliaisForm(forms.ModelForm):
             'fili_bair': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Estado', 'maxlength': '100'}),
             'fili_emai': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-mail'}),
         }
+
+
+
+class UsuarioForm(UserCreationForm):
+    class Meta:
+        model = Usuarios
+        fields = ["usua_nome", "usua_login", "usua_emai", "usua_fone", "usua_data_nasc", "usua_sexo", 
+                  "licenca", "empresa", "filial", "usua_bloq", "usua_libe_clie_bloq", "usua_libe_pedi_comp"]
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Personalização dos widgets para melhorar a experiência do usuário
+        self.fields["usua_nome"].widget.attrs.update({"class": "form-control", "placeholder": "Nome Completo"})
+        self.fields["usua_login"].widget.attrs.update({"class": "form-control", "placeholder": "Login"})
+        self.fields["usua_emai"].widget.attrs.update({"class": "form-control", "placeholder": "E-mail"})
+        self.fields["usua_fone"].widget.attrs.update({"class": "form-control", "placeholder": "Telefone"})
+        self.fields["usua_data_nasc"].widget.attrs.update({"class": "form-control", "type": "date"})
+        self.fields["usua_sexo"].widget.attrs.update({"class": "form-select"})
+        self.fields["licenca"].widget.attrs.update({"class": "form-control"})
+        self.fields["empresa"].widget.attrs.update({"class": "form-control"})
+        self.fields["filial"].widget.attrs.update({"class": "form-control"})
+
+        # Checkbox personalizado para os campos booleanos
+        self.fields["usua_bloq"].widget.attrs.update({"class": "form-check-input"})
+        self.fields["usua_libe_clie_bloq"].widget.attrs.update({"class": "form-check-input"})
+        self.fields["usua_libe_pedi_comp"].widget.attrs.update({"class": "form-check-input"})
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["password1"]) 
+        if commit:
+            user.save()
+        return user

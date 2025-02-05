@@ -2,6 +2,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from .models import Licencas, Filiais, Empresas
 from .forms import LicencasForm, EmpresasForm, FiliaisForm
+from .models import Usuarios
+from .forms import UsuarioForm
 
 
 class LicencasListView(ListView):
@@ -144,3 +146,17 @@ class FilialDeleteView(DeleteView):
     model = Filiais
     template_name = 'licencas/filial_confirm_delete.html'
     success_url = reverse_lazy('filial_list')
+    
+
+
+class UsuarioCreateView(CreateView):
+    model = Usuarios
+    form_class = UsuarioForm
+    template_name = "licencas/usuario_form.html"
+    success_url = reverse_lazy("usuarios:lista") 
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.set_password(form.cleaned_data["password1"])  
+        self.object.save()
+        return response

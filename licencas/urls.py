@@ -3,7 +3,7 @@ from django.urls import path
 from .views import LicencasListView, LicencasCreateView, LicencasUpdateView, LicencasDetailView, LicencasDeleteView
 from .views import (
     EmpresaListView, EmpresaCreateView, EmpresaUpdateView, EmpresaDetailView, EmpresaDeleteView,
-    FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView
+    FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView, UsuarioCreateView
 )
 
 urlpatterns = [
@@ -26,5 +26,8 @@ urlpatterns = [
     path('filial/editar/<int:pk>/', FilialUpdateView.as_view(), name='filial_update'),
     path('filial/detalhar/<int:pk>/', FilialDetailView.as_view(), name='filial_detail'),
     path('filial/excluir/<int:pk>/', FilialDeleteView.as_view(), name='filial_delete'),
+    
+    #usuarios
+    path("usuario/", UsuarioCreateView.as_view(), name="usuario"),
 ]
 

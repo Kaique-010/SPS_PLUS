@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+
+from licencas.middleware import get_current_request
 
 class Licencas(models.Model):
     lice_id = models.AutoField('Id', primary_key=True)
@@ -16,28 +19,6 @@ class Licencas(models.Model):
     def __str__(self):
         return f"Licença {self.lice_id} - {self.lice_docu}"
 
-
-class Usuarios(models.Model):
-    usua_codi = models.AutoField('ID', primary_key=True)
-    usua_nome = models.CharField('Nome', max_length=30, blank=True, null=True)
-    usua_login = models.CharField('Login', max_length=30, blank=True, null=True)
-    usua_data_nasc = models.DateField('Data Nascimento', blank=True, null=True)
-    usua_sexo = models.CharField(max_length=1, choices=[('M', 'Masculino'), ('F', 'Feminino')], blank=True, null=True)
-    usua_emai = models.EmailField('E-mail', max_length=100, blank=True, null=True)
-    usua_fone = models.CharField('Telefone', max_length=14, blank=True, null=True)
-    usua_senh = models.CharField('Senha', max_length=128)
-    usua_bloq = models.BooleanField('Ativo?', default=True)
-    usua_libe_clie_bloq = models.BooleanField('Liberação Cliente Bloqueado', default=False)
-    usua_libe_pedi_comp = models.BooleanField('Liberação Pedido Comprado', default=False)
-    licenca = models.ForeignKey(Licencas, on_delete=models.CASCADE, related_name='usuarios', blank=True, null=True)
-    field_log_data = models.DateField(db_column='_log_data', blank=True, null=True)
-    field_log_time = models.TimeField(db_column='_log_time', blank=True, null=True)
-
-    class Meta:
-        db_table = 'usuarios'
-
-    def __str__(self):
-        return self.usua_nome or f"Usuário {self.usua_codi}"
 
 
 class Empresas(models.Model):
@@ -83,3 +64,75 @@ class Filiais(models.Model):
 
     def __str__(self):
         return self.fili_nome
+
+
+
+class UsuarioManager(BaseUserManager):
+    def get_queryset(self):
+        qs = super().get_queryset()
+        try:
+            request = get_current_request()
+            if request and hasattr(request, 'user') and not request.user.is_superuser:
+                return qs.filter(empresa=request.user.empresa, filial=request.user.filial)
+        except Exception as e:
+            print(f"Erro ao recuperar request no UsuarioManager: {e}")  # Log para depuração
+        return qs
+
+    def create_user(self, usua_login, usua_nome, usua_senh, **extra_fields):
+        """Criação de um usuário normal"""
+        if not usua_login:
+            raise ValueError("O campo login é obrigatório")
+        user = self.model(usua_login=usua_login, usua_nome=usua_nome, **extra_fields)
+        user.set_password(usua_senh)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, usua_login, usua_nome, usua_senh, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        extra_fields.setdefault("usua_bloq", True)  # Garante que superusuário nunca será bloqueado
+        return self.create_user(usua_login, usua_nome, usua_senh, **extra_fields)
+
+
+
+class Usuarios(AbstractBaseUser, PermissionsMixin):
+    usua_codi = models.AutoField("ID", primary_key=True)
+    usua_nome = models.CharField("Nome", max_length=100, blank=True, null=True)
+    usua_login = models.CharField("Login", max_length=50, unique=True)  # Alterado para obrigatório
+    usua_data_nasc = models.DateField("Data de Nascimento", blank=True, null=True)
+    usua_sexo = models.CharField(
+        max_length=1, choices=[("M", "Masculino"), ("F", "Feminino")], blank=True, null=True
+    )
+    usua_emai = models.EmailField("E-mail", unique=True, max_length=100)
+    usua_fone = models.CharField("Telefone", max_length=14, blank=True, null=True)
+    usua_bloq = models.BooleanField("Ativo?", default=True)
+    
+    # Permissões Específicas
+    usua_libe_clie_bloq = models.BooleanField("Liberação Cliente Bloqueado", default=False)
+    usua_libe_pedi_comp = models.BooleanField("Liberação Pedido Comprado", default=False)
+
+    # Relacionamentos
+    licenca = models.ForeignKey("Licencas", on_delete=models.CASCADE, related_name="usuarios_licenca", blank=True, null=True)
+    empresa = models.ForeignKey(
+    "Empresas", on_delete=models.CASCADE, related_name="usuarios_empresa", db_index=True
+    )
+    filial = models.ForeignKey(
+    "Filiais", on_delete=models.CASCADE, related_name="usuarios_filial", db_index=True
+    )
+
+    # Campos de Log
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    # Configurações de Autenticação
+    objects = UsuarioManager()
+    USERNAME_FIELD = "usua_login"
+    REQUIRED_FIELDS = ["usua_nome", "usua_emai"]
+
+    class Meta:
+        db_table = "usuarios"
+        verbose_name = "Usuário"
+        verbose_name_plural = "Usuários"
+
+    def __str__(self):
+        return self.usua_nome or f"Usuário {self.usua_codi}"
