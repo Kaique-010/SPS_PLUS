@@ -3,7 +3,6 @@
 {% block title %}Lista de Produtos{% endblock %}
 
 {% block content %}
-
 <br><br><br>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="{% static 'produtos/styles.css' %}">
@@ -74,40 +73,64 @@
                     </thead>
                     <tbody>
                         {% for produto in page_obj %}
-                        <tr>
-                            <td>
-                                {% if produto.produto_codigo %}
-                                <a href="{% url 'produto_update' pk=produto.produto_codigo %}" class="btn btn-sm"
-                                    style="background-color: #7ab1ec; color: white;">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <a href="{% url 'produto_delete' pk=produto.produto_codigo %}" class="btn btn-sm"
-                                    style="background-color: #e7a0a7; color: white;">
-                                    <i class="bi bi-trash"></i>
-                                </a>
-                                {% endif %}
-                            </td>
-                            <td>{{ produto.produto_codigo }}</td>
-                            <td>{{ produto.nome_produto }}</td>
-                            <td>{{ produto.unidade_medida }}</td>
-                            <td>{{ produto.grupo }}</td>
-                            <td>{{ produto.subgrupo }}</td>
-                            <td>{{ produto.descricao_familia }}</td>
-                            <td>{{ produto.marca }}</td>
-                            <td>{{ produto.local }}</td>
-                            <td>{{ produto.ncm }}</td>
-                            <td>{{ produto.preco_custo }}</td>
-                            <td>{{ produto.preco_a_vista }}</td>
-                            <td>{{ produto.preco_a_prazo }}</td>
-                            <td>{{ saldoproduto.saldo_estoque }}</td>
-                            <td>
-                                {% if produto.foto %}
-                                    <img src="{{ produto.foto.url }}" alt="Foto do produto" style="width: 75px; height: auto;">
-                                {% else %}
-                                    <span>Sem foto</span>
-                                {% endif %}
-                            </td>
-                        </tr>
+                            <tr>
+                                <td>
+                                    {% if produto.produto_codigo %}
+                                    <a href="{% url 'produto_update' pk=produto.produto_codigo %}" class="btn btn-sm"
+                                        style="background-color: #7ab1ec; color: white;">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="{% url 'produto_delete' pk=produto.produto_codigo %}" class="btn btn-sm"
+                                        style="background-color: #e7a0a7; color: white;">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </td>
+                                <td>{{ produto.produto_codigo }}</td>
+                                <td>{{ produto.nome_produto }}</td>
+                                <td>{{ produto.unidade_medida }}</td>
+                                <td>{{ produto.grupo|default_if_none:"" }}</td>
+                                <td>{{ produto.subgrupo|default_if_none:"" }}</td>
+                                <td>{{ produto.familia|default_if_none:"" }}</td>
+                                <td>{{ produto.marca|default_if_none:"" }}</td>
+                                <td>{{ produto.local|default_if_none:"" }}</td>
+                                <td>{{ produto.ncm|default_if_none:"" }}</td>
+                                <td>
+                                    {% if produto.tabelaprecos_set.all %}
+                                        {% for preco in produto.tabelaprecos_set.all %}
+                                            {{ preco.tabe_cust|floatformat:2 }}</p>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p>Sem preço definido</p>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if produto.tabelaprecos_set.all %}
+                                        {% for preco in produto.tabelaprecos_set.all %}
+                                            {{ preco.tabe_avis|floatformat:2 }}</p>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p>Sem preço definido</p>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if produto.tabelaprecos_set.all %}
+                                        {% for preco in produto.tabelaprecos_set.all %}
+                                            {{ preco.tabe_praz|floatformat:2 }}</p>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p>Sem preço definido</p>
+                                    {% endif %}
+                                </td>
+                                <td>{{ produto.saldo_estoque|default_if_none:"" }}</td> 
+                                <td>
+                                    {% if produto.foto %}
+                                        <img src="{{ produto.foto.url }}" alt="Foto do Produto" width="80" height="80">
+                                    {% else %}
+                                        Sem foto
+                                    {% endif %}
+                                </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -208,7 +231,7 @@
         lightbox.style.display = 'none';
       });
     });
-  </script>
+</script>
 <!-- JavaScript necessário para o modal -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

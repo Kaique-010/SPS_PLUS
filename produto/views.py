@@ -5,6 +5,7 @@ import os
 from datetime import datetime 
 from django.db.models import Sum
 from django.db import connection, transaction
+from django.db.models import OuterRef, Subquery
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -15,13 +16,11 @@ from django.contrib.postgres.aggregates import ArrayAgg
 from django.urls import reverse_lazy
 from rest_framework import viewsets
 from produto.serializers import ProdutosSerializers
-from produto.models import Produtos, GrupoProduto, SubgrupoProduto, FamiliaProduto, Marca
-from .forms import ProdutosForm, GrupoForm, SubgrupoForm, FamiliaForm, MarcaForm
+from produto.models import Produtos, GrupoProduto, SubgrupoProduto, FamiliaProduto, Marca, Tabelaprecos
+from .forms import ProdutosForm, GrupoForm, SubgrupoForm, FamiliaForm, MarcaForm, TabelaprecosFormSet
 from Entradas_Produtos.models import Entrada_Produtos
 from Saidas_Produtos.models import Saida_Produtos
 from produto.models import SaldoProduto
-
-
 from django.views.generic import DeleteView, ListView, CreateView, UpdateView
 
 class ProdutosViewSet(viewsets.ModelViewSet):
@@ -38,12 +37,19 @@ class ProdutoListView(ListView):
     paginate_by = 10  # Define o número de itens por página
 
     def get_queryset(self):
-        """Filtra produtos com base em parâmetros de busca."""
+        """Filtra produtos com base em parâmetros de busca e inclui os preços associados."""
         nome = self.request.GET.get('nome', '')
         id_prod = self.request.GET.get('id_prod', '')
 
-        queryset = Produtos.objects.all()
+        # Subquery para buscar o saldo de cada produto
+        saldo_subquery = SaldoProduto.objects.filter(
+            produto_codigo=OuterRef('produto_codigo')
+        ).values('saldo_estoque')[:1]
 
+        # Base do queryset, agora com preços associados através de prefetch_related
+        queryset = Produtos.objects.annotate(saldo_estoque=Subquery(saldo_subquery)).prefetch_related('tabelaprecos_set')
+
+        # Aplicando filtros
         if nome:
             queryset = queryset.filter(nome_produto__icontains=nome)
         if id_prod:
@@ -52,134 +58,22 @@ class ProdutoListView(ListView):
         return queryset.order_by('produto_codigo')
     
 
-def dictfetchall(cursor):
-    "Return all rows from a cursor as a dict"
-    desc = cursor.description
-    return [
-        dict(zip([col[0] for col in desc], row))
-        for row in cursor.fetchall()
-    ]
-
-
-def exportar_produtos(request):
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="produtos_export.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow([
-        'Código Produto', 'Nome', 'Unidade Medida', 'Código Grupo', 'Descrição Grupo', 
-        'Código Subgrupo', 'Descrição Subgrupo', 'Código Família', 'Descrição Família', 
-        'Local', 'NCM', 'Código Marca', 'Nome Marca', 'Código Fabricante', 
-        'Preço Custo', 'Preço à Vista', 'Preço a Prazo', 'Saldo Estoque'
-    ])
-
-    # Montagem da query SQL
-    query = """
-    SELECT DISTINCT 
-        s.sapr_empr AS "Empresa",
-        s.sapr_fili AS "Filial",
-        p.prod_codi AS "codigo_produto",
-        p.prod_nome AS "nome_produto",
-        p.prod_unme AS "unidade_medida",
-        p.prod_grup AS "codigo_grupo",
-        gp.grup_desc AS "descricao_grupo",
-        p.prod_sugr AS "codigo_subgrupo",
-        sp.sugr_desc AS "descricao_subgrupo",
-        p.prod_fami AS "codigo_familia",
-        fp.fami_desc AS "descricao_familia",
-        p.prod_loca AS "local",
-        p.prod_ncm AS "ncm",
-        p.prod_marc AS "codigo_marca",
-        p.prod_foto AS "foto",
-        m.marc_nome AS "nome_marca",
-        p.prod_codi_fabr AS "codigo_fabricante",
-        t.tabe_cuge AS "preco_custo",
-        t.tabe_avis AS "preco_a_vista",
-        t.tabe_apra AS "preco_a_prazo",
-        s.sapr_sald AS "saldo_estoque"
-    FROM 
-        produtos p
-    LEFT JOIN 
-        tabelaprecos t ON p.prod_codi::text = t.tabe_prod::text
-    LEFT JOIN 
-        gruposprodutos gp ON p.prod_grup::text = gp.grup_codi::text
-    LEFT JOIN 
-        subgruposprodutos sp ON p.prod_sugr::text = sp.sugr_codi::text
-    LEFT JOIN 
-        familiaprodutos fp ON p.prod_fami::text = fp.fami_codi::text
-    LEFT JOIN 
-        saldosprodutos s ON p.prod_codi::text = s.sapr_prod::text
-    LEFT JOIN 
-        marca m ON p.prod_marc = m.marc_codi
-    WHERE 
-        s.sapr_sald > 0
-        
-        AND s.sapr_fili >= 0
-    """
-
-
-    with connection.cursor() as cursor:
-        cursor.execute(query)
-        produtos = dictfetchall(cursor)
-
-   
-    if produtos:
-        print("Colunas disponíveis:", produtos[0].keys())
-
- 
-    for produto in produtos:
-        writer.writerow([
-            produto.get('codigo_produto', ''),
-            produto.get('nome_produto', ''),
-            produto.get('unidade_medida', ''),
-            produto.get('codigo_grupo', ''),
-            produto.get('descricao_grupo', ''),
-            produto.get('codigo_subgrupo', ''),
-            produto.get('descricao_subgrupo', ''),
-            produto.get('codigo_familia', ''),
-            produto.get('descricao_familia', ''),
-            produto.get('local', ''),  
-            produto.get('ncm', ''),
-            produto.get('codigo_marca', ''),
-            produto.get('nome_marca', ''),
-            produto.get('codigo_fabricante', ''),
-            produto.get('preco_custo', ''),
-            produto.get('preco_a_vista', ''),
-            produto.get('preco_a_prazo', ''),
-            produto.get('saldo_estoque', '')
-        ])
-
-    return response
-
-def dictfetchall(cursor):
-    "Converte os resultados da consulta para uma lista de dicionários."
-    columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
-
-
-
 def produto_create(request):
     if request.method == 'POST':
         form = ProdutosForm(request.POST, request.FILES)
-        if form.is_valid():
+        formset = TabelaprecosFormSet(request.POST)  # Formset para a tabela de preços
+
+        if form.is_valid() and formset.is_valid():
             cleaned_data = form.cleaned_data
 
             with transaction.atomic():
-           
+                # Gerar código do produto automaticamente, se não informado
                 if not cleaned_data.get('produto_codigo'):
                     max_prod_codi = None
                     with connection.cursor() as cursor:
                         cursor.execute("SELECT MAX(prod_codi) FROM produtos WHERE prod_empr = %s", [cleaned_data.get('prod_empr')])
                         max_prod_codi = cursor.fetchone()[0]
-                        
-                        if max_prod_codi is not None:
-                            max_prod_codi = int(max_prod_codi)
-                        else:
-                            max_prod_codi = 0
-                    
+                        max_prod_codi = int(max_prod_codi) if max_prod_codi is not None else 0
                     
                     produto_codigo = max_prod_codi + 1
                     while Produtos.objects.filter(produto_codigo=produto_codigo).exists():
@@ -188,7 +82,7 @@ def produto_create(request):
                     cleaned_data['produto_codigo'] = str(produto_codigo)
 
                 # Criar o novo produto
-                novo_produto = Produtos(
+                novo_produto = Produtos.objects.create(
                     prod_empr=cleaned_data['prod_empr'],
                     produto_codigo=cleaned_data['produto_codigo'],
                     nome_produto=cleaned_data.get('nome_produto'),
@@ -202,32 +96,54 @@ def produto_create(request):
                     codigo_fabricante=cleaned_data.get('codigo_fabricante'),
                     foto=request.FILES.get('foto')
                 )
-                novo_produto.save()
 
-                messages.success(request, f"Produto criado com sucesso! Código do produto: {novo_produto.produto_codigo}")
+                tabelaprecos_instances = formset.save(commit=False)
+                for instance in tabelaprecos_instances:
+                    instance.tabe_prod = novo_produto
+                    instance.tabe_empr = novo_produto.prod_empr  # Atribuindo o valor de prod_empr para tabe_empr
+                    instance.save()
+
+                messages.success(request, f"Produto criado com sucesso! Código: {novo_produto.produto_codigo}")
                 return redirect('produtos_lista.html')
+
     else:
         form = ProdutosForm()
+        formset = TabelaprecosFormSet()
 
-    return render(request, 'produtos_form.html', {'form': form})
-
+    return render(request, 'produtos_form.html', {'form': form, 'formset': formset})
 
 
 def produto_update(request, pk):
     produto = get_object_or_404(Produtos, pk=pk)
     
     if request.method == 'POST':
-        form = ProdutosForm(request.POST, request.FILES, instance=produto)  # Incluímos request.FILES aqui
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Produto salvo com sucesso!")
-            return redirect('produtos_lista.html')  # Verifique se a URL está correta
-    else:
-       
-        form = ProdutosForm(instance=produto)
-        print(form.errors) 
+        form = ProdutosForm(request.POST, request.FILES, instance=produto)
+        formset = TabelaprecosFormSet(request.POST, instance=produto)  # Carregar os preços para o produto
 
-    return render(request, 'produtos_form.html', {'form': form})
+        if form.is_valid() and formset.is_valid():
+            cleaned_data = form.cleaned_data
+            
+            with transaction.atomic():
+                # Atualiza o produto
+                produto = form.save()
+
+                # Atualiza ou cria os preços associados ao produto
+                tabelaprecos_instances = formset.save(commit=False)
+                for instance in tabelaprecos_instances:
+                    instance.tabe_prod = produto
+                    instance.save()
+
+                # Remover preços não enviados no formset
+                tabelaprecos_ids = [instance.id for instance in tabelaprecos_instances]
+                Tabelaprecos.objects.filter(tabe_prod=produto).exclude(id__in=tabelaprecos_ids).delete()
+
+            messages.success(request, "Produto atualizado com sucesso!")
+            return redirect('produtos_lista')  # Certifique-se de que o nome da URL esteja correto
+    else:
+        form = ProdutosForm(instance=produto)
+        formset = TabelaprecosFormSet(queryset=Tabelaprecos.objects.filter(tabe_prod=produto))  # Preenche formset com preços existentes
+
+    return render(request, 'produtos_form.html', {'form': form, 'formset': formset})
 
 
 
@@ -415,3 +331,112 @@ def saldo(request):
         'data_inicio': data_inicio.strftime('%Y-%m-%d') if data_inicio else '',
         'data_fim': data_fim.strftime('%Y-%m-%d') if data_fim else '',
     })
+
+
+
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    desc = cursor.description
+    return [
+        dict(zip([col[0] for col in desc], row))
+        for row in cursor.fetchall()
+    ]
+
+
+def exportar_produtos(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="produtos_export.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow([
+        'Código Produto', 'Nome', 'Unidade Medida', 'Código Grupo', 'Descrição Grupo', 
+        'Código Subgrupo', 'Descrição Subgrupo', 'Código Família', 'Descrição Família', 
+        'Local', 'NCM', 'Código Marca', 'Nome Marca', 'Código Fabricante', 
+        'Preço Custo', 'Preço à Vista', 'Preço a Prazo', 'Saldo Estoque'
+    ])
+
+    # Montagem da query SQL
+    query = """
+    SELECT DISTINCT 
+        s.sapr_empr AS "Empresa",
+        s.sapr_fili AS "Filial",
+        p.prod_codi AS "codigo_produto",
+        p.prod_nome AS "nome_produto",
+        p.prod_unme AS "unidade_medida",
+        p.prod_grup AS "codigo_grupo",
+        gp.grup_desc AS "descricao_grupo",
+        p.prod_sugr AS "codigo_subgrupo",
+        sp.sugr_desc AS "descricao_subgrupo",
+        p.prod_fami AS "codigo_familia",
+        fp.fami_desc AS "descricao_familia",
+        p.prod_loca AS "local",
+        p.prod_ncm AS "ncm",
+        p.prod_marc AS "codigo_marca",
+        p.prod_foto AS "foto",
+        m.marc_nome AS "nome_marca",
+        p.prod_codi_fabr AS "codigo_fabricante",
+        t.tabe_cuge AS "preco_custo",
+        t.tabe_avis AS "preco_a_vista",
+        t.tabe_apra AS "preco_a_prazo",
+        s.sapr_sald AS "saldo_estoque"
+    FROM 
+        produtos p
+    LEFT JOIN 
+        tabelaprecos t ON p.prod_codi::text = t.tabe_prod::text
+    LEFT JOIN 
+        gruposprodutos gp ON p.prod_grup::text = gp.grup_codi::text
+    LEFT JOIN 
+        subgruposprodutos sp ON p.prod_sugr::text = sp.sugr_codi::text
+    LEFT JOIN 
+        familiaprodutos fp ON p.prod_fami::text = fp.fami_codi::text
+    LEFT JOIN 
+        saldosprodutos s ON p.prod_codi::text = s.sapr_prod::text
+    LEFT JOIN 
+        marca m ON p.prod_marc = m.marc_codi
+    WHERE 
+        s.sapr_sald > 0
+        
+        AND s.sapr_fili >= 0
+    """
+
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        produtos = dictfetchall(cursor)
+
+   
+    if produtos:
+        print("Colunas disponíveis:", produtos[0].keys())
+
+ 
+    for produto in produtos:
+        writer.writerow([
+            produto.get('codigo_produto', ''),
+            produto.get('nome_produto', ''),
+            produto.get('unidade_medida', ''),
+            produto.get('codigo_grupo', ''),
+            produto.get('descricao_grupo', ''),
+            produto.get('codigo_subgrupo', ''),
+            produto.get('descricao_subgrupo', ''),
+            produto.get('codigo_familia', ''),
+            produto.get('descricao_familia', ''),
+            produto.get('local', ''),  
+            produto.get('ncm', ''),
+            produto.get('codigo_marca', ''),
+            produto.get('nome_marca', ''),
+            produto.get('codigo_fabricante', ''),
+            produto.get('preco_custo', ''),
+            produto.get('preco_a_vista', ''),
+            produto.get('preco_a_prazo', ''),
+            produto.get('saldo_estoque', '')
+        ])
+
+    return response
+
+def dictfetchall(cursor):
+    "Converte os resultados da consulta para uma lista de dicionários."
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]

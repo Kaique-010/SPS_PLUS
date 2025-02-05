@@ -88,17 +88,18 @@
                                 <span class="text-muted">Sem ações</span>
                                 {% endif %}
                             </td>
-                            <td>{{ entidade.enti_clie }}</td>
-                            <td>{{ entidade.enti_nome }}</td>
-                            <td>{{ entidade.enti_tipo_enti }}</td>
-                            <td>{{ entidade.enti_cpf }}</td>
-                            <td>{{ entidade.enti_cnpj }}</td>
-                            <td>{{ entidade.enti_cida }}</td>
-                            <td>{{ entidade.enti_esta }}</td>
-                            <td>{{ entidade.enti_fone }}</td>
-                            <td>{{ entidade.enti_celu }}</td>
-                            <td>{{ entidade.enti_emai }}</td>
-                            <td>{{ entidade.enti_emai_empr }}</td>
+                            <td>{{ entidade.enti_clie|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_nome|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_tipo_enti|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_cpf|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_cnpj|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_cida|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_esta|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_fone|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_celu|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_emai|default_if_none:"" }}</td>
+                            <td>{{ entidade.enti_emai_empr|default_if_none:"" }}</td>
+                            
                         </tr>
                         {% endfor %}
                     </tbody>
