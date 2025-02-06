@@ -1,0 +1,33 @@
+<!-- licencas/templates/licencas/select_company_branch.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Seleção de Empresa e Filial</title>
+</head>
+
+<body>
+    <h2>Selecione a Empresa e a Filial</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="empresa">Empresa:</label>
+        <select name="empresa" id="empresa">
+            {% for empresa in empresas %}
+            <option value="{{ empresa.pk }}">{{ empresa.empr_nome }}</option>
+            {% endfor %}
+        </select>
+        <!-- Aqui, você pode implementar uma lógica (via JavaScript ou via view) para carregar as filiais relacionadas à empresa selecionada -->
+        <label for="filial">Filial:</label>
+        <select name="filial" id="filial">
+            <!-- Exemplo: Pode-se carregar inicialmente as filiais da primeira empresa -->
+            {% if empresas %}
+            {% for filial in empresas.0.filiais.all %}
+            <option value="{{ filial.pk }}">{{ filial.fili_nome }}</option>
+            {% endfor %}
+            {% endif %}
+        </select>
+        <button type="submit">Selecionar</button>
+    </form>
+</body>
+
+</html>

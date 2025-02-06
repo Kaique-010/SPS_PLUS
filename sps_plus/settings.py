@@ -1,6 +1,9 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from django.db import connections
+from licencas.database_utils import load_databases
+from licencas.db_router import LicenseDatabaseRouter
 
 
 load_dotenv()
@@ -10,6 +13,9 @@ print("DB_NAME:", os.getenv('DB_NAME'))
 print("DB_PORT:", os.getenv('DB_PORT'))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+from licencas.database_utils import load_databases
+DATABASES_FILE = BASE_DIR / "databases.json" 
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
@@ -77,6 +83,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'sps_plus.wsgi.application'
 
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -85,9 +92,17 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD', 'default_password'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5433'),
+        'ATOMIC_REQUESTS': True, 
     }
 }
+
 DATABASE_ROUTERS = ["licencas.db_router.LicenseDatabaseRouter"]
+
+DATABASES.update(load_databases())
+print(DATABASES.update())
+
+from django.conf import settings
+print(settings.DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

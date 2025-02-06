@@ -1,6 +1,7 @@
 # urls.py
 from django.urls import path
 from .views import LicencasListView, LicencasCreateView, LicencasUpdateView, LicencasDetailView, LicencasDeleteView
+from . import views
 from .views import (
     EmpresaListView, EmpresaCreateView, EmpresaUpdateView, EmpresaDetailView, EmpresaDeleteView,
     FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView, UsuarioCreateView, login_view
@@ -30,5 +31,12 @@ urlpatterns = [
     #usuarios
     path("usuario/", UsuarioCreateView.as_view(), name="usuario"),
     path('login/', login_view, name='login'),
+    
+    
+    # Rota para seleção do banco de dados para superusuário
+    path('select_database/', views.select_database, name='select_database'),
+    
+    # Rota para seleção de empresa e filial para usuários comuns
+    path('select_company_branch/', views.select_company_branch, name='select_company_branch'),
 ]
 

@@ -1,5 +1,6 @@
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
@@ -23,14 +24,58 @@ def login_view(request):
 
             if user is not None:
                 login(request, user)
-                return redirect('home')  # Ou a página para onde o usuário deve ser redirecionado
+                return redirect('home')  # Ou a página que o usuário deve acessar
             else:
-                messages.error(request, "CPF/CNPJ ou senha inválidos.")
+                messages.error(request, "Documento ou senha inválidos.")
                 return redirect('login')
     else:
         form = LoginForm()
 
     return render(request, 'licencas/login.html', {'form': form})
+
+
+
+@login_required
+def select_database(request):
+    if not request.user.is_superuser:
+        return redirect('home')
+    
+    if request.method == 'POST':
+        selected_db = request.POST.get('db_name')
+        if selected_db:
+            request.session['selected_db'] = selected_db
+            return redirect('home')
+    
+    # Lista dos bancos disponíveis (você pode carregar do JSON ou do seu modelo)
+    available_dbs = ['save1', 'origin', 'TESTES 2']  
+    return render(request, 'select_database.html', {'databases': available_dbs})
+
+
+
+@login_required
+def select_company_branch(request):
+    # Apenas usuários não superusuários devem acessar essa rota
+    if request.user.is_superuser:
+        return redirect('home')
+    
+    # Supondo que o usuário tenha acesso à licença, obtenha as empresas associadas a essa licença
+    licenca = request.user.licenca
+    empresas = Empresas.objects.filter(licenca=licenca)
+    
+    if request.method == 'POST':
+        empresa_id = request.POST.get('empresa')
+        filial_id = request.POST.get('filial')
+        if empresa_id and filial_id:
+            request.session['selected_empresa'] = empresa_id
+            request.session['selected_filial'] = filial_id
+            return redirect('home')
+    
+    context = {
+        'empresas': empresas,
+        # Você pode, opcionalmente, carregar as filiais do primeiro registro ou usar JavaScript para
+        # carregar dinamicamente as filiais conforme a seleção da empresa.
+    }
+    return render(request, 'licencas/select_company_branch.html', context)
 
 class LicencasListView(ListView):
     model = Licencas
@@ -90,7 +135,7 @@ class EmpresaListView(ListView):
     context_object_name = 'empresas'
     
     def get_queryset(self):
-        queryset = super().get_queryset().order_by('empr_id') 
+        queryset = super().get_queryset().order_by('empr_nome') 
         nome = self.request.GET.get('empr_nome', '')
         documento = self.request.GET.get('empr_docu', '')
 

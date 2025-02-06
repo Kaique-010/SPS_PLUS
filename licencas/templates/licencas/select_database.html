@@ -1,0 +1,22 @@
+<!-- licencas/templates/licencas/select_database.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Seleção de Banco de Dados</title>
+</head>
+
+<body>
+    <h2>Selecione o Banco de Dados</h2>
+    <form method="post">
+        {% csrf_token %}
+        <select name="db_name">
+            {% for db in databases %}
+            <option value="{{ db }}">{{ db }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Selecionar</button>
+    </form>
+</body>
+
+</html>

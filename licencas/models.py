@@ -1,6 +1,9 @@
+from tabnanny import verbose
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from licencas.db_router import LicenseDatabaseRouter
 from licencas.middleware import get_current_request
 
 class Licencas(models.Model):
@@ -14,15 +17,18 @@ class Licencas(models.Model):
 
     class Meta:
         db_table = 'licencas'
+        verbose_name = 'licencas'
 
     def __str__(self):
         return f"Licença {self.lice_id} - {self.lice_docu}"
-
+    
+    
 
 
 class Empresas(models.Model):
+    empr_id = models.AutoField(primary_key=True)
     empr_nome = models.CharField('Nome da Empresa', max_length=100)
-    empr_docu = models.CharField('CNPJ', max_length=14, unique=True)  # CNPJ deve ser único
+    empr_docu = models.CharField('CNPJ', max_length=14, unique=True, default='00000000000000')
     empr_ie = models.CharField('Inscrição Estadual', max_length=11, blank=True, null=True)
     empr_regi = models.CharField('Regime Tributação', max_length=50, choices=[
         ('simples_nacional', 'Simples Nacional'), ('regime_normal', 'Regime Normal')
@@ -35,7 +41,8 @@ class Empresas(models.Model):
     empr_cida = models.CharField('Cidade', max_length=100)
     empr_emai = models.EmailField('E-mail', blank=True, null=True)
     
-    licenca = models.ForeignKey(Licencas, on_delete=models.CASCADE, related_name='empresas')
+    licenca = models.ForeignKey(Licencas, on_delete=models.CASCADE, db_column='lice_id', default='1')
+
 
     class Meta:
         db_table = 'empresas'
@@ -47,6 +54,7 @@ class Empresas(models.Model):
 
 
 class Filiais(models.Model):
+    fili_id = models.AutoField(primary_key=True)
     fili_nome = models.CharField('Nome da Filial', max_length=100)
     empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, related_name='filiais')
     fili_docu = models.CharField('CNPJ', max_length=14, blank=True, null=True)
@@ -74,15 +82,15 @@ class UsuarioManager(BaseUserManager):
     def get_queryset(self):
         qs = super().get_queryset()
         try:
+            from licencas.middleware import get_current_request
             request = get_current_request()
             if request and hasattr(request, 'user') and not request.user.is_superuser:
                 return qs.filter(empresa=request.user.empresa, filial=request.user.filial)
         except Exception as e:
-            print(f"Erro ao recuperar request no UsuarioManager: {e}")  # Log para depuração
+            print(f"Erro ao recuperar request no UsuarioManager: {e}")
         return qs
 
     def create_user(self, usua_login, usua_nome, usua_senh, **extra_fields):
-        """Criação de um usuário normal"""
         if not usua_login:
             raise ValueError("O campo login é obrigatório")
         user = self.model(usua_login=usua_login, usua_nome=usua_nome, **extra_fields)
@@ -90,11 +98,21 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, usua_login, usua_nome, usua_senh, **extra_fields):
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("usua_bloq", True)  # Garante que superusuário nunca será bloqueado
-        return self.create_user(usua_login, usua_nome, usua_senh, **extra_fields)
+    def create_superuser(self, usua_login, usua_nome, usua_emai, password, **extra_fields):
+        if not usua_emai:
+            raise ValueError('O superusuário deve ter um e-mail válido.')
+        usua_emai = self.normalize_email(usua_emai)
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        user = self.model(
+            usua_login=usua_login,
+            usua_nome=usua_nome,
+            usua_emai=usua_emai,
+            **extra_fields
+        )
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
 
 
 
@@ -113,16 +131,20 @@ class Usuarios(AbstractBaseUser, PermissionsMixin):
     # Permissões Específicas
     usua_libe_clie_bloq = models.BooleanField("Liberação Cliente Bloqueado", default=False)
     usua_libe_pedi_comp = models.BooleanField("Liberação Pedido Comprado", default=False)
-
+    
     # Relacionamentos
-    licenca = models.ForeignKey(Licencas, on_delete=models.CASCADE, related_name="usuarios_licenca")
-    empresas = models.ManyToManyField(Empresas, related_name="usuarios_empresa")
-    filiais = models.ManyToManyField(Filiais, related_name="usuarios_filial")
-
+    licenca = models.ForeignKey('Licencas', on_delete=models.CASCADE, related_name="usuarios_licenca", default=1)
+    empresas = models.ManyToManyField('Empresas', related_name="usuarios_empresa")
+    filiais = models.ManyToManyField('Filiais', related_name="usuarios_filial")
+    
     # Campos de Log
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
+    
+    # Campos obrigatórios para admin
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    
     # Configurações de Autenticação
     objects = UsuarioManager()
     USERNAME_FIELD = "usua_login"
