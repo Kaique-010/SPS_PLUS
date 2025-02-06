@@ -1,10 +1,36 @@
 from django.urls import reverse_lazy
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 from .models import Licencas, Filiais, Empresas
-from .forms import LicencasForm, EmpresasForm, FiliaisForm
+from .forms import LicencasForm, EmpresasForm, FiliaisForm, LoginForm
 from .models import Usuarios
 from .forms import UsuarioForm
 
+
+
+
+def login_view(request):
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            documento = form.cleaned_data['documento']
+            senha = form.cleaned_data['senha']
+
+            # Autenticação personalizada
+            user = authenticate(request, username=documento, password=senha)
+
+            if user is not None:
+                login(request, user)
+                return redirect('home')  # Ou a página para onde o usuário deve ser redirecionado
+            else:
+                messages.error(request, "CPF/CNPJ ou senha inválidos.")
+                return redirect('login')
+    else:
+        form = LoginForm()
+
+    return render(request, 'licencas/login.html', {'form': form})
 
 class LicencasListView(ListView):
     model = Licencas

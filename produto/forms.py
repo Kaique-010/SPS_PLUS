@@ -146,17 +146,15 @@ class TabelaprecosForm(forms.ModelForm):
             'tabe_prco': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Preço de Compra'}),
             'tabe_fret': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001', 'placeholder': '% Frete'}),
             'tabe_desp': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001', 'placeholder': 'Despesas'}),
-            'tabe_cust': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Custo Gerencial'}),
             'tabe_marg': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001', 'placeholder': '% a vista'}),
             'tabe_avis': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Preço a vista'}),
             'tabe_praz': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.0001', 'placeholder': 'Preço a Prazo'}),
             'tabe_apra': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': '% a prazo'}),
             'field_log_data': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'field_log_time': forms.TimeInput(attrs={'class': 'form-control', 'type': 'time'}),
-            'tabe_perc_reaj': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Reajuste'}),
             'tabe_hist': forms.Textarea(attrs={'class': 'form-control', 'rows': 2, 'placeholder': 'Histórico'}),
-            'tabe_cuge': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Custo Geral'}),
-            'tabe_entr': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'tabe_cuge': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'placeholder': 'Custo Gerencial'}),
+            
         }
 
 TabelaprecosFormSet = inlineformset_factory(Produtos, Tabelaprecos, form=TabelaprecosForm, extra=1)

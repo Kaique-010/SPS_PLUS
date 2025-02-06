@@ -10,8 +10,7 @@ class Licencas(models.Model):
     lice_emai = models.EmailField('E-mail', max_length=150, blank=True, null=True)
     lice_bloq = models.BooleanField('Ativa?   ', default=False)
     lice_data_cria = models.DateField('Data de Criação', auto_now_add=True)
-    field_log_data = models.DateField(db_column='_log_data', blank=True, null=True)
-    field_log_time = models.TimeField(db_column='_log_time', blank=True, null=True)
+    
 
     class Meta:
         db_table = 'licencas'
@@ -22,49 +21,53 @@ class Licencas(models.Model):
 
 
 class Empresas(models.Model):
-    empr_id = models.AutoField('ID', primary_key=True)
     empr_nome = models.CharField('Nome da Empresa', max_length=100)
-    empr_docu = models.CharField('Documento', max_length=14, blank=True, null=True)
+    empr_docu = models.CharField('CNPJ', max_length=14, unique=True)  # CNPJ deve ser único
     empr_ie = models.CharField('Inscrição Estadual', max_length=11, blank=True, null=True)
-    empr_regi = models.CharField('Regime Tributação', max_length=50, choices=[('simples_nacional','Simples Nacional'), ('regime_normal', 'Regime Normal')])
-    empr_cep = models.CharField('CEP',max_length=8)
+    empr_regi = models.CharField('Regime Tributação', max_length=50, choices=[
+        ('simples_nacional', 'Simples Nacional'), ('regime_normal', 'Regime Normal')
+    ])
+    empr_cep = models.CharField('CEP', max_length=8)
     empr_ende = models.CharField('Endereço', max_length=100)
-    empr_nume = models.CharField('Numero', max_length=10)
+    empr_nume = models.CharField('Número', max_length=10)
     empr_esta = models.CharField('Estado', max_length=2)
     empr_bair = models.CharField('Bairro', max_length=100)
-    empr_cida = models.CharField('cidade', max_length=100)
+    empr_cida = models.CharField('Cidade', max_length=100)
     empr_emai = models.EmailField('E-mail', blank=True, null=True)
+    
     licenca = models.ForeignKey(Licencas, on_delete=models.CASCADE, related_name='empresas')
-   
 
     class Meta:
         db_table = 'empresas'
+        unique_together = ('licenca', 'empr_docu')  
 
     def __str__(self):
         return self.empr_nome
 
 
+
 class Filiais(models.Model):
-    fili_id = models.AutoField('ID', primary_key=True)
     fili_nome = models.CharField('Nome da Filial', max_length=100)
     empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE, related_name='filiais')
-    fili_docu = models.CharField('Documento', max_length=14, blank=True, null=True)
+    fili_docu = models.CharField('CNPJ', max_length=14, blank=True, null=True)
     fili_ie = models.CharField('Inscrição Estadual', max_length=11, blank=True, null=True)
-    fili_regi = models.CharField('Regime Tributação', max_length=50, choices=[('simples_nacional','Simples Nacional'), ('regime_normal', 'Regime Normal')])
-    fili_cep = models.CharField('CEP',max_length=8)
+    fili_regi = models.CharField('Regime Tributação', max_length=50, choices=[
+        ('simples_nacional', 'Simples Nacional'), ('regime_normal', 'Regime Normal')
+    ])
+    fili_cep = models.CharField('CEP', max_length=8)
     fili_ende = models.CharField('Endereço', max_length=100)
-    fili_nume = models.CharField('Numero', max_length=10)
+    fili_nume = models.CharField('Número', max_length=10)
     fili_esta = models.CharField('Estado', max_length=2)
     fili_bair = models.CharField('Bairro', max_length=100)
-    fili_cida = models.CharField('cidade', max_length=100)
+    fili_cida = models.CharField('Cidade', max_length=100)
     fili_emai = models.EmailField('E-mail', blank=True, null=True)
 
     class Meta:
         db_table = 'filiais'
+        unique_together = ('empresa', 'fili_docu') 
 
     def __str__(self):
         return self.fili_nome
-
 
 
 class UsuarioManager(BaseUserManager):
@@ -98,7 +101,7 @@ class UsuarioManager(BaseUserManager):
 class Usuarios(AbstractBaseUser, PermissionsMixin):
     usua_codi = models.AutoField("ID", primary_key=True)
     usua_nome = models.CharField("Nome", max_length=100, blank=True, null=True)
-    usua_login = models.CharField("Login", max_length=50, unique=True)  # Alterado para obrigatório
+    usua_login = models.CharField("Login", max_length=50, unique=True)
     usua_data_nasc = models.DateField("Data de Nascimento", blank=True, null=True)
     usua_sexo = models.CharField(
         max_length=1, choices=[("M", "Masculino"), ("F", "Feminino")], blank=True, null=True
@@ -112,13 +115,9 @@ class Usuarios(AbstractBaseUser, PermissionsMixin):
     usua_libe_pedi_comp = models.BooleanField("Liberação Pedido Comprado", default=False)
 
     # Relacionamentos
-    licenca = models.ForeignKey("Licencas", on_delete=models.CASCADE, related_name="usuarios_licenca", blank=True, null=True)
-    empresa = models.ForeignKey(
-    "Empresas", on_delete=models.CASCADE, related_name="usuarios_empresa", db_index=True
-    )
-    filial = models.ForeignKey(
-    "Filiais", on_delete=models.CASCADE, related_name="usuarios_filial", db_index=True
-    )
+    licenca = models.ForeignKey(Licencas, on_delete=models.CASCADE, related_name="usuarios_licenca")
+    empresas = models.ManyToManyField(Empresas, related_name="usuarios_empresa")
+    filiais = models.ManyToManyField(Filiais, related_name="usuarios_filial")
 
     # Campos de Log
     created_at = models.DateTimeField(auto_now_add=True)

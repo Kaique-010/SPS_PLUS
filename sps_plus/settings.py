@@ -87,6 +87,7 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5433'),
     }
 }
+DATABASE_ROUTERS = ["licencas.db_router.LicenseDatabaseRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -106,6 +107,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    "licencas.auth_backends.DocumentoAuthBackend",  # Seu backend de autenticação personalizado
+    "django.contrib.auth.backends.ModelBackend",    # Backend padrão do Django (se necessário)
+]
 
 # Language and Time Zone
 LANGUAGE_CODE = 'pt-br'
@@ -123,7 +128,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'produto/static'),
     os.path.join(BASE_DIR, 'menu/static'),
     os.path.join(BASE_DIR, 'Ordemservico/static'),
-    os.path.join(BASE_DIR, 'Ordemproducao/static'),
+    #os.path.join(BASE_DIR, 'Ordemproducao/static'),
     os.path.join(BASE_DIR, 'Saidas_Produtos/static'),
     os.path.join(BASE_DIR, 'Entradas_Produtos/static'),
     os.path.join(BASE_DIR, 'orcamentos/static'),

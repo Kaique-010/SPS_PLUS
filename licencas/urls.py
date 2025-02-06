@@ -3,7 +3,7 @@ from django.urls import path
 from .views import LicencasListView, LicencasCreateView, LicencasUpdateView, LicencasDetailView, LicencasDeleteView
 from .views import (
     EmpresaListView, EmpresaCreateView, EmpresaUpdateView, EmpresaDetailView, EmpresaDeleteView,
-    FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView, UsuarioCreateView
+    FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView, UsuarioCreateView, login_view
 )
 
 urlpatterns = [
@@ -29,5 +29,6 @@ urlpatterns = [
     
     #usuarios
     path("usuario/", UsuarioCreateView.as_view(), name="usuario"),
+    path('login/', login_view, name='login'),
 ]
 
