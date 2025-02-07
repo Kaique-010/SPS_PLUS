@@ -66,6 +66,8 @@
   }
 </style>
 
+
+
 <form method="POST">
   {% csrf_token %}
   <div class="container">
@@ -73,7 +75,7 @@
     <h2>Login</h2>
     <div class="mb-3">
       <label for="documento" class="form-label">CPF/CNPJ</label>
-      {{ form.lice_docu }}
+      {{ form.usua_login }}
     </div>
 
     <div class="mb-3">

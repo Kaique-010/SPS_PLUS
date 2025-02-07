@@ -30,7 +30,7 @@ urlpatterns = [
     
     #usuarios
     path("usuario/", UsuarioCreateView.as_view(), name="usuario"),
-    path('login/', login_view, name='login'),
+    path('', login_view, name='login'),
     
     
     # Rota para seleção do banco de dados para superusuário

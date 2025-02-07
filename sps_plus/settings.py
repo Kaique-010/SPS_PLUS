@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 from django.db import connections
 from licencas.database_utils import load_databases
-from licencas.db_router import LicenseDatabaseRouter
 
 
 load_dotenv()
@@ -23,6 +22,8 @@ if not SECRET_KEY:
 
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+
+
 
 
 
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'licencas.middleware.ThreadLocalMiddleware', 
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -60,7 +62,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'licencas.middleware.RequestMiddleware', 
+    
 ]
+LOGIN_REDIRECT_URL ='/home'
 
 ROOT_URLCONF = 'sps_plus.urls'
 
@@ -96,10 +100,12 @@ DATABASES = {
     }
 }
 
-DATABASE_ROUTERS = ["licencas.db_router.LicenseDatabaseRouter"]
+DATABASE_ROUTERS = [
+    "licencas.db_router.LicenseDatabaseRouter",
+    "licencas.db_router.DBRouter",
+]
 
 DATABASES.update(load_databases())
-print(DATABASES.update())
 
 from django.conf import settings
 print(settings.DATABASES)
@@ -122,11 +128,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+#modelos de autenticação
 AUTHENTICATION_BACKENDS = [
-    'licencas.auth_backends.DocumentoAuthBackend',  # Nome correto do arquivo e classe
-    'licencas.auth_backends.CustomAuthBackend',
-    'django.contrib.auth.backends.ModelBackend',  # Mantém a autenticação padrão do Django
+    'licencas.auth_backends.DocumentoAuthBackend',  
+    'django.contrib.auth.backends.ModelBackend',  
 ]
+
+
+#modelo personalizado de usuários
+AUTH_USER_MODEL = 'licencas.Usuarios'
+
 
 # Language and Time Zone
 LANGUAGE_CODE = 'pt-br'
@@ -155,4 +167,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = "licencas.Usuarios" 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db' 
+SESSION_COOKIE_AGE = 86400 
+SESSION_SAVE_EVERY_REQUEST = True  
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False 

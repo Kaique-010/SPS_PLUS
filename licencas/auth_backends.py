@@ -1,42 +1,41 @@
-# licencas/auth_backends.py
 from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from licencas.models import Licencas, Empresas, Filiais, Usuarios
+
+from licencas.models import Licencas, Usuarios
+
+User = get_user_model()
 
 class DocumentoAuthBackend(BaseBackend):
-    def authenticate(self, request, lice_docu=None, password=None, **kwargs):
+    def authenticate(self, request, usua_login=None, password=None, **kwargs):
+        # Tenta autenticar com base no documento da licença (CNPJ ou CPF)
         try:
-            # Buscar a licença pelo documento da empresa (lice_docu)
-            licenca = Licencas.objects.get(lice_docu=lice_docu)
+            # Verifica se o login corresponde a um documento de licença
+            licenca = Licencas.objects.get(lice_docu=usua_login)
+            
+            # Se a licença for encontrada, verifica se está bloqueada
+            if not licenca.lice_bloq:
+                print(f"Licença {usua_login} está bloqueada.")
+                return None  # Licença bloqueada, não autentica
 
-            # Verificar se a licença está bloqueada
-            if licenca.lice_bloq:
-                return None
-
-            # Buscar o usuário vinculado à essa licença
-            user = Usuarios.objects.get(licenca=licenca, usua_login=lice_docu)
-
-            # Verificar a senha do usuário
+            # Se não for bloqueada, autentica o usuário associado à licença
+            usuario = Usuarios.objects.filter(licenca=licenca).first()
+            if usuario and usuario.check_password(password):
+                print(f"Usuário {usuario.usua_nome} autenticado com sucesso!")
+                return usuario  # Retorna o usuário autenticado com a licença associada
+        except Licencas.DoesNotExist:
+            print(f"Licença com documento {usua_login} não encontrada.")
+        
+        # Caso o login não corresponda a uma licença, tenta autenticar com o modelo de usuário normal
+        try:
+            user = Usuarios.objects.get(usua_login=usua_login)
             if user.check_password(password):
+                print(f"Usuário {user.usua_nome} autenticado com sucesso!")
                 return user
-        except (Licencas.DoesNotExist, Usuarios.DoesNotExist):
-            return None
-
-    def get_user(self, user_id):
-        try:
-            return Usuarios.objects.get(pk=user_id)
+            else:
+                print("Senha incorreta para o usuário.")
         except Usuarios.DoesNotExist:
-            return None
+            print(f"Usuário com login {usua_login} não encontrado.")
 
-
-class CustomAuthBackend(BaseBackend):
-    def authenticate(self, request, username=None, password=None, **kwargs):
-        try:
-            user = get_user_model().objects.get(lice_docu=username)
-
-            if user.check_password(password):
-                if user.is_superuser or not user.licenca.lice_bloq:
-                    return user  # Login válido
-        except get_user_model().DoesNotExist:
-            return None
+        # Se nenhum dos dois casos for encontrado ou as credenciais estiverem incorretas, retorna None
+        return None

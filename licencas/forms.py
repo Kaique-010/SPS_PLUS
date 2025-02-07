@@ -98,11 +98,11 @@ class UsuarioForm(UserCreationForm):
 
 
 class LoginForm(forms.Form):
-    lice_docu = forms.CharField(  # Alterado de lice_docu para username
+    usua_login = forms.CharField( 
         label="CPF/CNPJ", 
         max_length=14, 
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite seu Documento'})
     )
-    password = forms.CharField(  # Alterado de senha para password
+    password = forms.CharField(  
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Digite sua senha'})
     )

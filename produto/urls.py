@@ -16,7 +16,7 @@ router = DefaultRouter()
 router.register(r'produtos', ProdutosViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
     path('produtos_lista', ProdutoListView.as_view(), name='produtos_lista.html'),
     path('produto/create/', produto_create, name='produto_create'),
     path('produto/update/<int:pk>/', produto_update, name='produto_update'),

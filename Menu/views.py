@@ -12,7 +12,9 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
 
+
 def home(request):
+    print(f"Usuário autenticado na home? {request.user.is_authenticated}")
     vendedor = request.GET.get('vendedor', '')
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')

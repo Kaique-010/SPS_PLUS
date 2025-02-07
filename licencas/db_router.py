@@ -9,6 +9,7 @@ from django.core.management import call_command
 import json
 from datetime import datetime
 
+
 class LicenseDatabaseRouter:
     """
     Roteador de banco de dados para gerenciar multi-bancos dinâmicos com base na licença do usuário.
@@ -138,3 +139,39 @@ class LicenseDatabaseRouter:
             print(f"Arquivo de confirmação gerado: {file_path}")
         except Exception as e:
             print(f"Erro ao gerar o arquivo de confirmação: {e}")
+
+class DBRouter:
+    """
+    Roteador de banco de dados para ativar o banco correto da licença.
+    """
+
+    def db_for_read(self, model, **hints):
+        return self.get_db()
+
+    def db_for_write(self, model, **hints):
+        return self.get_db()
+
+    def get_db(self):
+        """
+        Obtém o banco de dados correto com base na sessão do usuário.
+        """
+        from django.contrib.sessions.models import Session
+        from licencas.models import Licencas
+
+        request = self.get_request()
+        if request:
+            licenca_id = request.session.get('licenca_id')
+            if licenca_id:
+                licenca = Licencas.objects.filter(id=licenca_id).first()
+                if licenca:
+                    return f'licenca_{licenca.documento}'  # Nome do banco
+
+        return 'default'  # Se não houver licença, usa o banco padrão
+
+    
+    def get_user(self, user_id):
+        from licencas.models import Usuarios 
+        try:
+            return Usuarios.objects.get(pk=user_id)
+        except Usuarios.DoesNotExist:
+            return None
