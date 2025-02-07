@@ -104,6 +104,7 @@ class UsuarioManager(BaseUserManager):
         usua_emai = self.normalize_email(usua_emai)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        
         user = self.model(
             usua_login=usua_login,
             usua_nome=usua_nome,
@@ -128,12 +129,8 @@ class Usuarios(AbstractBaseUser, PermissionsMixin):
     usua_fone = models.CharField("Telefone", max_length=14, blank=True, null=True)
     usua_bloq = models.BooleanField("Ativo?", default=True)
     
-    # Permissões Específicas
-    usua_libe_clie_bloq = models.BooleanField("Liberação Cliente Bloqueado", default=False)
-    usua_libe_pedi_comp = models.BooleanField("Liberação Pedido Comprado", default=False)
-    
     # Relacionamentos
-    licenca = models.ForeignKey('Licencas', on_delete=models.CASCADE, related_name="usuarios_licenca", default=1)
+    licenca = models.ForeignKey('Licencas', on_delete=models.CASCADE, related_name="usuarios_licenca", blank=True, null=True)
     empresas = models.ManyToManyField('Empresas', related_name="usuarios_empresa")
     filiais = models.ManyToManyField('Filiais', related_name="usuarios_filial")
     

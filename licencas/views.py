@@ -9,30 +9,28 @@ from .forms import LicencasForm, EmpresasForm, FiliaisForm, LoginForm
 from .models import Usuarios
 from .forms import UsuarioForm
 
-
-
-
 def login_view(request):
     if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            documento = form.cleaned_data['documento']
-            senha = form.cleaned_data['senha']
+            lice_docu = form.cleaned_data['lice_docu']
+            password = form.cleaned_data['password']
 
-            # Autenticação personalizada
-            user = authenticate(request, username=documento, password=senha)
+            # Autentica o usuário com o documento da licença e senha
+            user = authenticate(request, lice_docu=lice_docu, password=password)
 
             if user is not None:
+                # Loga o usuário
                 login(request, user)
-                return redirect('home')  # Ou a página que o usuário deve acessar
+                return redirect('home')  # Redireciona para a página inicial ou a página desejada
             else:
                 messages.error(request, "Documento ou senha inválidos.")
-                return redirect('login')
+        else:
+            messages.error(request, "Formulário inválido.")
     else:
         form = LoginForm()
 
     return render(request, 'licencas/login.html', {'form': form})
-
 
 
 @login_required
@@ -224,7 +222,7 @@ class UsuarioCreateView(CreateView):
     model = Usuarios
     form_class = UsuarioForm
     template_name = "licencas/usuario_form.html"
-    success_url = reverse_lazy("usuarios:lista") 
+    success_url = reverse_lazy("home") 
 
     def form_valid(self, form):
         response = super().form_valid(form)

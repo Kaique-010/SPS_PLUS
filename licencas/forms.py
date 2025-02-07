@@ -69,7 +69,7 @@ class UsuarioForm(UserCreationForm):
     class Meta:
         model = Usuarios
         fields = ["usua_nome", "usua_login", "usua_emai", "usua_fone", "usua_data_nasc", "usua_sexo", 
-                  "licenca", "empresas", "filiais", "usua_bloq", "usua_libe_clie_bloq", "usua_libe_pedi_comp"]
+                  "licenca", "empresas", "filiais", "usua_bloq",]
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -87,8 +87,7 @@ class UsuarioForm(UserCreationForm):
 
         # Checkbox personalizado para os campos booleanos
         self.fields["usua_bloq"].widget.attrs.update({"class": "form-check-input"})
-        self.fields["usua_libe_clie_bloq"].widget.attrs.update({"class": "form-check-input"})
-        self.fields["usua_libe_pedi_comp"].widget.attrs.update({"class": "form-check-input"})
+        
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -99,11 +98,11 @@ class UsuarioForm(UserCreationForm):
 
 
 class LoginForm(forms.Form):
-    documento = forms.CharField(
+    lice_docu = forms.CharField(  # Alterado de lice_docu para username
         label="CPF/CNPJ", 
         max_length=14, 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite seu CPF/CNPJ'})
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite seu Documento'})
     )
-    senha = forms.CharField(
+    password = forms.CharField(  # Alterado de senha para password
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Digite sua senha'})
     )

@@ -123,8 +123,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    "licencas.auth_backends.DocumentoAuthBackend",  # Seu backend de autenticação personalizado
-    "django.contrib.auth.backends.ModelBackend",    # Backend padrão do Django (se necessário)
+    'licencas.auth_backends.DocumentoAuthBackend',  # Nome correto do arquivo e classe
+    'licencas.auth_backends.CustomAuthBackend',
+    'django.contrib.auth.backends.ModelBackend',  # Mantém a autenticação padrão do Django
 ]
 
 # Language and Time Zone
