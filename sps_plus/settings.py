@@ -53,18 +53,21 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'licencas.middleware.ThreadLocalMiddleware', 
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware', 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'licencas.middleware.RequestMiddleware', 
+    #'licencas.middleware.DatabaseRouterMiddleware',
+
     
+
 ]
-LOGIN_REDIRECT_URL ='/home'
+
+
+LOGIN_REDIRECT_URL ='home'
 
 ROOT_URLCONF = 'sps_plus.urls'
 
@@ -97,18 +100,15 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5433'),
         'ATOMIC_REQUESTS': True, 
-    }
+        'OPTIONS': {}, 
+        'CONN_MAX_AGE': 600,
+        'AUTOCOMMIT': True,
+        'CONN_HEALTH_CHECKS': False,
+    },
 }
 
-DATABASE_ROUTERS = [
-    "licencas.db_router.LicenseDatabaseRouter",
-    "licencas.db_router.DBRouter",
-]
 
-DATABASES.update(load_databases())
 
-from django.conf import settings
-print(settings.DATABASES)
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -131,8 +131,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 #modelos de autenticação
 AUTHENTICATION_BACKENDS = [
-    'licencas.auth_backends.DocumentoAuthBackend',  
+    #'licencas.auth_backends.DocumentoAuthBackend',  
     'django.contrib.auth.backends.ModelBackend',  
+    'licencas.auth_backends.LoginBackend',  
 ]
 
 
@@ -146,6 +147,7 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
+DATABASE_ROUTERS = [ "licencas.db_router.LicenseDatabaseManager"]
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
@@ -168,6 +170,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db' 
-SESSION_COOKIE_AGE = 86400 
+SESSION_COOKIE_AGE = 3600  # Tempo em segundos para expiração do cookie (1 hora
+SESSION_COOKIE_NAME = 'sessionid'  # Nome do cookie de sessão
 SESSION_SAVE_EVERY_REQUEST = True  
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False 
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
+SESSION_COOKIE_SECURE = False  # Se estiver testando localmente
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = "Lax"  # Teste com "None" se necessário
+
+LOGOUT_REDIRECT_URL = 'login'  # Ou a página que você preferir

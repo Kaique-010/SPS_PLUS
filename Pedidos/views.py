@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from django.http import Http404
 from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse_lazy
 from django.db import connection
@@ -367,6 +368,7 @@ def dictfetchall(cursor):
     columns = [col[0] for col in cursor.description]
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
+@login_required
 def dashboard(request):
 
     vendedor = request.GET.get('vendedor', '')

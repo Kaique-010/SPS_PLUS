@@ -1,12 +1,9 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from licencas.models import Licencas
-from licencas.db_router import LicenseDatabaseRouter
+from licencas.db_router import LicenseDatabaseManager
 
 @receiver(post_save, sender=Licencas)
-def criar_banco_automaticamente(sender, instance, created, **kwargs):
-    """
-    Quando uma nova licença é criada, criamos automaticamente o banco de dados correspondente.
-    """
-    if created:
-        LicenseDatabaseRouter.ensure_database_exists(instance)
+def criar_banco_automaticamente(sender, instance, **kwargs):
+    # Cria o banco de dados fora de qualquer transação
+    LicenseDatabaseManager.ensure_database_exists(instance)

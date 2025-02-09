@@ -4,7 +4,8 @@ from .views import LicencasListView, LicencasCreateView, LicencasUpdateView, Lic
 from . import views
 from .views import (
     EmpresaListView, EmpresaCreateView, EmpresaUpdateView, EmpresaDetailView, EmpresaDeleteView,
-    FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView, UsuarioCreateView, login_view
+    FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView, UsuarioCreateView, UsuarioLoginView, test_session,LogoutView,
+    UsuariosListView
 )
 
 urlpatterns = [
@@ -29,8 +30,11 @@ urlpatterns = [
     path('filial/excluir/<int:pk>/', FilialDeleteView.as_view(), name='filial_delete'),
     
     #usuarios
-    path("usuario/", UsuarioCreateView.as_view(), name="usuario"),
-    path('', login_view, name='login'),
+    path('usuarios/', UsuariosListView.as_view(), name='usuarios_list'),
+    path("usuario/", UsuarioCreateView.as_view(), name="usuario_create"),
+    path('', UsuarioLoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('teste', test_session, name='teste'),
     
     
     # Rota para seleção do banco de dados para superusuário

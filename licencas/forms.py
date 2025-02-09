@@ -1,6 +1,7 @@
 from django import forms
 from .models import Licencas, Usuarios, Empresas, Filiais
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 
 
 class LicencasForm(forms.ModelForm):
@@ -64,45 +65,53 @@ class FiliaisForm(forms.ModelForm):
         }
 
 
-
 class UsuarioForm(UserCreationForm):
     class Meta:
         model = Usuarios
-        fields = ["usua_nome", "usua_login", "usua_emai", "usua_fone", "usua_data_nasc", "usua_sexo", 
-                  "licenca", "empresas", "filiais", "usua_bloq",]
-    
+        fields = ["licenca", "nome", "login", "data_nascimento", "sexo", 
+                  "email", "telefone", "ativo", "empresas", "filiais", "is_staff"]
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        
+
         # Personalização dos widgets para melhorar a experiência do usuário
-        self.fields["usua_nome"].widget.attrs.update({"class": "form-control", "placeholder": "Nome Completo"})
-        self.fields["usua_login"].widget.attrs.update({"class": "form-control", "placeholder": "Login"})
-        self.fields["usua_emai"].widget.attrs.update({"class": "form-control", "placeholder": "E-mail"})
-        self.fields["usua_fone"].widget.attrs.update({"class": "form-control", "placeholder": "Telefone"})
-        self.fields["usua_data_nasc"].widget.attrs.update({"class": "form-control", "type": "date"})
-        self.fields["usua_sexo"].widget.attrs.update({"class": "form-select"})
-        self.fields["licenca"].widget.attrs.update({"class": "form-control"})
-        self.fields["empresas"].widget.attrs.update({"class": "form-control"})
-        self.fields["filiais"].widget.attrs.update({"class": "form-control"})
+        #self.fields["usuario_id"].widget.attrs.update({"class": "form-control", "placeholder": "Nome Completo"})
+        self.fields["licenca"].widget.attrs.update({"class": "form-select", "placeholder": "Licença"})
+        self.fields["nome"].widget.attrs.update({"class": "form-control", "placeholder": "Nome Completo"})
+        self.fields["login"].widget.attrs.update({"class": "form-control", "placeholder": "Login"})
+        self.fields["data_nascimento"].widget.attrs.update({"class": "form-control", "type": "date"})
+        self.fields["sexo"].widget.attrs.update({"class": "form-select"})
+        self.fields["empresas"].widget.attrs.update({"class": "form-select"})
+        self.fields["filiais"].widget.attrs.update({"class": "form-select"})
+        self.fields["is_staff"].widget.attrs.update({"class": "form-check-input"})
+        self.fields["email"].widget.attrs.update({"class": "form-control", "placeholder": "E-mail"})
+        self.fields["telefone"].widget.attrs.update({"class": "form-control", "placeholder": "Telefone"})
 
         # Checkbox personalizado para os campos booleanos
-        self.fields["usua_bloq"].widget.attrs.update({"class": "form-check-input"})
-        
+        self.fields["ativo"].widget.attrs.update({"class": "form-check-input"})
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password1"]) 
+        user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()
         return user
 
 
-class LoginForm(forms.Form):
-    usua_login = forms.CharField( 
-        label="CPF/CNPJ", 
-        max_length=14, 
-        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Digite seu Documento'})
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(
+        label="Login",
+        max_length=14,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
-    password = forms.CharField(  
-        widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Digite sua senha'})
+    
+    password = forms.CharField(
+        label="Senha",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
     )
+
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if username:
+            return username.strip()
+        return username

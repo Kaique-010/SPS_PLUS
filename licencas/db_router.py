@@ -1,177 +1,142 @@
-from django.apps import apps
-import os
-from django.conf import settings
-from django.db import connections, DEFAULT_DB_ALIAS, OperationalError
-from licencas.middleware import get_current_request
-from licencas.database_utils import save_database, load_databases
-from django.db import migrations, connection
-from django.core.management import call_command
 import json
-from datetime import datetime
+from django.conf import settings
+from django.db import connections
+from django.db import connection, OperationalError
+from django.core.management import call_command
+import psycopg2
 
-
-class LicenseDatabaseRouter:
+class LicenseDatabaseManager:
     """
-    Roteador de banco de dados para gerenciar multi-bancos dinâmicos com base na licença do usuário.
+    Gerencia a criação e configuração de bancos de dados para cada licença.
     """
 
-    @staticmethod
-    def _add_database_to_settings(db_name):
-        """Adiciona um banco ao settings.DATABASES e ao JSON."""
-        if db_name not in settings.DATABASES:
-            settings.DATABASES[db_name] = {
-                'ENGINE': 'django.db.backends.postgresql',
-                'NAME': db_name,
-                'USER': os.getenv("DB_USER", "postgres"),
-                'PASSWORD': os.getenv("DB_PASSWORD", "@spartacus201@"),
-                'HOST': os.getenv("DB_HOST", "localhost"),
-                'PORT': os.getenv("DB_PORT", "5433"),
-                'ATOMIC_REQUESTS': False,
-            }
-            save_database(db_name)  # Salva no JSON
-
-    def db_for_read(self, model, **hints):
-        """Define o banco para leitura com base na licença do usuário."""
-        request = get_current_request()
-        if request and hasattr(request, "user") and request.user.is_authenticated:
-            # Verifica se o superusuário escolheu um banco específico
-            if request.user.is_superuser:
-                db_name = request.session.get("selected_db", None)  # A sessão vai armazenar o banco escolhido
-                if db_name:
-                    return db_name  # Retorna o banco de dados escolhido pelo superusuário
-
-            licenca = getattr(request.user, "licenca", None)
-            if licenca:
-                db_name = licenca.lice_docu
-                self._add_database_to_settings(db_name)
-                return db_name
-
-        return DEFAULT_DB_ALIAS
-
-    def db_for_write(self, model, **hints):
-        """Define o banco para escrita com base na licença do usuário."""
-        return self.db_for_read(model, **hints)
-
-    def allow_migrate(self, db, app_label, model_name=None, **hints):
-        """Permite migração apenas para bancos cadastrados."""
-        return db in load_databases() or db == DEFAULT_DB_ALIAS
-
+ 
     @staticmethod
     def ensure_database_exists(licenca):
         """
-        Verifica se o banco de dados existe, caso contrário, cria o banco de dados.
+        Verifica se o banco da licença existe, e se não, cria ele e aplica migrações.
         """
         db_name = licenca.lice_nome
 
-        # Adiciona o banco ao settings se necessário
-        LicenseDatabaseRouter._add_database_to_settings(db_name)
+        if LicenseDatabaseManager.database_exists(db_name):
+            print(f"Banco {db_name} já existe.")
+            return  # Se já existe, não precisa recriar
 
-        try:
-            if not connections[DEFAULT_DB_ALIAS].is_usable():
-                connections[DEFAULT_DB_ALIAS].close()
-                connections[DEFAULT_DB_ALIAS].connect()
+        # Criação do banco fora de qualquer transação
+        LicenseDatabaseManager.create_database(db_name)
+        LicenseDatabaseManager.apply_migrations_to_new_db(db_name)
 
-            with connection.cursor() as cursor:
-                # Verifica se o banco já existe
-                cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = '{db_name}'")
-                exists = cursor.fetchone()
+        # Salva a licença no banco principal e registra o banco no JSON
+        licenca.save()
+        save_database(db_name)
 
-                if not exists:
-                    # Realiza a criação do banco fora da transação
-                    connection.connection.set_isolation_level(0)  # Desativa a transação
-                    cursor.execute(f'CREATE DATABASE "{db_name}"')
-                    connection.connection.set_isolation_level(1)  # Restaura o nível de isolamento
-                    print(f"Banco de dados {db_name} criado com sucesso!")
-
-                    # Aplica as migrações no banco recém-criado
-                    LicenseDatabaseRouter.apply_migrations_to_new_db(db_name)
-
-                    # Salva a licença no banco principal (licenças)
-                    licenca.save()
-
-        except OperationalError as e:
-            print(f"Erro ao criar/verificar o banco {db_name}: {e}")
 
     @staticmethod
-    def apply_migrations_to_new_db(db_name):
-        """
-        Aplica as migrações no banco de dados recém-criado.
-        """
-        settings.DATABASES[db_name] = settings.DATABASES[DEFAULT_DB_ALIAS].copy()
-        settings.DATABASES[db_name]['NAME'] = db_name
-
+    def database_exists(db_name):
+        """Verifica se um banco já existe no PostgreSQL."""
         try:
-            # Verificar se o banco foi adicionado corretamente
-            print(f"Configurando banco de dados para migração: {db_name}")
-            call_command('migrate', database=db_name)  # Aplica as migrações no banco específico
-            print(f"Migrações aplicadas com sucesso no banco {db_name}")
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", [db_name])
+                return cursor.fetchone() is not None
+        except OperationalError:
+            return False
+
+    @staticmethod
+    def create_database(db_name):
+        """Cria um novo banco de dados no PostgreSQL fora de qualquer transação."""
+        try:
+            # Conexão direta ao PostgreSQL (sem transação)
+            connection = psycopg2.connect(
+                dbname='postgres',  # banco de dados default do PostgreSQL
+                user=settings.DATABASES['default']['USER'],
+                password=settings.DATABASES['default']['PASSWORD'],
+                host=settings.DATABASES['default']['HOST'],
+                port=settings.DATABASES['default']['PORT']
+            )
+            connection.autocommit = True  # Necessário para criar o banco fora de transações
+            cursor = connection.cursor()
+            cursor.execute(f'CREATE DATABASE "{db_name}"')
+            print(f"Banco de dados {db_name} criado com sucesso!")
+            cursor.close()
+            connection.close()
+            
+            save_database(db_name)
+
+        except Exception as e:
+            print(f"Erro ao criar o banco {db_name}: {e}")
+
+    @staticmethod
+
+    def apply_migrations_to_new_db(db_name):
+        """Aplica as migrações no banco recém-criado."""
+        
+        default_db = settings.DATABASES.get('default')
+        if not default_db:
+            raise KeyError("Configuração 'default' não encontrada em DATABASES.")
+        
+        # Adicionando a configuração para o novo banco de dados
+        settings.DATABASES[db_name] = {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_name,
+            'USER': default_db['USER'],
+            'PASSWORD': default_db['PASSWORD'],
+            'HOST': default_db['HOST'],
+            'PORT': default_db['PORT'],
+            'TIME_ZONE': 'America/Sao_Paulo',  # Adicionando TIME_ZONE
+            'CONN_HEALTH_CHECKS': True,  # Adicionando CONN_HEALTH_CHECKS
+            'CONN_MAX_AGE': 600,  # Adicionando CONN_MAX_AGE
+            'AUTOCOMMIT': True,  # Necessário para que as operações de criação de banco funcionem
+            'ATOMIC_REQUESTS': True,  # Necessário para garantir 
+            'OPTIONS': {},  # Garantindo que a chave 'OPTIONS' esteja presente
+        }
+        
+        # Forçando a recarga da configuração de banco de dados
+        connections.databases[db_name] = settings.DATABASES[db_name]
+        
+        try:
+            # Agora, podemos aplicar as migrações no banco recém-criado
+            call_command('migrate', database=db_name)
+            print(f"Migrações aplicadas no banco {db_name}")
         except Exception as e:
             print(f"Erro ao aplicar migrações no banco {db_name}: {e}")
+                
+                
+def save_database(db_name):
+    """
+    Salva o nome do banco de dados no arquivo de configuração de bancos de dados JSON.
+    """
+    # Verifica se DATABASES já está carregado corretamente
+    if settings.DATABASES is None:
+        raise ValueError("As configurações de DATABASES não foram carregadas corretamente.")
 
-    @staticmethod
-    def generate_confirmation_file(db_name, licenca):
-        """
-        Gera um arquivo de confirmação com os detalhes do banco de dados e da licença.
-        """
-        confirmation_data = {
-            "db_name": db_name,
-            "licenca_nome": licenca.lice_nome,
-            "licenca_documento": licenca.lice_docu,
-            "user": os.getenv("DB_USER", "postgres"),
-            "host": os.getenv("DB_HOST", "localhost"),
-            "port": os.getenv("DB_PORT", "5433"),
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Verifica se o banco já está presente
+    databases = settings.DATABASES
+
+    # Tentativa de carregar o arquivo JSON existente
+    try:
+        with open('databases.json', 'r') as f:
+            databases = json.load(f)
+    except (json.JSONDecodeError, FileNotFoundError) as e:
+        # Se o arquivo não existir ou estiver vazio, inicializa como um dicionário vazio
+        print("Arquivo 'databases.json' não encontrado ou corrompido. Criando novo arquivo.")
+        databases = {}
+
+    if db_name not in databases:
+        databases[db_name] = {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_name,
+            'USER': settings.DATABASES['default']['USER'],
+            'PASSWORD': settings.DATABASES['default']['PASSWORD'],
+            'HOST': settings.DATABASES['default']['HOST'],
+            'PORT': settings.DATABASES['default']['PORT'],
+            'TIME_ZONE': 'America/Sao_Paulo',  # Adicionando TIME_ZONE
+            'CONN_HEALTH_CHECKS': True,  # Adicionando CONN_HEALTH_CHECKS
+            'CONN_MAX_AGE': 600,  # Adicionando CONN_MAX_AGE
+            'OPTIONS': {},  # Garantindo que a chave 'OPTIONS' esteja presente
         }
-
-        # Define o caminho para o arquivo de confirmação
-        confirmation_dir = "arquivos_confirmacao"
-        os.makedirs(confirmation_dir, exist_ok=True)  # Cria o diretório, caso não exista
-        file_path = os.path.join(confirmation_dir, f"confirmacao_{db_name}.txt")
-
-        # Debug: imprime o caminho do arquivo
-        print(f"Caminho do arquivo de confirmação: {file_path}")
-
-        try:
-            # Salva os dados em um arquivo de texto
-            with open(file_path, 'w') as file:
-                for key, value in confirmation_data.items():
-                    file.write(f"{key}: {value}\n")
-            print(f"Arquivo de confirmação gerado: {file_path}")
-        except Exception as e:
-            print(f"Erro ao gerar o arquivo de confirmação: {e}")
-
-class DBRouter:
-    """
-    Roteador de banco de dados para ativar o banco correto da licença.
-    """
-
-    def db_for_read(self, model, **hints):
-        return self.get_db()
-
-    def db_for_write(self, model, **hints):
-        return self.get_db()
-
-    def get_db(self):
-        """
-        Obtém o banco de dados correto com base na sessão do usuário.
-        """
-        from django.contrib.sessions.models import Session
-        from licencas.models import Licencas
-
-        request = self.get_request()
-        if request:
-            licenca_id = request.session.get('licenca_id')
-            if licenca_id:
-                licenca = Licencas.objects.filter(id=licenca_id).first()
-                if licenca:
-                    return f'licenca_{licenca.documento}'  # Nome do banco
-
-        return 'default'  # Se não houver licença, usa o banco padrão
-
-    
-    def get_user(self, user_id):
-        from licencas.models import Usuarios 
-        try:
-            return Usuarios.objects.get(pk=user_id)
-        except Usuarios.DoesNotExist:
-            return None
+        
+        # Aqui você salva ou atualiza o arquivo JSON com as novas configurações de banco de dados
+        with open('databases.json', 'w') as f:
+            json.dump(databases, f, indent=4)
+    else:
+        print(f"O banco {db_name} já está configurado.")

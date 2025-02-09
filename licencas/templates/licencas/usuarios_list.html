@@ -1,0 +1,57 @@
+{% extends 'base.html' %} {% block content %} {% load static %}
+
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
+<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
+
+<div class="container">
+  <h1 class="my-4">usuarios</h1>
+
+  <!-- Formulário de pesquisa -->
+
+  <div class="container-btn">
+    <a
+      href="{% url 'usuario_create' %}"
+      class="btn btn-success mb-4 mt-2 float-end"
+    >
+      <i class="bi bi-plus"></i> Nova usuario
+    </a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="thead-dark">
+        <tr>
+          <th>Ações</th>
+          <th>ID</th>
+          <th>Login</th>
+          <th>Nome</th>
+          <th>Documento</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for usuarios in usuarios %}
+        <tr>
+          <td>
+            <a href="" class="btn btn-primary btn-sm">Visualizar</a>
+            <a href="" class="btn btn-warning btn-sm">Editar</a>
+            <a href="" class="btn btn-danger btn-sm">Excluir</a>
+          </td>
+          <td>{{ usuarios.id }}</td>
+          <td>{{ usuarios.login }}</td>
+          <td>{{ usuarios.nome }}</td>
+          <td>{{ usuarios.licenca }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">Não há usuarios cadastradas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

@@ -5,28 +5,39 @@ import json
 import os
 
 def load_databases():
-    """Carrega os bancos de dados do arquivo JSON."""
-    if not os.path.exists(settings.DATABASES_FILE):
-        return {}
-
+    """Carrega as configurações de banco de dados a partir de um arquivo JSON."""
     try:
-        with open(settings.DATABASES_FILE, 'r') as file:
-            return json.load(file)
+        with open('databases.json', 'r') as f:
+            databases = json.load(f)
+            settings.DATABASES = databases  # Atualiza as configurações de DATABASES
+            print(f"Bancos de dados carregados com sucesso: {settings.DATABASES}")
     except FileNotFoundError:
-        return {}  
+        print("Arquivo de bancos de dados não encontrado.")
+    except json.JSONDecodeError:
+        print("Erro ao decodificar o arquivo JSON de bancos de dados.")
 
-def save_database(db_name):
-    """Salva um novo banco de dados no arquivo JSON."""
-    databases = load_databases()
+'''def save_database(db_name):
+    """
+    Salva o nome do banco de dados no arquivo de configuração de bancos de dados JSON.
+    """
+    if settings.DATABASES is None:
+        raise ValueError("As configurações de DATABASES não foram carregadas corretamente.")
+    
+    # Verifica se o banco já está presente
+    databases = settings.DATABASES
+
     if db_name not in databases:
         databases[db_name] = {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": db_name,
-            "USER": os.getenv("DB_USER", "postgres"),
-            "PASSWORD": os.getenv("DB_PASSWORD", "@spartacus201@"),
-            "HOST": os.getenv("DB_HOST", "localhost"),
-            "PORT": os.getenv("DB_PORT", "5433"),
-            "ATOMIC_REQUESTS": False,
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': db_name,
+            'USER': settings.DATABASES['default']['USER'],
+            'PASSWORD': settings.DATABASES['default']['PASSWORD'],
+            'HOST': settings.DATABASES['default']['HOST'],
+            'PORT': settings.DATABASES['default']['PORT'],
         }
-        with open(settings.DATABASES_FILE, "w") as file:
-            json.dump(databases, file, indent=4)
+        # Salva as configurações atualizadas no arquivo JSON
+        with open('databases.json', 'w') as f:
+            json.dump(databases, f, indent=4)
+    else:
+        print(f"O banco {db_name} já está configurado.")
+'''

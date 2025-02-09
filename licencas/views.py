@@ -1,90 +1,26 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate, login, get_user_model
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.views import LogoutView
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
-
-from sps_plus import settings
 from .models import Licencas, Filiais, Empresas
 from .forms import LicencasForm, EmpresasForm, FiliaisForm, LoginForm
 from .models import Usuarios
 from .forms import UsuarioForm
 
-User = get_user_model()
+class UsuarioLoginView(LoginView):
+    template_name = "licencas/login.html"
+    form_class = LoginForm
+    redirect_authenticated_user = True
 
-class LicencaLoginView(TemplateView):
-    
-    template_name = 'licencas/login.html'
-
-    def post(self, request, *args, **kwargs):
-        form = LoginForm(request.POST)
-        
-        if form.is_valid():
-            usua_login = form.cleaned_data['usua_login']
-            password = form.cleaned_data['password']
-            
-            print(f"Tentando autenticar: {usua_login}, senha: {password}")
-            
-            user = authenticate(request, usua_login=usua_login, password=password)
-            
-            if user is not None:
-                login(request, user)
-                print(f"Login realizado com sucesso para o usuário {user.usua_nome}")
-                # Alterado para usar 'licenca' em vez de 'license'
-                print(f"Licença logada: {request.user.licencas.lice_nome}")
-                print(f"Banco conectado: {settings.DATABASES[request.user.licencas.lice_nome]}")       
-                return redirect('home')  
-            else:
-                messages.error(request, "Login ou senha inválidos.")
-                print("Erro: Login ou senha inválidos.")
-        else:
-            messages.error(request, "Formulário inválido.")
-        
-        return render(request, self.template_name, {'form': form})
-
-def login_view(request):
-    # Se o usuário já estiver autenticado, redireciona para a página inicial
-    if request.user.is_authenticated:
-        return redirect('home')
-
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            usua_login = form.cleaned_data['usua_login']
-            password = form.cleaned_data['password']
-
-            print(f"Tentando autenticar: {usua_login}, senha: {password}")
-            user = authenticate(request, usua_login=usua_login, password=password)
-
-            if user:
-                login(request, user)  # Faz login do usuário
-                request.session.modified = True  # Garante que a sessão foi alterada
-                request.session.save()
-                print(f"Usuário autenticado na home? {request.user.is_authenticated}")
-
-                # Verifica se a licença do usuário existe
-                if hasattr(user, "licenca") and user.licenca:
-                    print(f"Licença logada: {user.licenca.lice_nome}")
-                    
-                    # Verifica se a licença tem um banco de dados associado
-                    if user.licenca.lice_nome in settings.DATABASES:
-                        print(f"Banco conectado: {settings.DATABASES[user.licenca.lice_nome]}")
-                    else:
-                        print("⚠️ Banco de dados da licença não configurado corretamente.")
-
-                return redirect('home')  # Redireciona após o login
-
-            else:
-                messages.error(request, "Login ou senha inválidos.")  # Mensagem de erro
-
-    else:
-        form = LoginForm()  # Cria um formulário vazio para GET
-
-    return render(request, 'licencas/login.html', {'form': form}) 
+    def get_success_url(self):
+        return reverse_lazy("home") 
 
 
 @login_required
@@ -276,10 +212,23 @@ class UsuarioCreateView(CreateView):
     model = Usuarios
     form_class = UsuarioForm
     template_name = "licencas/usuario_form.html"
-    success_url = reverse_lazy("home") 
+    success_url = reverse_lazy("usuarios_list") 
 
     def form_valid(self, form):
         response = super().form_valid(form)
         self.object.set_password(form.cleaned_data["password1"])  
         self.object.save()
         return response
+    
+
+class UsuariosListView(ListView):
+    model = Usuarios
+    template_name = 'licencas/usuarios_list.html'
+    context_object_name = 'usuarios'
+    
+
+def test_session(request):
+    # Salva dados simples na sessão
+    request.session['test_key'] = 'test_value'
+    request.session.save()  # Salva explicitamente
+    return HttpResponse(f"Test session saved: {request.session['test_key']}")

@@ -1,50 +1,49 @@
-import threading
-import weakref
+from django.db import connections
 from django.utils.deprecation import MiddlewareMixin
+from django.conf import settings
+from licencas.database_utils import load_databases
 
-_thread_locals = threading.local()
+from threading import local
 
-class RequestMiddleware:
-    """Armazena o request na thread atual de forma segura"""
-    def __init__(self, get_response):
-        self.get_response = get_response
+_thread_locals = local()
 
-    def __call__(self, request):
-        _thread_locals.request = weakref.ref(request)  # Armazena um fraco apontador para evitar vazamento de memória
-        response = self.get_response(request)
-        return response
+# Mapeamento entre o documento da licença e o nome do banco
+LICENCA_DB_MAP = {
+    '11111111111111': 'save0',
+    '22222222222222': 'lacera',
+    # Adicione outros mapeamentos conforme necessário
+}
 
-def get_current_request():
-    """Retorna o request atual armazenado na thread"""
-    request_ref = getattr(_thread_locals, 'request', None)
-    return request_ref() if request_ref else None  # Retorna o request apenas se ainda estiver válido
-
-
-class DatabaseSelectionMiddleware(MiddlewareMixin):
-    """
-    Middleware para capturar a escolha do banco de dados pelo superusuário.
-    """
-
+'''class DatabaseRouterMiddleware(MiddlewareMixin):
     def process_request(self, request):
-        if request.user.is_authenticated and request.user.is_superuser:
-            # Suponha que o superusuário possa escolher o banco através de uma query string ou algo assim
-            selected_db = request.GET.get("db", None)
-            if selected_db:
-                # Salva na sessão a escolha do banco de dados
-                request.session["selected_db"] = selected_db
+        if request.user.is_authenticated:
+            try:
+                usuario = request.user
 
+                # Verifique se o usuário é o "master" e usa o banco de dados padrão
+                if usuario.usua_login == 'master':
+                    connection_name = 'default'  # Banco de dados padrão
+                else:
+                    if usuario.licenca:
+                        licenca_db = usuario.licenca.lice_docu
+                        connection_name = LICENCA_DB_MAP.get(licenca_db)
 
+                        if connection_name:
+                            if not settings.DATABASES.get(connection_name):
+                                load_databases()  # Carrega o banco do JSON se necessário
 
-_thread_locals = threading.local()
-
-class ThreadLocalMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        _thread_locals.request = request
-        response = self.get_response(request)
-        return response
+                            if connection_name in settings.DATABASES:
+                                connections.databases['default'] = settings.DATABASES[connection_name]
+                            else:
+                                raise Exception(f"Banco de dados para a licença {licenca_db} não encontrado.")
+                        else:
+                            raise Exception(f"Licença {licenca_db} não possui banco de dados mapeado.")
+            except Exception as e:
+                # Logar o erro para monitoramento e debug
+                print(f"Erro ao ajustar o banco de dados: {e}")
+                # Pode adicionar algum logging para capturar o erro, ex:
+                # logger.error(f"Erro ao ajustar o banco de dados: {e}")
+        return None'''
 
 def get_current_request():
-    return getattr(_thread_locals, "request", None)
+    return getattr(_thread_locals, 'request', None)
