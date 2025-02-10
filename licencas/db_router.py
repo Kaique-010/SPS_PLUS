@@ -2,6 +2,7 @@ import json
 from django.conf import settings
 from django.db import connections
 from django.db import connection, OperationalError
+from .middleware import get_current_user
 from django.core.management import call_command
 import psycopg2
 
@@ -140,3 +141,24 @@ def save_database(db_name):
             json.dump(databases, f, indent=4)
     else:
         print(f"O banco {db_name} já está configurado.")
+
+
+class LicenseDatabaseRouter:
+    def db_for_read(self, model, **hints):
+        if hasattr(model, 'licenca'):
+            licenca = self.get_user_license()
+            if licenca:
+                return licenca.lice_nome  # Corrigido para usar o nome correto do banco
+        return None
+
+    def db_for_write(self, model, **hints):
+        if hasattr(model, 'licenca'):
+            licenca = self.get_user_license()
+            if licenca:
+                return licenca.lice_nome  # Corrigido para usar o nome correto do banco
+        return None
+
+    def get_user_license(self):
+        # Obtém o usuário autenticado e retorna a licença dele
+        user = get_current_user()
+        return user.licenca if user else None

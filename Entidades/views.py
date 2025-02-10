@@ -9,6 +9,8 @@ from django.contrib import messages
 from django.db import connection
 from django.urls import reverse_lazy
 import requests
+
+from licencas.mixins import LicenseMixin
 from .models import Entidades
 from django.db.models import Max
 from .serializers import EntidadesSerializer
@@ -57,7 +59,7 @@ class EntidadesListView(ListView):
 
 
 
-class EntidadeCreateView(CreateView):
+class EntidadeCreateView(LicenseMixin,CreateView):
     model = models.Entidades
     form_class = EntidadesForm
     template_name = 'entidade_form.html'
@@ -87,7 +89,7 @@ def entidade_update(request, pk):
 
 
 
-def entidade_delete(request, pk):
+def entidade_delete(LicenseMixin,request, pk):
     entidade = get_object_or_404(Entidades, pk=pk)
     if request.method == 'POST':
         entidade.delete()

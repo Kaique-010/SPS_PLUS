@@ -15,6 +15,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.urls import reverse_lazy
 from rest_framework import viewsets
+from licencas.mixins import LicenseMixin
 from produto.serializers import ProdutosSerializers
 from produto.models import Produtos, GrupoProduto, SubgrupoProduto, FamiliaProduto, Marca, Tabelaprecos
 from .forms import ProdutosForm, GrupoForm, SubgrupoForm, FamiliaForm, MarcaForm, TabelaprecosFormSet
@@ -30,11 +31,11 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     search_fields = ['nome', 'codigo_produto']
     
 
-class ProdutoListView(ListView):
+class ProdutoListView(LicenseMixin,ListView):
     model = Produtos
     template_name = 'produtos_lista.html'
     context_object_name = 'page_obj'
-    paginate_by = 10  # Define o número de itens por página
+    paginate_by = 10  
 
     def get_queryset(self):
         """Filtra produtos com base em parâmetros de busca e inclui os preços associados."""
@@ -57,23 +58,22 @@ class ProdutoListView(ListView):
 
         return queryset.order_by('produto_codigo')
     
+class ProdutoCreateView(LicenseMixin, CreateView):
+    model = Produtos
+    form_class = ProdutosForm
+    template_name = 'produtos_form.html'
 
-def produto_create(request):
-    if request.method == 'POST':
-        form = ProdutosForm(request.POST, request.FILES)
-        formset = TabelaprecosFormSet(request.POST)  # Formset para a tabela de preços
-
+    def form_valid(self, form):
+        formset = TabelaprecosFormSet(self.request.POST)
         if form.is_valid() and formset.is_valid():
             cleaned_data = form.cleaned_data
-
+            
             with transaction.atomic():
-                # Gerar código do produto automaticamente, se não informado
                 if not cleaned_data.get('produto_codigo'):
                     max_prod_codi = None
                     with connection.cursor() as cursor:
                         cursor.execute("SELECT MAX(prod_codi) FROM produtos WHERE prod_empr = %s", [cleaned_data.get('prod_empr')])
-                        max_prod_codi = cursor.fetchone()[0]
-                        max_prod_codi = int(max_prod_codi) if max_prod_codi is not None else 0
+                        max_prod_codi = cursor.fetchone()[0] or 0
                     
                     produto_codigo = max_prod_codi + 1
                     while Produtos.objects.filter(produto_codigo=produto_codigo).exists():
@@ -81,101 +81,86 @@ def produto_create(request):
                     
                     cleaned_data['produto_codigo'] = str(produto_codigo)
 
-                # Criar o novo produto
-                novo_produto = Produtos.objects.create(
-                    prod_empr=cleaned_data['prod_empr'],
-                    produto_codigo=cleaned_data['produto_codigo'],
-                    nome_produto=cleaned_data.get('nome_produto'),
-                    unidade_medida=cleaned_data.get('unidade_medida'),
-                    grupo=cleaned_data.get('grupo'),
-                    subgrupo=cleaned_data.get('subgrupo'),
-                    familia=cleaned_data.get('familia'),
-                    local=cleaned_data.get('local'),
-                    ncm=cleaned_data.get('ncm'),
-                    marca=cleaned_data.get('marca'),
-                    codigo_fabricante=cleaned_data.get('codigo_fabricante'),
-                    foto=request.FILES.get('foto')
-                )
-
+                novo_produto = form.save()
+                
                 tabelaprecos_instances = formset.save(commit=False)
                 for instance in tabelaprecos_instances:
                     instance.tabe_prod = novo_produto
-                    instance.tabe_empr = novo_produto.prod_empr  # Atribuindo o valor de prod_empr para tabe_empr
+                    instance.tabe_empr = novo_produto.prod_empr
                     instance.save()
 
-                messages.success(request, f"Produto criado com sucesso! Código: {novo_produto.produto_codigo}")
-                return redirect('produtos_lista.html')
+                messages.success(self.request, f"Produto criado com sucesso! Código: {novo_produto.produto_codigo}")
+                return redirect('produtos_lista')
+        
+        return self.form_invalid(form)
 
-    else:
-        form = ProdutosForm()
-        formset = TabelaprecosFormSet()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = TabelaprecosFormSet()
+        return context
 
-    return render(request, 'produtos_form.html', {'form': form, 'formset': formset})
 
+class ProdutoUpdateView(LicenseMixin, UpdateView):
+    model = Produtos
+    form_class = ProdutosForm
+    template_name = 'produtos_form.html'
 
-def produto_update(request, pk):
-    produto = get_object_or_404(Produtos, pk=pk)
-    
-    if request.method == 'POST':
-        form = ProdutosForm(request.POST, request.FILES, instance=produto)
-        formset = TabelaprecosFormSet(request.POST, instance=produto)  # Carregar os preços para o produto
-
+    def form_valid(self, form):
+        formset = TabelaprecosFormSet(self.request.POST, instance=self.object)
         if form.is_valid() and formset.is_valid():
-            cleaned_data = form.cleaned_data
-            
             with transaction.atomic():
-                # Atualiza o produto
                 produto = form.save()
 
-                # Atualiza ou cria os preços associados ao produto
                 tabelaprecos_instances = formset.save(commit=False)
                 for instance in tabelaprecos_instances:
                     instance.tabe_prod = produto
                     instance.save()
 
-                # Remover preços não enviados no formset
                 tabelaprecos_ids = [instance.id for instance in tabelaprecos_instances]
                 Tabelaprecos.objects.filter(tabe_prod=produto).exclude(id__in=tabelaprecos_ids).delete()
 
-            messages.success(request, "Produto atualizado com sucesso!")
-            return redirect('produtos_lista')  # Certifique-se de que o nome da URL esteja correto
-    else:
-        form = ProdutosForm(instance=produto)
-        formset = TabelaprecosFormSet(queryset=Tabelaprecos.objects.filter(tabe_prod=produto))  # Preenche formset com preços existentes
+            messages.success(self.request, "Produto atualizado com sucesso!")
+            return redirect('produtos_lista')
+        
+        return self.form_invalid(form)
 
-    return render(request, 'produtos_form.html', {'form': form, 'formset': formset})
-
-
-
-def produto_delete(request, pk):
-    produto = get_object_or_404(Produtos, pk=pk)
-    if request.method == 'POST':
-        produto.delete()
-        messages.success(request, "Produto excluído com sucesso!")
-        print(f"Produto: {produto.nome_produto} - Código: {produto.produto_codigo}")
-        return redirect('produtos_lista.html')  
-    return render(request, 'produto_confirm_delete.html', {'produto': produto})
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['formset'] = TabelaprecosFormSet(instance=self.object)
+        return context
 
 
-class GrupoListView(ListView):
+class ProdutoDeleteView(LicenseMixin, DeleteView):
+    model = Produtos
+    template_name = 'produto_confirm_delete.html'
+    success_url = reverse_lazy('produtos_lista')
+
+    def delete(self, request, *args, **kwargs):
+        produto = self.get_object()
+        messages.success(self.request, f"Produto excluído com sucesso! Código: {produto.produto_codigo}")
+        return super().delete(request, *args, **kwargs)
+
+
+
+class GrupoListView(LicenseMixin,ListView):
     model = GrupoProduto
     template_name = 'grupos_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class GrupoCreateView(CreateView):
+class GrupoCreateView(LicenseMixin,CreateView):
     model = GrupoProduto
     form_class = GrupoForm
     template_name = 'grupo_create.html'
     success_url = reverse_lazy('grupos_list')
 
-class GrupoUpdateView(UpdateView):
+class GrupoUpdateView(LicenseMixin,UpdateView):
     model = GrupoProduto
     form_class = GrupoForm
     template_name = 'grupo_update.html'
     success_url = reverse_lazy('grupos_list')
 
-class GrupoDeleteView(DeleteView):
+class GrupoDeleteView(LicenseMixin,DeleteView):
     model = GrupoProduto
     template_name = 'grupo_delete.html'
     success_url = reverse_lazy('grupos_list')
@@ -186,25 +171,25 @@ class GrupoDeleteView(DeleteView):
         return context
 
 
-class SubgrupoListView(ListView):
+class SubgrupoListView(LicenseMixin,ListView):
     model = SubgrupoProduto
     template_name = 'subgrupos_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class SubgrupoCreateView(CreateView):
+class SubgrupoCreateView(LicenseMixin,CreateView):
     model = SubgrupoProduto
     form_class = SubgrupoForm
     template_name = 'subgrupo_create.html'
     success_url = reverse_lazy('subgrupos_list')
 
-class SubgrupoUpdateView(UpdateView):
+class SubgrupoUpdateView(LicenseMixin,UpdateView):
     model = SubgrupoProduto
     form_class = GrupoForm
     template_name = 'subgrupo_update.html'
     success_url = reverse_lazy('subgrupos_list')
 
-class SubgrupoDeleteView(DeleteView):
+class SubgrupoDeleteView(LicenseMixin,DeleteView):
     model = SubgrupoProduto
     template_name = 'subgrupo_delete.html'
     success_url = reverse_lazy('subgrupos_list')
@@ -216,25 +201,25 @@ class SubgrupoDeleteView(DeleteView):
 
 
 # Views para Marca
-class MarcaListView(ListView):
+class MarcaListView(LicenseMixin,ListView):
     model = Marca
     template_name = 'marcas_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class MarcaCreateView(CreateView):
+class MarcaCreateView(LicenseMixin,CreateView):
     model = Marca
     form_class = MarcaForm
     template_name = 'marca_create.html'
     success_url = reverse_lazy('marcas_list')
 
-class MarcaUpdateView(UpdateView):
+class MarcaUpdateView(LicenseMixin,UpdateView):
     model = Marca
     form_class = MarcaForm
     template_name = 'marca_update.html'
     success_url = reverse_lazy('marcas_list')
 
-class MarcaDeleteView(DeleteView):
+class MarcaDeleteView(LicenseMixin,DeleteView):
     model = Marca
     template_name = 'marca_delete.html'
     success_url = reverse_lazy('marcas_list')
@@ -245,25 +230,25 @@ class MarcaDeleteView(DeleteView):
         return context
 
 # Views para FamiliaProduto
-class FamiliaProdutoListView(ListView):
+class FamiliaProdutoListView(LicenseMixin,ListView):
     model = FamiliaProduto
     template_name = 'familias_produto_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class FamiliaProdutoCreateView(CreateView):
+class FamiliaProdutoCreateView(LicenseMixin,CreateView):
     model = FamiliaProduto
     form_class = FamiliaForm
     template_name = 'familia_produto_create.html'
     success_url = reverse_lazy('familias_produto_list')
 
-class FamiliaProdutoUpdateView(UpdateView):
+class FamiliaProdutoUpdateView(LicenseMixin,UpdateView):
     model = FamiliaProduto
     form_class = FamiliaForm
     template_name = 'familia_produto_update.html'
     success_url = reverse_lazy('familias_produto_list')
 
-class FamiliaProdutoDeleteView(DeleteView):
+class FamiliaProdutoDeleteView(LicenseMixin,DeleteView):
     model = FamiliaProduto
     template_name = 'familia_produto_delete.html'
     success_url = reverse_lazy('familias_produto_list')

@@ -13,8 +13,9 @@ print("DB_PORT:", os.getenv('DB_PORT'))
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-from licencas.database_utils import load_databases
-DATABASES_FILE = BASE_DIR / "databases.json" 
+DATABASES_FILE = BASE_DIR / "databases.json"
+
+
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 if not SECRET_KEY:
@@ -60,7 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',  
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    #'licencas.middleware.DatabaseRouterMiddleware',
+    'licencas.middleware.ThreadLocalMiddleware',
 
     
 
@@ -107,7 +108,9 @@ DATABASES = {
     },
 }
 
+from licencas.database_utils import load_databases
 
+DATABASES.update(load_databases())
 
 
 # Password validation
@@ -147,7 +150,10 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-DATABASE_ROUTERS = [ "licencas.db_router.LicenseDatabaseManager"]
+DATABASE_ROUTERS = [ "licencas.db_router.LicenseDatabaseManager",
+                     "licencas.db_router.LicenseDatabaseRouter",
+                    
+                    ]
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
@@ -180,3 +186,10 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"  # Teste com "None" se necessário
 
 LOGOUT_REDIRECT_URL = 'login'  # Ou a página que você preferir
+LOGIN_URL = '/licencas/login/'
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8000',
+    'https://seu-dominio.com',  # Exemplo para produção
+]

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProdutosViewSet, exportar_produtos,produto_create,produto_update,produto_delete, ProdutoListView
+from .views import ProdutosViewSet, exportar_produtos,ProdutoListView, ProdutoCreateView, ProdutoUpdateView, ProdutoDeleteView
 from .views import GrupoListView, GrupoCreateView, GrupoUpdateView, GrupoDeleteView
 from .views import SubgrupoListView, SubgrupoCreateView, SubgrupoUpdateView, SubgrupoDeleteView
 from .views import (
@@ -18,9 +18,9 @@ router.register(r'produtos', ProdutosViewSet)
 urlpatterns = [
     path('api/', include(router.urls)),
     path('produtos_lista', ProdutoListView.as_view(), name='produtos_lista.html'),
-    path('produto/create/', produto_create, name='produto_create'),
-    path('produto/update/<int:pk>/', produto_update, name='produto_update'),
-    path('produto/delete/<int:pk>/', produto_delete, name='produto_delete'),
+    path('produto/create/', ProdutoCreateView.as_view, name='produto_create'),
+    path('produto/update/<int:pk>/', ProdutoUpdateView.as_view, name='produto_update'),
+    path('produto/delete/<int:pk>/', ProdutoDeleteView.as_view, name='produto_delete'),
     path('exportar-produtos/',exportar_produtos, name='exportar_produtos'),
     
     path('grupos_list', GrupoListView.as_view(), name='grupos_list'),

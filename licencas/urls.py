@@ -1,5 +1,6 @@
 # urls.py
 from django.urls import path
+from django.contrib.auth.views import LoginView
 from .views import LicencasListView, LicencasCreateView, LicencasUpdateView, LicencasDetailView, LicencasDeleteView
 from . import views
 from .views import (
@@ -33,6 +34,7 @@ urlpatterns = [
     path('usuarios/', UsuariosListView.as_view(), name='usuarios_list'),
     path("usuario/", UsuarioCreateView.as_view(), name="usuario_create"),
     path('', UsuarioLoginView.as_view(), name='login'),
+    path("licencas/login/", LoginView.as_view(template_name="licencas/login.html"), name="login"),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('teste', test_session, name='teste'),
     
