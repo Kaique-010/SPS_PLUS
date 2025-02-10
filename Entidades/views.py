@@ -1,5 +1,6 @@
 from io import BytesIO
 from django.forms import ValidationError
+from django.db import connections
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -9,7 +10,6 @@ from django.contrib import messages
 from django.db import connection
 from django.urls import reverse_lazy
 import requests
-
 from licencas.mixins import LicenseMixin
 from .models import Entidades
 from django.db.models import Max
@@ -36,56 +36,69 @@ def dictfetchall(cursor):
         for row in cursor.fetchall()
     ]
     
-class EntidadesListView(ListView):
+    
+class EntidadesListView(LicenseMixin, ListView):
     model = Entidades
     template_name = 'entidades.html'
     context_object_name = 'entidades'
     paginate_by = 15
 
     def get_queryset(self):
-        queryset = super().get_queryset().order_by('id') 
+        licenca = self.get_license()
+        db_name = licenca.lice_nome if licenca else "default"
+
+        queryset = Entidades.objects.using(db_name).order_by('enti_clie')
+
         nome = self.request.GET.get('enti_nome')
         enti_clie = self.request.GET.get('enti_clie')
 
         if nome:
-            queryset = queryset.filter(enti_nome__icontains=nome) 
+            queryset = queryset.filter(enti_nome__icontains=nome)
 
         if enti_clie:
             queryset = queryset.filter(enti_clie=enti_clie)
-           
+
         return queryset
 
 
 
 
-
-class EntidadeCreateView(LicenseMixin,CreateView):
+class EntidadeCreateView(LicenseMixin, CreateView):
     model = models.Entidades
     form_class = EntidadesForm
     template_name = 'entidade_form.html'
-    success_url = reverse_lazy('entidades')  
+    success_url = reverse_lazy('entidades')
 
     def form_valid(self, form):
+        licenca = self.get_license()
+        db_name = licenca.lice_nome if licenca else "default"
+        
+        # Salvar no banco correto
+        entidade = form.save(commit=False)
+        entidade.save(using=db_name)
+
+        print(f"Banco de dados utilizado para salvar: {db_name}")
         return super().form_valid(form)
 
 
 
 
-def entidade_update(request, pk):
-    entidade = get_object_or_404(Entidades, pk=pk)
-    
-    if request.method == 'POST':
-        form = EntidadesForm(request.POST, instance=entidade)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Entidade salva com sucesso!")
-            return redirect('entidades')  
-        else:
-            print("Formulário inválido:", form.errors) 
-    else:
-        form = EntidadesForm(instance=entidade)
-    
-    return render(request, 'entidade_form.html', {'form': form})
+class EntidadeUpdateView(LicenseMixin, UpdateView):
+    model = models.Entidades
+    form_class = EntidadesForm
+    template_name = 'entidade_form.html'
+    success_url = reverse_lazy('entidades')
+
+    def get_object(self, queryset=None):
+        """Garante que a entidade seja buscada no banco correto"""
+        licenca = self.get_license()
+        db_name = licenca.lice_nome if licenca else "default"
+        return models.Entidades.objects.using(db_name).get(pk=self.kwargs["pk"])
+
+    def form_valid(self, form):
+        print(f"Banco de dados utilizado: {connections[connection.alias].settings_dict['NAME']}")
+        return super().form_valid(form)
+
 
 
 

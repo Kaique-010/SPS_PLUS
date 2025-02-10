@@ -6,12 +6,37 @@ from .middleware import get_current_user
 from django.core.management import call_command
 import psycopg2
 
+class LicenseDatabaseRouter:
+    def db_for_read(self, model, **hints):
+        # Obtém o banco da licença a partir da sessão do usuário
+        request = self.get_request()
+        if request:
+           
+            return request.session.get("banco_conectado", "default")
+        return "default"
+
+    def db_for_write(self, model, **hints):
+        # Obtém o banco da licença a partir da sessão do usuário
+        request = self.get_request()
+        if request:
+            # O banco de dados da licença é armazenado na sessão do usuário
+            return request.session.get("banco_conectado", "default")
+        return "default"
+
+    def get_request(self):
+        """Obtém a request atual usando thread local."""
+        import threading
+        local_request = getattr(threading.local(), "request", None)
+        return local_request
+
+
+
+
 class LicenseDatabaseManager:
     """
     Gerencia a criação e configuração de bancos de dados para cada licença.
     """
 
- 
     @staticmethod
     def ensure_database_exists(licenca):
         """
@@ -30,7 +55,6 @@ class LicenseDatabaseManager:
         # Salva a licença no banco principal e registra o banco no JSON
         licenca.save()
         save_database(db_name)
-
 
     @staticmethod
     def database_exists(db_name):
@@ -60,21 +84,20 @@ class LicenseDatabaseManager:
             print(f"Banco de dados {db_name} criado com sucesso!")
             cursor.close()
             connection.close()
-            
+
             save_database(db_name)
 
         except Exception as e:
             print(f"Erro ao criar o banco {db_name}: {e}")
 
     @staticmethod
-
     def apply_migrations_to_new_db(db_name):
         """Aplica as migrações no banco recém-criado."""
-        
+
         default_db = settings.DATABASES.get('default')
         if not default_db:
             raise KeyError("Configuração 'default' não encontrada em DATABASES.")
-        
+
         # Adicionando a configuração para o novo banco de dados
         settings.DATABASES[db_name] = {
             'ENGINE': 'django.db.backends.postgresql',
@@ -87,21 +110,21 @@ class LicenseDatabaseManager:
             'CONN_HEALTH_CHECKS': True,  # Adicionando CONN_HEALTH_CHECKS
             'CONN_MAX_AGE': 600,  # Adicionando CONN_MAX_AGE
             'AUTOCOMMIT': True,  # Necessário para que as operações de criação de banco funcionem
-            'ATOMIC_REQUESTS': True,  # Necessário para garantir 
+            'ATOMIC_REQUESTS': True,  # Necessário para garantir que a transação seja controlada
             'OPTIONS': {},  # Garantindo que a chave 'OPTIONS' esteja presente
         }
-        
+
         # Forçando a recarga da configuração de banco de dados
         connections.databases[db_name] = settings.DATABASES[db_name]
-        
+
         try:
             # Agora, podemos aplicar as migrações no banco recém-criado
             call_command('migrate', database=db_name)
             print(f"Migrações aplicadas no banco {db_name}")
         except Exception as e:
             print(f"Erro ao aplicar migrações no banco {db_name}: {e}")
-                
-                
+
+
 def save_database(db_name):
     """
     Salva o nome do banco de dados no arquivo de configuração de bancos de dados JSON.
@@ -135,30 +158,9 @@ def save_database(db_name):
             'CONN_MAX_AGE': 600,  # Adicionando CONN_MAX_AGE
             'OPTIONS': {},  # Garantindo que a chave 'OPTIONS' esteja presente
         }
-        
+
         # Aqui você salva ou atualiza o arquivo JSON com as novas configurações de banco de dados
         with open('databases.json', 'w') as f:
             json.dump(databases, f, indent=4)
     else:
         print(f"O banco {db_name} já está configurado.")
-
-
-class LicenseDatabaseRouter:
-    def db_for_read(self, model, **hints):
-        if hasattr(model, 'licenca'):
-            licenca = self.get_user_license()
-            if licenca:
-                return licenca.lice_nome  # Corrigido para usar o nome correto do banco
-        return None
-
-    def db_for_write(self, model, **hints):
-        if hasattr(model, 'licenca'):
-            licenca = self.get_user_license()
-            if licenca:
-                return licenca.lice_nome  # Corrigido para usar o nome correto do banco
-        return None
-
-    def get_user_license(self):
-        # Obtém o usuário autenticado e retorna a licença dele
-        user = get_current_user()
-        return user.licenca if user else None

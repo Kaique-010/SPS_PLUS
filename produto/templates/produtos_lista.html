@@ -26,14 +26,14 @@
             <form method="get" class="search-form mb-4">
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label for="nome">Nome</label>
-                        <input type="text" id="nome" name="nome" class="form-control" value="{{ nome }}"
+                        <label for="prod_nome">Nome</label>
+                        <input type="text" id="prod_nome" name="prod_nome" class="form-control" value="{{ prod_nome }}"
                             placeholder="Filtrar por nome">
                     </div>
                     <div class="form-group col-md-4">
-                        <label for="id_prod">ID Produto</label>
-                        <input type="number" id="id_prod" name="id_prod" class="form-control" value="{{ id_prod }}"
-                            placeholder="Filtrar por ID Produto">
+                        <label for="prod_codi">ID Produto</label>
+                        <input type="number" id="prod_codi" name="prod_codi" class="form-control"
+                            value="{{ prod_codi }}" placeholder="Filtrar por ID Produto">
                     </div>
                     <div class="form-group col-md-4 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary">Filtrar</button>
@@ -49,7 +49,7 @@
             </div>
         </div>
         <main>
-            {% if page_obj %}
+            {%if page_obj%}
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
                     <thead class="thead-dark">
@@ -58,11 +58,6 @@
                             <th>Código Produto</th>
                             <th>Nome Produto</th>
                             <th>Unidade Medida</th>
-                            <th>Grupo</th>
-                            <th>Subgrupo</th>
-                            <th>Família</th>
-                            <th>Marca</th>
-                            <th>Local</th>
                             <th>NCM</th>
                             <th>Preço Custo</th>
                             <th>Preço à Vista</th>
@@ -73,64 +68,61 @@
                     </thead>
                     <tbody>
                         {% for produto in page_obj %}
-                            <tr>
-                                <td>
-                                    {% if produto.produto_codigo %}
-                                    <a href="{% url 'produto_update' pk=produto.produto_codigo %}" class="btn btn-sm"
-                                        style="background-color: #7ab1ec; color: white;">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a href="{% url 'produto_delete' pk=produto.produto_codigo %}" class="btn btn-sm"
-                                        style="background-color: #e7a0a7; color: white;">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                    {% endif %}
-                                </td>
-                                <td>{{ produto.produto_codigo }}</td>
-                                <td>{{ produto.nome_produto }}</td>
-                                <td>{{ produto.unidade_medida }}</td>
-                                <td>{{ produto.grupo|default_if_none:"" }}</td>
-                                <td>{{ produto.subgrupo|default_if_none:"" }}</td>
-                                <td>{{ produto.familia|default_if_none:"" }}</td>
-                                <td>{{ produto.marca|default_if_none:"" }}</td>
-                                <td>{{ produto.local|default_if_none:"" }}</td>
-                                <td>{{ produto.ncm|default_if_none:"" }}</td>
-                                <td>
-                                    {% if produto.tabelaprecos_set.all %}
-                                        {% for preco in produto.tabelaprecos_set.all %}
-                                            {{ preco.tabe_cust|floatformat:2 }}</p>
-                                        {% endfor %}
-                                    {% else %}
-                                        <p>Sem preço definido</p>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if produto.tabelaprecos_set.all %}
-                                        {% for preco in produto.tabelaprecos_set.all %}
-                                            {{ preco.tabe_avis|floatformat:2 }}</p>
-                                        {% endfor %}
-                                    {% else %}
-                                        <p>Sem preço definido</p>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if produto.tabelaprecos_set.all %}
-                                        {% for preco in produto.tabelaprecos_set.all %}
-                                            {{ preco.tabe_praz|floatformat:2 }}</p>
-                                        {% endfor %}
-                                    {% else %}
-                                        <p>Sem preço definido</p>
-                                    {% endif %}
-                                </td>
-                                <td>{{ produto.saldo_estoque|default_if_none:"" }}</td> 
-                                <td>
-                                    {% if produto.foto %}
-                                        <img src="{{ produto.foto.url }}" alt="Foto do Produto" width="80" height="80">
-                                    {% else %}
-                                        Sem foto
-                                    {% endif %}
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>
+                                {% if produto.prod_codi %}
+                                <a href="{% url 'produtos_update' pk=produto.prod_codi %}" class="btn btn-sm"
+                                    style="background-color: #7ab1ec; color: white;">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'produto_delete' pk=produto.prod_codi %}" class="btn btn-sm"
+                                    style="background-color: #e7a0a7; color: white;">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                            <td>{{ produto.prod_codi|default:"Valor inválido" }}</td>
+
+                            <td>{{ produto.prod_nome }}</td>
+                            <td>{{ produto.prod_unme }}</td>
+
+                            <td>{{ produto.prod_ncm }}</td>
+                            <td>
+                                {% if produto.tabelaprecos_set.all %}
+                                {% for preco in produto.tabelaprecos_set.all %}
+                                {{ preco.tabe_cust|floatformat:2 }}</p>
+                                {% endfor %}
+                                {% else %}
+                                <p>Sem preço definido</p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if produto.tabelaprecos_set.all %}
+                                {% for preco in produto.tabelaprecos_set.all %}
+                                {{ preco.tabe_avis|floatformat:2 }}</p>
+                                {% endfor %}
+                                {% else %}
+                                <p>Sem preço definido</p>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if produto.tabelaprecos_set.all %}
+                                {% for preco in produto.tabelaprecos_set.all %}
+                                {{ preco.tabe_praz|floatformat:2 }}</p>
+                                {% endfor %}
+                                {% else %}
+                                <p>Sem preço definido</p>
+                                {% endif %}
+                            </td>
+                            <td>{{ produto.saldo_estoque|default_if_none:"" }}</td>
+                            <td>
+                                {% if produto.prod_foto %}
+                                <img src="{{ produto.prod_foto.url }}" alt="Foto do Produto" width="80" height="80">
+                                {% else %}
+                                Sem foto
+                                {% endif %}
+                            </td>
+                        </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -142,13 +134,13 @@
                         {% if page_obj.has_previous %}
                         <li class="page-item">
                             <a class="page-link"
-                                href="?page=1{% if nome %}&nome={{ nome }}{% endif %}{% if id_prod %}&id_prod={{ id_prod }}{% endif %}">
+                                href="?page=1{% if prod_nome %}&prod_nome={{ prod_nome }}{% endif %}{% if prod_codi %}&prod_codi={{ prod_codi }}{% endif %}">
                                 Primeira
                             </a>
                         </li>
                         <li class="page-item">
                             <a class="page-link"
-                                href="?page={{ page_obj.previous_page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_prod %}&id_prod={{ id_prod }}{% endif %}">
+                                href="?page={{ page_obj.previous_page_number }}{% if prod_nome %}&prod_nome={{ prod_nome }}{% endif %}{% if prod_codi %}&prod_codi={{ prod_codi }}{% endif %}">
                                 Anterior
                             </a>
                         </li>
@@ -159,14 +151,14 @@
                             {% if page_obj.number == page_number %}
                             <li class="page-item active">
                                 <a class="page-link"
-                                    href="?page={{ page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_prod %}&id_prod={{ id_prod }}{% endif %}">
+                                    href="?page={{ page_number }}{% if prod_nome %}&prod_nome={{ prod_nome }}{% endif %}{% if prod_codi %}&prod_codi={{ prod_codi }}{% endif %}">
                                     {{ page_number }}
                                 </a>
                             </li>
                             {% else %}
                             <li class="page-item">
                                 <a class="page-link"
-                                    href="?page={{ page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_prod %}&id_prod={{ id_prod }}{% endif %}">
+                                    href="?page={{ page_number }}{% if prod_nome %}&prod_nome={{ prod_nome }}{% endif %}{% if prod_codi %}&prod_codi={{ prod_codi }}{% endif %}">
                                     {{ page_number }}
                                 </a>
                             </li>
@@ -177,13 +169,13 @@
                             {% if page_obj.has_next %}
                             <li class="page-item">
                                 <a class="page-link"
-                                    href="?page={{ page_obj.next_page_number }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_prod %}&id_prod={{ id_prod }}{% endif %}">
+                                    href="?page={{ page_obj.next_page_number }}{% if prod_nome %}&prod_nome={{ prod_nome }}{% endif %}{% if prod_codi %}&prod_codi={{ prod_codi }}{% endif %}">
                                     Próxima
                                 </a>
                             </li>
                             <li class="page-item">
                                 <a class="page-link"
-                                    href="?page={{ page_obj.paginator.num_pages }}{% if nome %}&nome={{ nome }}{% endif %}{% if id_prod %}&id_prod={{ id_prod }}{% endif %}">
+                                    href="?page={{ page_obj.paginator.num_pages }}{% if prod_nome %}&prod_nome={{ prod_nome }}{% endif %}{% if prod_codi %}&prod_codi={{ prod_codi }}{% endif %}">
                                     Última
                                 </a>
                             </li>
@@ -196,7 +188,7 @@
             <p>Não há produtos para exibir.</p>
             {% endif %}
 
-            <a href="{% url 'exportar_produtos' %}?nome={{ nome }}&id_prod={{ id_prod }}"
+            <a href="{% url 'exportar_produtos' %}?prod_nome={{ prod_nome }}&prod_codi={{ prod_codi }}"
                 class="btn btn-success mb-2">Exportar para CSV</a>
         </main>
     </div>
@@ -214,22 +206,22 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const galleryImages = document.querySelectorAll('.table img');
-      const lightbox = document.querySelector('.lightbox');
-      const lightboxImage = document.querySelector('.lightbox-image');
-      const closeBtn = document.querySelector('.lightbox-close');
-  
-      galleryImages.forEach(image => {
-        image.addEventListener('click', () => {
-          lightboxImage.src = image.src;
-          lightbox.style.display = 'flex';
+        const galleryImages = document.querySelectorAll('.table img');
+        const lightbox = document.querySelector('.lightbox');
+        const lightboxImage = document.querySelector('.lightbox-image');
+        const closeBtn = document.querySelector('.lightbox-close');
+
+        galleryImages.forEach(image => {
+            image.addEventListener('click', () => {
+                lightboxImage.src = image.src;
+                lightbox.style.display = 'flex';
+            });
         });
-      });
-  
-      closeBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        lightbox.style.display = 'none';
-      });
+
+        closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            lightbox.style.display = 'none';
+        });
     });
 </script>
 <!-- JavaScript necessário para o modal -->

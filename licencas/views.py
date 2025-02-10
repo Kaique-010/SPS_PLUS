@@ -1,8 +1,10 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
+from django.db import connections
 from django.contrib.auth import authenticate, login, get_user_model
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LoginView
+from django.views.generic.edit import FormView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import LogoutView
@@ -13,14 +15,36 @@ from .models import Licencas, Filiais, Empresas
 from .forms import LicencasForm, EmpresasForm, FiliaisForm, LoginForm
 from .models import Usuarios
 from .forms import UsuarioForm
-
-class UsuarioLoginView(LoginView):
+class UsuarioLoginView(FormView):
     template_name = "licencas/login.html"
     form_class = LoginForm
-    redirect_authenticated_user = True
+    success_url = reverse_lazy("home")
 
-    def get_success_url(self):
-        return reverse_lazy("home") 
+    def form_valid(self, form):
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password"]
+
+        # Autentica no banco `default`
+        user = authenticate(self.request, username=username, password=password)
+
+        if user:
+            login(self.request, user)
+
+            licenca = user.licenca
+            if licenca:
+                print(f"Licença: {licenca}, Nome do banco: {licenca.lice_nome}, Tipo: {type(licenca.lice_nome)}")
+                print("Licença Nome:", licenca.lice_nome, type(licenca.lice_nome))
+
+
+                self.request.session["id"] = user.id 
+                self.request.session["licenca_nome"] = licenca.lice_nome
+                 # Para garantir que seja string
+
+
+            return super().form_valid(form)
+
+        return self.form_invalid(form)
+
 
 
 @login_required

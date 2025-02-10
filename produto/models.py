@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.html import mark_safe
 
+from licencas.models import Empresas, Filiais
+
 
 class GrupoProduto(models.Model):
     codigo = models.AutoField(
@@ -116,30 +118,23 @@ class Tabelaprecos(models.Model):
         unique_together = (('tabe_empr', 'tabe_fili', 'tabe_prod'),)
 
 
-class SaldoProduto(models.Model):
-    produto_codigo = models.ForeignKey("Produtos", on_delete=models.CASCADE)
-    empresa = models.CharField(max_length=50, db_column='sapr_empr')
-    filial = models.CharField(max_length=50, db_column='sapr_fili')
-    saldo_estoque = models.DecimalField(max_digits=10, decimal_places=2, db_column='sapr_sald')
 
-    class Meta:
-        db_table = 'saldosprodutos'
 
 
 
 class Produtos(models.Model):
     prod_empr = models.CharField(max_length=50, db_column='prod_empr')
-    produto_codigo = models.CharField(max_length=50, db_column='prod_codi', primary_key=True)
-    nome_produto = models.CharField(max_length=255, db_column='prod_nome')
-    unidade_medida = models.CharField(max_length=10, db_column='prod_unme')
-    grupo = models.ForeignKey(GrupoProduto, on_delete=models.DO_NOTHING, db_column='prod_grup', related_name='produtos', blank= True, null= True)
-    subgrupo = models.ForeignKey(SubgrupoProduto, on_delete=models.DO_NOTHING, db_column='prod_sugr', related_name='produtos', blank= True, null= True)
-    familia = models.ForeignKey(FamiliaProduto, on_delete=models.DO_NOTHING, db_column='prod_fami', related_name='produtos', blank= True, null= True)
-    local = models.CharField(max_length=255, db_column='prod_loca', blank= True, null= True)
-    ncm = models.CharField(max_length=10, db_column='prod_ncm')
-    marca = models.ForeignKey(Marca, on_delete=models.DO_NOTHING, db_column='prod_marc', related_name='produtos', blank= True, null= True)
-    codigo_fabricante = models.CharField(max_length=50, db_column='prod_codi_fabr', blank= True, null= True)
-    foto = models.ImageField(upload_to='fotos/', db_column='prod_foto', blank=True, null=True)
+    prod_codi = models.CharField(max_length=50, db_column='prod_codi', primary_key=True)
+    prod_nome = models.CharField(max_length=255, db_column='prod_nome')
+    prod_unme = models.CharField(max_length=10, db_column='prod_unme')
+    prod_grup = models.ForeignKey(GrupoProduto, on_delete=models.DO_NOTHING, db_column='prod_grup', related_name='produtos', blank= True, null= True)
+    prod_sugr = models.ForeignKey(SubgrupoProduto, on_delete=models.DO_NOTHING, db_column='prod_sugr', related_name='produtos', blank= True, null= True)
+    prod_fami = models.ForeignKey(FamiliaProduto, on_delete=models.DO_NOTHING, db_column='prod_fami', related_name='produtos', blank= True, null= True)
+    prod_loca = models.CharField(max_length=255, db_column='prod_loca', blank= True, null= True)
+    prod_ncm = models.CharField(max_length=10, db_column='prod_ncm')
+    prod_marc = models.ForeignKey(Marca, on_delete=models.DO_NOTHING, db_column='prod_marc', related_name='produtos', blank= True, null= True)
+    prod_codi_fabr = models.CharField(max_length=50, db_column='prod_codi_fabr', blank= True, null= True)
+    prod_foto = models.ImageField(upload_to='fotos/', db_column='prod_foto', blank=True, null=True)
 
 
 
@@ -158,3 +153,18 @@ class Produtos(models.Model):
             return "Sem foto"
 
     imagem_tag.short_description = 'Imagem'
+
+
+
+class SaldoProduto(models.Model):
+    sapr_empr = models.ForeignKey(Empresas, on_delete=models.CASCADE,primary_key=True) 
+    sapr_fili = models.ForeignKey(Filiais, on_delete=models.CASCADE)
+    sapr_prod = models.ForeignKey(Produtos, on_delete=models.CASCADE, db_column='sapr_prod') 
+    sapr_sald = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True)
+
+    class Meta:
+      
+        db_table = 'saldosprodutos'
+    
+    def __str__(self):
+        return f'Produto {self.sapr_prod.prod_nome} - Saldo: {self.sapr_sald}'

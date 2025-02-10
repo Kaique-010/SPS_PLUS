@@ -14,7 +14,7 @@ class Base(models.Model):
 class Entrada_Produtos(Base):
     data = models.DateField('Data Entrada',null=True, blank=True)
     entidade = models.ForeignKey(Entidades, on_delete=models.PROTECT, blank=False, null=False, related_name= 'entradas')
-    produto_codigo = models.ForeignKey(Produtos, on_delete=models.PROTECT, blank=False, null=False, related_name='entradas')
+    prod_codi = models.ForeignKey(Produtos, on_delete=models.PROTECT, blank=False, null=False, related_name='entradas')
     quantidade = models.IntegerField()
     documento = models.CharField('Nº Documento', max_length= 20, blank= True, null= True)
     observacoes = models.TextField('Observações', max_length=200, blank= True, null= True)

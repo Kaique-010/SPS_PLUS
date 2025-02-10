@@ -4,7 +4,7 @@ from . import models
 class Entradas(forms.ModelForm):
     class Meta:    
         model = models.Entrada_Produtos
-        fields = ['data', 'entidade', 'produto_codigo', 'quantidade', 'documento', 'observacoes']
+        fields = ['data', 'entidade', 'prod_codi', 'quantidade', 'documento', 'observacoes']
         widgets = {
             'data': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'entidade': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Entidade Responsável'}),

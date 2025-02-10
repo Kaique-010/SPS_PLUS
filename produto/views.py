@@ -2,7 +2,7 @@ from datetime import date, timedelta
 import json
 import csv
 import os
-from datetime import datetime 
+from datetime import datetime
 from django.db.models import Sum
 from django.db import connection, transaction
 from django.db.models import OuterRef, Subquery
@@ -27,83 +27,97 @@ from django.views.generic import DeleteView, ListView, CreateView, UpdateView
 class ProdutosViewSet(viewsets.ModelViewSet):
     queryset = Produtos.objects.all()
     serializer_class = ProdutosSerializers
-    filterset_fields = ['nome', 'id_produto']
-    search_fields = ['nome', 'codigo_produto']
-    
-
-class ProdutoListView(LicenseMixin,ListView):
+    filterset_fields = ['nome_produto', 'prod_codi']
+    search_fields = ['nome_produto', 'prod_codi']
+class ProdutoListView(LicenseMixin, ListView):
     model = Produtos
     template_name = 'produtos_lista.html'
     context_object_name = 'page_obj'
-    paginate_by = 10  
+    paginate_by = 10
 
     def get_queryset(self):
-        """Filtra produtos com base em parâmetros de busca e inclui os preços associados."""
-        nome = self.request.GET.get('nome', '')
-        id_prod = self.request.GET.get('id_prod', '')
+        licenca = self.get_license()
+        db_name = licenca.lice_nome if licenca else "default"
+        
+        nome = self.request.GET.get('nome_produto', '')
+        id_prod = self.request.GET.get('prod_codi', '')
 
-        # Subquery para buscar o saldo de cada produto
-        saldo_subquery = SaldoProduto.objects.filter(
-            produto_codigo=OuterRef('produto_codigo')
-        ).values('saldo_estoque')[:1]
-
-        # Base do queryset, agora com preços associados através de prefetch_related
-        queryset = Produtos.objects.annotate(saldo_estoque=Subquery(saldo_subquery)).prefetch_related('tabelaprecos_set')
-
-        # Aplicando filtros
-        if nome:
-            queryset = queryset.filter(nome_produto__icontains=nome)
+        # Tenta converter o valor de id_prod para número
         if id_prod:
-            queryset = queryset.filter(produto_codigo=id_prod)
+            try:
+                id_prod = int(id_prod)
+            except ValueError:
+                id_prod = None  # Se não for numérico, define como None
 
-        return queryset.order_by('produto_codigo')
-    
+        # Consulta para obter o saldo de cada produto (usando o banco de dados da licença)
+        saldo_produtos = SaldoProduto.objects.using(db_name).all()
+        if id_prod:
+            saldo_produtos = saldo_produtos.filter(sapr_prod__prod_codi=id_prod)
+
+        # Subquery para adicionar o saldo no queryset de Produtos (usando o banco de dados da licença)
+        produtos = Produtos.objects.using(db_name).all()
+        if nome:
+            produtos = produtos.filter(prod_nome__icontains=nome)
+
+        # Usando o saldo de produtos para adicionar à consulta principal
+        produtos_com_saldo = produtos.annotate(
+            saldo=Subquery(saldo_produtos.filter(sapr_prod=OuterRef('prod_codi')).values('sapr_sald')[:1])
+        )
+
+        return produtos_com_saldo.order_by('prod_codi')
+
+
+
+
 class ProdutoCreateView(LicenseMixin, CreateView):
     model = Produtos
     form_class = ProdutosForm
     template_name = 'produtos_form.html'
 
     def form_valid(self, form):
+        licenca = self.get_license()
+        db_name = licenca.lice_nome if licenca else "default"
         formset = TabelaprecosFormSet(self.request.POST)
         if form.is_valid() and formset.is_valid():
             cleaned_data = form.cleaned_data
             
             with transaction.atomic():
-                if not cleaned_data.get('produto_codigo'):
+                if not cleaned_data.get('prod_codi'):
                     max_prod_codi = None
                     with connection.cursor() as cursor:
                         cursor.execute("SELECT MAX(prod_codi) FROM produtos WHERE prod_empr = %s", [cleaned_data.get('prod_empr')])
                         max_prod_codi = cursor.fetchone()[0] or 0
                     
                     produto_codigo = max_prod_codi + 1
-                    while Produtos.objects.filter(produto_codigo=produto_codigo).exists():
+                    while Produtos.objects.filter(prod_codi=produto_codigo).exists():
                         produto_codigo += 1
                     
-                    cleaned_data['produto_codigo'] = str(produto_codigo)
+                    cleaned_data['prod_codi'] = str(produto_codigo)
 
-                novo_produto = form.save()
-                
+                novo_produto = form.save(commit=False)                
+                novo_produto.save(using=db_name)
+
                 tabelaprecos_instances = formset.save(commit=False)
                 for instance in tabelaprecos_instances:
                     instance.tabe_prod = novo_produto
                     instance.tabe_empr = novo_produto.prod_empr
                     instance.save()
 
-                messages.success(self.request, f"Produto criado com sucesso! Código: {novo_produto.produto_codigo}")
+                messages.success(self.request, f"Produto criado com sucesso! Código: {novo_produto.prod_codi}")
                 return redirect('produtos_lista')
         
         return self.form_invalid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['formset'] = TabelaprecosFormSet()
-        return context
 
 
 class ProdutoUpdateView(LicenseMixin, UpdateView):
     model = Produtos
     form_class = ProdutosForm
-    template_name = 'produtos_form.html'
+    template_name = 'produtos_update.html'
+
+    def get_object(self, queryset=None):
+        """Busca o produto pelo código, garantindo que ele seja tratado corretamente"""
+        return get_object_or_404(Produtos, prod_codi=self.kwargs['pk'])
 
     def form_valid(self, form):
         formset = TabelaprecosFormSet(self.request.POST, instance=self.object)
@@ -121,14 +135,13 @@ class ProdutoUpdateView(LicenseMixin, UpdateView):
 
             messages.success(self.request, "Produto atualizado com sucesso!")
             return redirect('produtos_lista')
-        
+
         return self.form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['formset'] = TabelaprecosFormSet(instance=self.object)
         return context
-
 
 class ProdutoDeleteView(LicenseMixin, DeleteView):
     model = Produtos
@@ -137,30 +150,28 @@ class ProdutoDeleteView(LicenseMixin, DeleteView):
 
     def delete(self, request, *args, **kwargs):
         produto = self.get_object()
-        messages.success(self.request, f"Produto excluído com sucesso! Código: {produto.produto_codigo}")
+        messages.success(self.request, f"Produto excluído com sucesso! Código: {produto.prod_codi}")
         return super().delete(request, *args, **kwargs)
 
-
-
-class GrupoListView(LicenseMixin,ListView):
+class GrupoListView(LicenseMixin, ListView):
     model = GrupoProduto
     template_name = 'grupos_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class GrupoCreateView(LicenseMixin,CreateView):
+class GrupoCreateView(LicenseMixin, CreateView):
     model = GrupoProduto
     form_class = GrupoForm
     template_name = 'grupo_create.html'
     success_url = reverse_lazy('grupos_list')
 
-class GrupoUpdateView(LicenseMixin,UpdateView):
+class GrupoUpdateView(LicenseMixin, UpdateView):
     model = GrupoProduto
     form_class = GrupoForm
     template_name = 'grupo_update.html'
     success_url = reverse_lazy('grupos_list')
 
-class GrupoDeleteView(LicenseMixin,DeleteView):
+class GrupoDeleteView(LicenseMixin, DeleteView):
     model = GrupoProduto
     template_name = 'grupo_delete.html'
     success_url = reverse_lazy('grupos_list')
@@ -170,26 +181,25 @@ class GrupoDeleteView(LicenseMixin,DeleteView):
         context['grupo'] = self.object
         return context
 
-
-class SubgrupoListView(LicenseMixin,ListView):
+class SubgrupoListView(LicenseMixin, ListView):
     model = SubgrupoProduto
     template_name = 'subgrupos_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class SubgrupoCreateView(LicenseMixin,CreateView):
+class SubgrupoCreateView(LicenseMixin, CreateView):
     model = SubgrupoProduto
     form_class = SubgrupoForm
     template_name = 'subgrupo_create.html'
     success_url = reverse_lazy('subgrupos_list')
 
-class SubgrupoUpdateView(LicenseMixin,UpdateView):
+class SubgrupoUpdateView(LicenseMixin, UpdateView):
     model = SubgrupoProduto
     form_class = GrupoForm
     template_name = 'subgrupo_update.html'
     success_url = reverse_lazy('subgrupos_list')
 
-class SubgrupoDeleteView(LicenseMixin,DeleteView):
+class SubgrupoDeleteView(LicenseMixin, DeleteView):
     model = SubgrupoProduto
     template_name = 'subgrupo_delete.html'
     success_url = reverse_lazy('subgrupos_list')
@@ -199,27 +209,26 @@ class SubgrupoDeleteView(LicenseMixin,DeleteView):
         context['subgrupo'] = self.object
         return context
 
-
 # Views para Marca
-class MarcaListView(LicenseMixin,ListView):
+class MarcaListView(LicenseMixin, ListView):
     model = Marca
     template_name = 'marcas_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class MarcaCreateView(LicenseMixin,CreateView):
+class MarcaCreateView(LicenseMixin, CreateView):
     model = Marca
     form_class = MarcaForm
     template_name = 'marca_create.html'
     success_url = reverse_lazy('marcas_list')
 
-class MarcaUpdateView(LicenseMixin,UpdateView):
+class MarcaUpdateView(LicenseMixin, UpdateView):
     model = Marca
     form_class = MarcaForm
     template_name = 'marca_update.html'
     success_url = reverse_lazy('marcas_list')
 
-class MarcaDeleteView(LicenseMixin,DeleteView):
+class MarcaDeleteView(LicenseMixin, DeleteView):
     model = Marca
     template_name = 'marca_delete.html'
     success_url = reverse_lazy('marcas_list')
@@ -230,25 +239,25 @@ class MarcaDeleteView(LicenseMixin,DeleteView):
         return context
 
 # Views para FamiliaProduto
-class FamiliaProdutoListView(LicenseMixin,ListView):
+class FamiliaProdutoListView(LicenseMixin, ListView):
     model = FamiliaProduto
     template_name = 'familias_produto_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class FamiliaProdutoCreateView(LicenseMixin,CreateView):
+class FamiliaProdutoCreateView(LicenseMixin, CreateView):
     model = FamiliaProduto
     form_class = FamiliaForm
     template_name = 'familia_produto_create.html'
     success_url = reverse_lazy('familias_produto_list')
 
-class FamiliaProdutoUpdateView(LicenseMixin,UpdateView):
+class FamiliaProdutoUpdateView(LicenseMixin, UpdateView):
     model = FamiliaProduto
     form_class = FamiliaForm
     template_name = 'familia_produto_update.html'
     success_url = reverse_lazy('familias_produto_list')
 
-class FamiliaProdutoDeleteView(LicenseMixin,DeleteView):
+class FamiliaProdutoDeleteView(LicenseMixin, DeleteView):
     model = FamiliaProduto
     template_name = 'familia_produto_delete.html'
     success_url = reverse_lazy('familias_produto_list')
@@ -257,66 +266,33 @@ class FamiliaProdutoDeleteView(LicenseMixin,DeleteView):
         context = super().get_context_data(**kwargs)
         context['familia_produto'] = self.object
         return context
-    
-    
+
 def saldo(request):
     # Filtros de produto e período
-    produto_selecionado = request.GET.get('produto', '')  
+    produto_selecionado = request.GET.get('produto', '')
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')
 
     entradas = Entrada_Produtos.objects.all()
     saidas = Saida_Produtos.objects.all()
 
-    # Filtro por produto
     if produto_selecionado:
-        entradas = entradas.filter(produto_codigo=produto_selecionado)  # Use produto_codigo
-        saidas = saidas.filter(produto_codigo=produto_selecionado)      # Use produto_codigo
+        entradas = entradas.filter(prod_codi=produto_selecionado)
+        saidas = saidas.filter(prod_codi=produto_selecionado)
 
-    # Filtro por data
     if data_inicio:
-        data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d')
-        entradas = entradas.filter(criado__date__gte=data_inicio)
-        saidas = saidas.filter(criado__date__gte=data_inicio)
+        entradas = entradas.filter(data_entrada__gte=data_inicio)
+        saidas = saidas.filter(data_saida__gte=data_inicio)
 
     if data_fim:
-        data_fim = datetime.strptime(data_fim, '%Y-%m-%d')
-        entradas = entradas.filter(criado__date__lte=data_fim)
-        saidas = saidas.filter(criado__date__lte=data_fim)
+        entradas = entradas.filter(data_entrada__lte=data_fim)
+        saidas = saidas.filter(data_saida__lte=data_fim)
 
-    # Lista de produtos envolvidos
-    produtos = list(set(
-        [entrada.produto_codigo.nome_produto for entrada in entradas] +
-        [saida.produto_codigo.nome_produto for saida in saidas]
-    ))
+    saldo_estoque = entradas.aggregate(total_entrada=Sum('quantidade'))['total_entrada'] or 0
+    total_saida = saidas.aggregate(total_saida=Sum('quantidade'))['total_saida'] or 0
+    saldo_produto = saldo_estoque - total_saida
 
-    # Dados de entradas e saídas por produto
-    entradas_data = [
-        entradas.filter(produto_codigo__nome_produto=produto).aggregate(total=Sum('quantidade'))['total'] or 0
-        for produto in produtos
-    ]
-    saidas_data = [
-        saidas.filter(produto_codigo__nome_produto=produto).aggregate(total=Sum('quantidade'))['total'] or 0
-        for produto in produtos
-    ]
-
-    # Saldo de cada produto
-    saldos = {
-        saldo.produto_codigo: float(saldo.saldo_estoque)  # Atualizando para usar produto_codigo
-        for saldo in SaldoProduto.objects.all()
-    }
-
-    return render(request, 'saldos.html', {
-        'produtos': SaldoProduto.objects.values_list('produto_codigo', flat=True).distinct(),
-        'produtos_filtrados': produtos,
-        'entradas_data': entradas_data,
-        'saidas_data': saidas_data,
-        'saldos': saldos,
-        'produto_selecionado': produto_selecionado,
-        'data_inicio': data_inicio.strftime('%Y-%m-%d') if data_inicio else '',
-        'data_fim': data_fim.strftime('%Y-%m-%d') if data_fim else '',
-    })
-
+    return render(request, 'saldo_produto.html', {'saldo_produto': saldo_produto})
 
 
 def dictfetchall(cursor):

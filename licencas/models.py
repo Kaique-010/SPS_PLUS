@@ -15,7 +15,7 @@ class Licencas(models.Model):
         verbose_name = 'Licença'
 
     def __str__(self):
-        return f"Licença {self.lice_id} - {self.lice_docu}"
+        return f"Licença {self.lice_id} - {self.lice_docu} - {self.lice_nome}"
 
 
 class Empresas(models.Model):

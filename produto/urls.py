@@ -18,9 +18,9 @@ router.register(r'produtos', ProdutosViewSet)
 urlpatterns = [
     path('api/', include(router.urls)),
     path('produtos_lista', ProdutoListView.as_view(), name='produtos_lista.html'),
-    path('produto/create/', ProdutoCreateView.as_view, name='produto_create'),
-    path('produto/update/<int:pk>/', ProdutoUpdateView.as_view, name='produto_update'),
-    path('produto/delete/<int:pk>/', ProdutoDeleteView.as_view, name='produto_delete'),
+    path('produto/create/', ProdutoCreateView.as_view(), name='produto_create'),
+    path('produto/update/<pk>/', ProdutoUpdateView.as_view(), name='produtos_update'),
+    path('produto/delete/<pk>/', ProdutoDeleteView.as_view(), name='produto_delete'),
     path('exportar-produtos/',exportar_produtos, name='exportar_produtos'),
     
     path('grupos_list', GrupoListView.as_view(), name='grupos_list'),

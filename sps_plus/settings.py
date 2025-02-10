@@ -184,9 +184,10 @@ CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
 SESSION_COOKIE_SECURE = False  # Se estiver testando localmente
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"  # Teste com "None" se necessário
+SESSION_DB_ALIAS = "default"  
 
-LOGOUT_REDIRECT_URL = 'login'  # Ou a página que você preferir
-LOGIN_URL = '/licencas/login/'
+LOGOUT_REDIRECT_URL = '/'  # Ou a página que você preferir
+LOGIN_URL = 'login'
 
 
 CSRF_TRUSTED_ORIGINS = [

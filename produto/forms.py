@@ -6,67 +6,67 @@ class ProdutosForm(forms.ModelForm):
     class Meta:
         model = Produtos
         fields = [
-            'prod_empr','produto_codigo', 'nome_produto', 'unidade_medida', 'grupo', 'subgrupo',
-            'familia', 'local', 'ncm', 'marca', 'codigo_fabricante', 'foto'
+            'prod_empr', 'prod_codi', 'prod_nome', 'prod_unme', 'prod_grup', 'prod_sugr',
+            'prod_fami', 'prod_loca', 'prod_ncm', 'prod_marc', 'prod_codi_fabr', 'prod_foto'
         ]
         widgets = {
-            'produto_codigo': forms.TextInput(attrs={
+            'prod_codi': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Código'
             }),
-            'prod_empr':forms.TextInput(attrs={
+            'prod_empr': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Empresa'
             }),
-            'nome_produto': forms.TextInput(attrs={
+            'prod_nome': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Nome do Produto'
             }),
-            'unidade_medida': forms.TextInput(attrs={
+            'prod_unme': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Unidade de Medida'
             }),
-            'grupo': forms.Select(attrs={
+            'prod_grup': forms.Select(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Grupo'
             }),
-            'subgrupo': forms.Select(attrs={
+            'prod_sugr': forms.Select(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Subgrupo'
             }),
-            'familia': forms.Select(attrs={
+            'prod_fami': forms.Select(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Família'
             }),
-            'local': forms.TextInput(attrs={
+            'prod_loca': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Local'
             }),
-            'ncm': forms.TextInput(attrs={
+            'prod_ncm': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'NCM'
             }),
-            'marca': forms.Select(attrs={
+            'prod_marc': forms.Select(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Marca'
             }),
-            'codigo_fabricante': forms.TextInput(attrs={
+            'prod_codi_fabr': forms.TextInput(attrs={
                 'class': 'form-control', 
                 'placeholder': 'Código do Fabricante'
             }),
-            'foto': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
-            }
+            'prod_foto': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+        }
     
     def __init__(self, *args, **kwargs):
         super(ProdutosForm, self).__init__(*args, **kwargs)
         # Configurando campos opcionais
-        self.fields['grupo'].required = False
-        self.fields['subgrupo'].required = False  
-        self.fields['familia'].required = False
-        self.fields['local'].required = False
-        self.fields['marca'].required = False  
-        self.fields['foto'].required = False
-        self.fields['produto_codigo'].required = False
+        self.fields['prod_grup'].required = False
+        self.fields['prod_sugr'].required = False  
+        self.fields['prod_fami'].required = False
+        self.fields['prod_loca'].required = False
+        self.fields['prod_marc'].required = False  
+        self.fields['prod_foto'].required = False
+        self.fields['prod_codi'].required = False
 
 class GrupoForm(forms.ModelForm):
    class Meta:

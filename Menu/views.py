@@ -4,6 +4,8 @@ from django.contrib.auth import get_user
 from django.contrib.auth.decorators import login_required
 from django.db import connection
 
+from licencas.models import Licencas
+
 
 def dictfetchall(cursor):
     """Converte o resultado do cursor em uma lista de dicionários."""
@@ -15,13 +17,12 @@ def dictfetchall(cursor):
 
 @login_required
 def home(request):
-    print(f"Usuário autenticado na home? {request.user.is_authenticated}")
+    licenca= Licencas.objects.all()
     user = get_user(request)  # Obtém o usuário autenticado
     print(f"Usuário autenticado na home? {user.is_authenticated}")
     print(f"Usuário: {user}")  # Verifica se o usuário está correto
     print(f"Session Key: {request.session.session_key}")
-    print(f"Usuário autenticado: {request.user.is_authenticated}")
-    print(f"Usuário: {request.user}")
+    print(f"Licença: {Licencas.lice_nome}")
     vendedor = request.GET.get('vendedor', '')
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')
