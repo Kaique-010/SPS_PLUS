@@ -24,27 +24,26 @@ class UsuarioLoginView(FormView):
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
 
-        # Autentica no banco `default`
         user = authenticate(self.request, username=username, password=password)
 
         if user:
             login(self.request, user)
 
-            licenca = user.licenca
+            # Certifique-se de carregar a licença do usuário corretamente
+            licenca = user.licenca if hasattr(user, "licenca") else None
             if licenca:
-                print(f"Licença: {licenca}, Nome do banco: {licenca.lice_nome}, Tipo: {type(licenca.lice_nome)}")
-                print("Licença Nome:", licenca.lice_nome, type(licenca.lice_nome))
+                licenca = user.licenca  # Se for uma ForeignKey, precisa ser explicitamente recuperada
+                banco = licenca.lice_nome  # Nome do banco
 
+                print(f"Licença: {licenca}, Nome do banco: {banco}, Tipo: {type(banco)}")
+                print(f"🎯 Banco salvo na sessão: {banco}")
 
                 self.request.session["id"] = user.id 
-                self.request.session["licenca_nome"] = licenca.lice_nome
-                 # Para garantir que seja string
-
-
+                self.request.session["licenca_nome"] = banco  # Salvar na sessão
+                
             return super().form_valid(form)
 
         return self.form_invalid(form)
-
 
 
 @login_required

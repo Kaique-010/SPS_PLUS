@@ -4,32 +4,44 @@ from django.db import connections
 from django.db import connection, OperationalError
 from .middleware import get_current_user
 from django.core.management import call_command
+from threading import local
 import psycopg2
+
+
+_thread_locals = local()
 
 class LicenseDatabaseRouter:
     def db_for_read(self, model, **hints):
-        # Obtém o banco da licença a partir da sessão do usuário
+    
         request = self.get_request()
         if request:
-           
-            return request.session.get("banco_conectado", "default")
+            banco = request.session.get("banco_conectado", "default")
+            print(f"🔍 Banco de leitura: {banco}")  # Debug
+            return banco
         return "default"
 
     def db_for_write(self, model, **hints):
         # Obtém o banco da licença a partir da sessão do usuário
         request = self.get_request()
         if request:
-            # O banco de dados da licença é armazenado na sessão do usuário
+            
             return request.session.get("banco_conectado", "default")
         return "default"
 
     def get_request(self):
-        """Obtém a request atual usando thread local."""
-        import threading
-        local_request = getattr(threading.local(), "request", None)
-        return local_request
+        return getattr(_thread_locals, "request", None)
 
 
+class ThreadLocalMiddleware:
+    """Middleware para armazenar a request no thread local"""
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        _thread_locals.request = request
+        response = self.get_response(request)
+        del _thread_locals.request  # Remove a referência após a resposta
+        return response
 
 
 class LicenseDatabaseManager:

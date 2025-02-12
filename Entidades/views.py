@@ -1,13 +1,12 @@
 from io import BytesIO
 from django.forms import ValidationError
+from django.db.utils import IntegrityError
 from django.db import connections
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db import transaction
-import openpyxl
 from django.contrib import messages
-from django.db import connection
+from django.http import Http404
 from django.urls import reverse_lazy
 import requests
 from licencas.mixins import LicenseMixin
@@ -19,7 +18,6 @@ from rest_framework import viewsets
 from rest_framework import filters
 from django.core.paginator import Paginator
 from Entidades import models
-
 
 class EntidadesViewSet(viewsets.ModelViewSet):
     queryset = Entidades.objects.filter(enti_empr=1)
@@ -69,16 +67,44 @@ class EntidadeCreateView(LicenseMixin, CreateView):
     template_name = 'entidade_form.html'
     success_url = reverse_lazy('entidades')
 
-    def form_valid(self, form):
+    def dispatch(self, request, *args, **kwargs):
+        """ Garante que o banco da licença está definido na sessão antes de processar a requisição """
         licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else "default"
-        
-        # Salvar no banco correto
-        entidade = form.save(commit=False)
-        entidade.save(using=db_name)
+        db_name = licenca.lice_nome if licenca else None
 
-        print(f"Banco de dados utilizado para salvar: {db_name}")
-        return super().form_valid(form)
+        if not db_name:
+            print("🚨 Erro: Nenhuma licença encontrada ou nome do banco indefinido!")
+            return redirect('erro_view')  # Redireciona para uma página de erro apropriada
+
+        # Define o banco na sessão
+        request.session['banco'] = db_name
+        request.session.modified = True
+
+        print(f"✅ Banco de dados definido na sessão: {request.session.get('banco')}")
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['db_name'] = self.request.session.get('banco')  # Passa o nome do banco da sessão
+        return kwargs
+    
+    def form_valid(self, form):
+        """ Valida o formulário e salva a entidade no banco correto """
+        db_name = self.request.session.get('banco')
+
+        print(f"📌 Banco de dados na sessão antes de salvar: {db_name}")
+
+        if not db_name:
+            form.add_error(None, "Erro: banco de dados não definido.")
+            return self.form_invalid(form)
+
+        # Passa o banco de dados para o formulário
+        form.instance._state.db = db_name
+
+        print(f"📌 Tentando salvar no banco: {db_name}")
+
+        return super().form_valid(form)  # Aqui o Django já chama `save()`
 
 
 
@@ -90,14 +116,50 @@ class EntidadeUpdateView(LicenseMixin, UpdateView):
     success_url = reverse_lazy('entidades')
 
     def get_object(self, queryset=None):
-        """Garante que a entidade seja buscada no banco correto"""
         licenca = self.get_license()
         db_name = licenca.lice_nome if licenca else "default"
-        return models.Entidades.objects.using(db_name).get(pk=self.kwargs["pk"])
+        enti_clie = self.kwargs.get("enti_clie")
 
+        print(f"[DEBUG] Buscando entidade com enti_clie={enti_clie} no banco {db_name}")
+
+        entidade = models.Entidades.objects.using(db_name).filter(enti_clie=enti_clie).first()
+        
+        if not entidade:
+            raise Http404("Entidade não encontrada.")
+        
+        return entidade
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['db_name'] = self.request.session.get('banco')  # Passa o nome do banco da sessão
+        return kwargs
+    
     def form_valid(self, form):
-        print(f"Banco de dados utilizado: {connections[connection.alias].settings_dict['NAME']}")
+        """ Valida o formulário e salva a entidade no banco correto """
+        db_name = self.request.session.get('banco')
+
+        print(f"📌 Banco de dados na sessão antes de salvar: {db_name}")
+
+        if not db_name:
+            form.add_error(None, "Erro: banco de dados não definido.")
+            return self.form_invalid(form)
+
+        # Obtém o objeto correto para edição
+        entidade = self.get_object()
+
+        # Atualiza os campos da entidade com os dados do formulário
+        for field, value in form.cleaned_data.items():
+            setattr(entidade, field, value)
+
+        try:
+            entidade.save(using=db_name)  # Salva a entidade no banco correto
+        except IntegrityError as e:
+            print(f"[DEBUG] Erro ao atualizar entidade: {e}")
+            messages.error(self.request, "Erro ao atualizar entidade. Verifique os dados.")
+            return self.form_invalid(form)  
+
         return super().form_valid(form)
+
 
 
 

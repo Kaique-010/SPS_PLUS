@@ -76,17 +76,17 @@
                         <tr>
                             <td>
                                 {% if entidade.enti_clie %}
-                                <a href="{% url 'entidade_form' pk=entidade.enti_clie %}" class="btn btn-sm"
+                                <a href="{% url 'entidade_update' enti_clie=entidade.enti_clie %}" class="btn btn-sm"
                                     style="background-color: #7ab1ec; color: white;">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{% url 'entidade_delete' pk=entidade.enti_clie %}" class="btn btn-sm"
+                                <a href="{% url 'entidade_delete' enti_clie=entidade.enti_clie %}" class="btn btn-sm"
                                     style="background-color: #e7a0a7; color: white;">
                                     <i class="bi bi-trash"></i>
                                 </a>
-                                {% else %}
+                            {% else %}
                                 <span class="text-muted">Sem ações</span>
-                                {% endif %}
+                            {% endif %}
                             </td>
                             <td>{{ entidade.enti_clie|default_if_none:"" }}</td>
                             <td>{{ entidade.enti_nome|default_if_none:"" }}</td>

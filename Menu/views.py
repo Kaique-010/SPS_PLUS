@@ -17,12 +17,11 @@ def dictfetchall(cursor):
 
 @login_required
 def home(request):
-    licenca= Licencas.objects.all()
-    user = get_user(request)  # Obtém o usuário autenticado
-    print(f"Usuário autenticado na home? {user.is_authenticated}")
-    print(f"Usuário: {user}")  # Verifica se o usuário está correto
-    print(f"Session Key: {request.session.session_key}")
-    print(f"Licença: {Licencas.lice_nome}")
+    licenca_nome = request.session.get("licenca_nome", "Desconhecido")
+    usuario = get_user(request)  # Obtém o usuário autenticado
+    print(f"Usuário autenticado na home? {usuario.is_authenticated}")
+    print(f"Usuário: {usuario}")
+    print(f"Licença na sessão: {licenca_nome}")
     vendedor = request.GET.get('vendedor', '')
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')
@@ -95,7 +94,7 @@ def home(request):
         'data_inicio': data_inicio,
         'data_fim': data_fim,
         'vendedores': vendedores_list,
-        'user': user
+        'usuario': usuario
     }
 
     return render(request, 'home.html', context)
