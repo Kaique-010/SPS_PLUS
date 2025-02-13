@@ -215,3 +215,26 @@ LOGGING = {
         },
     },
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'INFO',  # Pode ser 'DEBUG', 'INFO', 'WARNING', etc.
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',  # Pode ser 'DEBUG' para capturar mais detalhes
+            'propagate': True,
+        },
+        'IA': {  # Seu módulo específico de IA, se necessário
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}

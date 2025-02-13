@@ -2252,3 +2252,1224 @@
 (0.000) BEGIN; args=None; alias=default
 (0.000) UPDATE "django_session" SET "session_data" = '.eJxljssOgjAURP-la0JsKZa6dO83NPdVQbFNeKyM_25JWGDczpk5mbcKsC59WGeZwsDqorSqjhkCPSVtgB-Q7rmmnJZpwHqr1Dud61tmGa9790fQw9yXdUfWgyVEz9YxutZC57xuYsPsBKSzOpJD0-pT7LgVZk2GvUU0ZxO9KdLtnq7UOJAkgpDyS4p4BJIJCkZIlP-CUP4KLcAH9PkCFztRPA:1ti0w8:qjYQrGMGK-tIGrDr7OBzhft9Mu__w9NQDE6qkZLm1ag', "expire_date" = '2025-02-12T01:49:08.382988+00:00'::timestamptz WHERE "django_session"."session_key" = 'zxxpcgleuar5xh5l69dx3ds81cwa7mqd'; args=('.eJxljssOgjAURP-la0JsKZa6dO83NPdVQbFNeKyM_25JWGDczpk5mbcKsC59WGeZwsDqorSqjhkCPSVtgB-Q7rmmnJZpwHqr1Dud61tmGa9790fQw9yXdUfWgyVEz9YxutZC57xuYsPsBKSzOpJD0-pT7LgVZk2GvUU0ZxO9KdLtnq7UOJAkgpDyS4p4BJIJCkZIlP-CUP4KLcAH9PkCFztRPA:1ti0w8:qjYQrGMGK-tIGrDr7OBzhft9Mu__w9NQDE6qkZLm1ag', datetime.datetime(2025, 2, 12, 1, 49, 8, 382988, tzinfo=datetime.timezone.utc), 'zxxpcgleuar5xh5l69dx3ds81cwa7mqd'); alias=default
 (0.000) COMMIT; args=None; alias=default
+(0.015) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente_id,
+            e.nome AS cliente_nome,
+            p.pedi_vend AS vendedor_id,
+            v.nome AS vendedor_nome,
+            i.iped_prod AS produto_id,
+            i.iped_quan AS quantidade,
+            i.iped_tota AS valor_item
+        FROM pedidosvenda p
+        JOIN itenspedidovenda i ON p.pedi_nume = i.iped_pedi_id
+        JOIN entidades e ON p.pedi_forn_id = e.id
+        LEFT JOIN entidades v ON p.pedi_vend_id = v.id
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente_id,
+            e.nome AS cliente_nome,
+            p.pedi_vend AS vendedor_id,
+            v.nome AS vendedor_nome,
+            i.iped_prod AS produto_id,
+            i.iped_quan AS quantidade,
+            i.iped_tota AS valor_item
+        FROM pedidosvenda p
+        JOIN itenspedidovenda i ON p.pedi_nume = i.iped_pedi_id
+        JOIN entidades e ON p.pedi_forn_id = e.id
+        LEFT JOIN entidades v ON p.pedi_vend_id = v.id
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente,
+            e.nome AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            v.nome AS vendedor_nome,
+            i.iped_prod AS produto_id,
+            i.iped_quan AS quantidade,
+            i.iped_tota AS valor_item
+        FROM pedidosvenda p
+        JOIN itenspedidovenda i ON p.pedi_nume = i.iped_pedi
+        JOIN entidades e ON p.pedi_forn_id = e.id
+        LEFT JOIN entidades v ON p.pedi_vend = v.id
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente,
+            e.nome AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            v.nome AS vendedor_nome,
+            i.iped_prod AS produto_id,
+            i.iped_quan AS quantidade,
+            i.iped_tota AS valor_item
+        FROM pedidosvenda p
+        JOIN itenspedidovenda i ON p.pedi_nume = i.iped_pedi
+        JOIN entidades e ON p.pedi_forn_id = e.id
+        LEFT JOIN entidades v ON p.pedi_vend = v.id
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente,
+            e.nome AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.iped_prod AS produto_id,
+            i.iped_quan AS quantidade,
+            i.iped_tota AS valor_item
+        FROM pedidosvenda p
+        JOIN itenspedidovenda i ON p.pedi_nume = i.iped_pedi
+        JOIN entidades e ON p.pedi_forn_id = e.id
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.015) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente,
+            e.nome AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.iped_prod AS produto_id,
+            i.iped_quan AS quantidade,
+            i.iped_tota AS valor_item
+        FROM pedidosvenda p
+        JOIN itenspedidovenda i ON p.pedi_nume = i.iped_pedi
+        JOIN entidades e ON p.pedi_forn_id = e.id
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.015) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn_id = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.016) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn_id = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn_id = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_forn AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn_id = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13' AND p.pedi_canc = FALSE
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.031) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2025-01-13'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.016) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.032) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" LIMIT 21; args=(); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.016) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.047) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.015) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT 1 AS "a" FROM "django_session" WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk' LIMIT 1; args=(1, 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SAVEPOINT "s16408_x1"; args=None; alias=default
+(0.016) INSERT INTO "django_session" ("session_key", "session_data", "expire_date") VALUES ('da2wkdy1gq9a66sz0gtpdkm548x5a1nk', 'e30:1tiMli:Fdzr8eMkWwjdowndvu7rqRkbRjOoODL-zuk3uewZC08', '2025-02-13T01:07:50.165074+00:00'::timestamptz); args=('da2wkdy1gq9a66sz0gtpdkm548x5a1nk', 'e30:1tiMli:Fdzr8eMkWwjdowndvu7rqRkbRjOoODL-zuk3uewZC08', datetime.datetime(2025, 2, 13, 1, 7, 50, 165074, tzinfo=datetime.timezone.utc)); alias=default
+(0.000) RELEASE SAVEPOINT "s16408_x1"; args=None; alias=default
+(0.000) UPDATE "usuarios" SET "last_login" = '2025-02-13T00:07:50.181219+00:00'::timestamptz WHERE "usuarios"."id" = 1; args=(datetime.datetime(2025, 2, 13, 0, 7, 50, 181219, tzinfo=datetime.timezone.utc), 1); alias=default
+(0.016) SELECT "licencas"."lice_id", "licencas"."lice_docu", "licencas"."lice_nome", "licencas"."lice_emai", "licencas"."lice_bloq", "licencas"."lice_data_cria" FROM "licencas" WHERE "licencas"."lice_id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiMli:4COl-JGpZg8RKUjySQqhH_1XHrqJker_ex2d9_a01UY', "expire_date" = '2025-02-13T01:07:50.244782+00:00'::timestamptz WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiMli:4COl-JGpZg8RKUjySQqhH_1XHrqJker_ex2d9_a01UY', datetime.datetime(2025, 2, 13, 1, 7, 50, 244782, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:07:50.260498+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 7, 50, 260498, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.031) 
+            SELECT DISTINCT e1.enti_clie, e1.enti_nome
+            FROM pedidosvenda 
+            LEFT JOIN entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+            WHERE pedi_canc = false  -- Certifique-se de filtrar pedidos cancelados
+
+            ORDER BY e1.enti_nome ASC;
+        ; args=None; alias=default
+(0.000) 
+        SELECT 
+            MAX(pedi_vend) AS "COD VENDEDOR",
+            MAX(e1.enti_nome) AS "Nome Vendedor",
+            COUNT(DISTINCT pedi_nume) AS "Total Pedidos",  -- Ajuste aqui
+            SUM(pedi_tota) AS "Total Valor dos Pedidos"
+        FROM 
+            pedidosvenda
+        LEFT JOIN 
+            entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+        WHERE 
+            pedi_canc = false  -- Filtrar pedidos cancelados
+
+    
+        GROUP BY 
+            pedi_vend, e1.enti_nome
+        ORDER BY 
+            e1.enti_nome ASC;
+    ; args=[]; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiMli:4COl-JGpZg8RKUjySQqhH_1XHrqJker_ex2d9_a01UY', "expire_date" = '2025-02-13T01:07:50.356734+00:00'::timestamptz WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiMli:4COl-JGpZg8RKUjySQqhH_1XHrqJker_ex2d9_a01UY', datetime.datetime(2025, 2, 13, 1, 7, 50, 356734, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.016) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:07:52.849261+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 7, 52, 849261, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiMll:yzrKxrr6Vc6xHBcZfiph01leUYPo9B_sMDobC2PCQMM', "expire_date" = '2025-02-13T01:07:53.008614+00:00'::timestamptz WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiMll:yzrKxrr6Vc6xHBcZfiph01leUYPo9B_sMDobC2PCQMM', datetime.datetime(2025, 2, 13, 1, 7, 53, 8614, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:07:54.042539+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 7, 54, 42539, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiMlm:gQP6coEWJ8vBtQeFhAguVl67UrFflQiyuFoEOiYVnes', "expire_date" = '2025-02-13T01:07:54.084193+00:00'::timestamptz WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiMlm:gQP6coEWJ8vBtQeFhAguVl67UrFflQiyuFoEOiYVnes', datetime.datetime(2025, 2, 13, 1, 7, 54, 84193, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.016) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:08:19.571181+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 8, 19, 571181, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.016) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:08:43.049720+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 8, 43, 49720, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:08:47.673928+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 8, 47, 673928, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.015) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.015) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:25:43.638971+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 25, 43, 638971, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.000) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.016) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:26:47.093999+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 26, 47, 93999, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.016) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:27:20.864017+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 27, 20, 864017, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.016) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.000) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:29:11.595498+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 29, 11, 595498, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.015) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:30:34.734879+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 30, 34, 734879, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiN7i:jQ3MsNiMWuf3pO1VMav9bQXlHVvaNd3Sue4rNpHCEmU', "expire_date" = '2025-02-13T01:30:34.862276+00:00'::timestamptz WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiN7i:jQ3MsNiMWuf3pO1VMav9bQXlHVvaNd3Sue4rNpHCEmU', datetime.datetime(2025, 2, 13, 1, 30, 34, 862276, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:30:37.620098+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 30, 37, 620098, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.015) ROLLBACK; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:30:43.859682+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 30, 43, 859682, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) UPDATE "usuarios" SET "last_login" = '2025-02-13T00:30:44.912035+00:00'::timestamptz WHERE "usuarios"."id" = 1; args=(datetime.datetime(2025, 2, 13, 0, 30, 44, 912035, tzinfo=datetime.timezone.utc), 1); alias=default
+(0.016) SELECT "licencas"."lice_id", "licencas"."lice_docu", "licencas"."lice_nome", "licencas"."lice_emai", "licencas"."lice_bloq", "licencas"."lice_data_cria" FROM "licencas" WHERE "licencas"."lice_id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiN7s:Yr_cqvgx9X0-s5nJbvRlOMiQ9MU2HpUzIyyygUMl2xY', "expire_date" = '2025-02-13T01:30:44.927711+00:00'::timestamptz WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiN7s:Yr_cqvgx9X0-s5nJbvRlOMiQ9MU2HpUzIyyygUMl2xY', datetime.datetime(2025, 2, 13, 1, 30, 44, 927711, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:30:44.935777+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 30, 44, 935777, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.016) 
+            SELECT DISTINCT e1.enti_clie, e1.enti_nome
+            FROM pedidosvenda 
+            LEFT JOIN entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+            WHERE pedi_canc = false  -- Certifique-se de filtrar pedidos cancelados
+
+            ORDER BY e1.enti_nome ASC;
+        ; args=None; alias=default
+(0.000) 
+        SELECT 
+            MAX(pedi_vend) AS "COD VENDEDOR",
+            MAX(e1.enti_nome) AS "Nome Vendedor",
+            COUNT(DISTINCT pedi_nume) AS "Total Pedidos",  -- Ajuste aqui
+            SUM(pedi_tota) AS "Total Valor dos Pedidos"
+        FROM 
+            pedidosvenda
+        LEFT JOIN 
+            entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+        WHERE 
+            pedi_canc = false  -- Filtrar pedidos cancelados
+
+    
+        GROUP BY 
+            pedi_vend, e1.enti_nome
+        ORDER BY 
+            e1.enti_nome ASC;
+    ; args=[]; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiN7s:Yr_cqvgx9X0-s5nJbvRlOMiQ9MU2HpUzIyyygUMl2xY', "expire_date" = '2025-02-13T01:30:44.949962+00:00'::timestamptz WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiN7s:Yr_cqvgx9X0-s5nJbvRlOMiQ9MU2HpUzIyyygUMl2xY', datetime.datetime(2025, 2, 13, 1, 30, 44, 949962, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:30:50.409249+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 30, 50, 409249, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:30:57.144694+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 30, 57, 144694, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:30:57.942835+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 30, 57, 942835, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) ROLLBACK; args=None; alias=default
+(0.000) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.000) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:33:07.185021+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 33, 7, 185021, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) 
+            SELECT DISTINCT e1.enti_clie, e1.enti_nome
+            FROM pedidosvenda 
+            LEFT JOIN entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+            WHERE pedi_canc = false  -- Certifique-se de filtrar pedidos cancelados
+
+            ORDER BY e1.enti_nome ASC;
+        ; args=None; alias=default
+(0.000) 
+        SELECT 
+            MAX(pedi_vend) AS "COD VENDEDOR",
+            MAX(e1.enti_nome) AS "Nome Vendedor",
+            COUNT(DISTINCT pedi_nume) AS "Total Pedidos",  -- Ajuste aqui
+            SUM(pedi_tota) AS "Total Valor dos Pedidos"
+        FROM 
+            pedidosvenda
+        LEFT JOIN 
+            entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+        WHERE 
+            pedi_canc = false  -- Filtrar pedidos cancelados
+
+    
+        GROUP BY 
+            pedi_vend, e1.enti_nome
+        ORDER BY 
+            e1.enti_nome ASC;
+    ; args=[]; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNAB:OEMalZ5vPb3_-pv9dOMsuWu1Cq_TXy22oc-NOyvtCN8', "expire_date" = '2025-02-13T01:33:07.344177+00:00'::timestamptz WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNAB:OEMalZ5vPb3_-pv9dOMsuWu1Cq_TXy22oc-NOyvtCN8', datetime.datetime(2025, 2, 13, 1, 33, 7, 344177, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.015) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:33:09.725680+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 33, 9, 725680, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.016) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:33:22.389784+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 33, 22, 389784, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.015) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:33:31.380317+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 33, 31, 380317, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:33:38.860208+00:00'::timestamptz AND "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 33, 38, 860208, tzinfo=datetime.timezone.utc), 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE "django_session"."session_key" = 'da2wkdy1gq9a66sz0gtpdkm548x5a1nk' LIMIT 21; args=('da2wkdy1gq9a66sz0gtpdkm548x5a1nk',); alias=default
+(0.000) DELETE FROM "django_session" WHERE "django_session"."session_key" IN ('da2wkdy1gq9a66sz0gtpdkm548x5a1nk'); args=('da2wkdy1gq9a66sz0gtpdkm548x5a1nk',); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT 1 AS "a" FROM "django_session" WHERE "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o' LIMIT 1; args=(1, 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SAVEPOINT "s12668_x1"; args=None; alias=default
+(0.000) INSERT INTO "django_session" ("session_key", "session_data", "expire_date") VALUES ('kya7lih8qvsc8s2zx8ka80y4zoebhm8o', 'e30:1tiNAx:XhWDAY4vCLeMTsn1e5TrZS9UddPLb26CqQIhpNsemFw', '2025-02-13T01:33:55.624315+00:00'::timestamptz); args=('kya7lih8qvsc8s2zx8ka80y4zoebhm8o', 'e30:1tiNAx:XhWDAY4vCLeMTsn1e5TrZS9UddPLb26CqQIhpNsemFw', datetime.datetime(2025, 2, 13, 1, 33, 55, 624315, tzinfo=datetime.timezone.utc)); alias=default
+(0.000) RELEASE SAVEPOINT "s12668_x1"; args=None; alias=default
+(0.000) UPDATE "usuarios" SET "last_login" = '2025-02-13T00:33:55.640231+00:00'::timestamptz WHERE "usuarios"."id" = 1; args=(datetime.datetime(2025, 2, 13, 0, 33, 55, 640231, tzinfo=datetime.timezone.utc), 1); alias=default
+(0.000) SELECT "licencas"."lice_id", "licencas"."lice_docu", "licencas"."lice_nome", "licencas"."lice_emai", "licencas"."lice_bloq", "licencas"."lice_data_cria" FROM "licencas" WHERE "licencas"."lice_id" = 1 LIMIT 21; args=(1,); alias=default
+(0.015) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNAx:K74Ob2cJmiFNGRa5nj5OS5JdLkm6klSXPzk4LRXvzMo', "expire_date" = '2025-02-13T01:33:55.656080+00:00'::timestamptz WHERE "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNAx:K74Ob2cJmiFNGRa5nj5OS5JdLkm6klSXPzk4LRXvzMo', datetime.datetime(2025, 2, 13, 1, 33, 55, 656080, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:33:55.673956+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 33, 55, 673956, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) 
+            SELECT DISTINCT e1.enti_clie, e1.enti_nome
+            FROM pedidosvenda 
+            LEFT JOIN entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+            WHERE pedi_canc = false  -- Certifique-se de filtrar pedidos cancelados
+
+            ORDER BY e1.enti_nome ASC;
+        ; args=None; alias=default
+(0.015) 
+        SELECT 
+            MAX(pedi_vend) AS "COD VENDEDOR",
+            MAX(e1.enti_nome) AS "Nome Vendedor",
+            COUNT(DISTINCT pedi_nume) AS "Total Pedidos",  -- Ajuste aqui
+            SUM(pedi_tota) AS "Total Valor dos Pedidos"
+        FROM 
+            pedidosvenda
+        LEFT JOIN 
+            entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+        WHERE 
+            pedi_canc = false  -- Filtrar pedidos cancelados
+
+    
+        GROUP BY 
+            pedi_vend, e1.enti_nome
+        ORDER BY 
+            e1.enti_nome ASC;
+    ; args=[]; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNAx:K74Ob2cJmiFNGRa5nj5OS5JdLkm6klSXPzk4LRXvzMo', "expire_date" = '2025-02-13T01:33:55.704047+00:00'::timestamptz WHERE "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNAx:K74Ob2cJmiFNGRa5nj5OS5JdLkm6klSXPzk4LRXvzMo', datetime.datetime(2025, 2, 13, 1, 33, 55, 704047, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.016) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:33:57.439229+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 33, 57, 439229, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:34:22.270829+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 34, 22, 270829, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.015) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:34:49.560333+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 34, 49, 560333, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.016) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.015) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:37:13.712454+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 37, 13, 712454, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) 
+            SELECT
+                c.relname,
+                CASE
+                    WHEN c.relispartition THEN 'p'
+                    WHEN c.relkind IN ('m', 'v') THEN 'v'
+                    ELSE 't'
+                END,
+                obj_description(c.oid, 'pg_class')
+            FROM pg_catalog.pg_class c
+            LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+            WHERE c.relkind IN ('f', 'm', 'p', 'r', 'v')
+                AND n.nspname NOT IN ('pg_catalog', 'pg_toast')
+                AND pg_catalog.pg_table_is_visible(c.oid)
+        ; args=None; alias=default
+(0.015) SELECT "django_migrations"."id", "django_migrations"."app", "django_migrations"."name", "django_migrations"."applied" FROM "django_migrations"; args=(); alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:37:30.101364+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 37, 30, 101364, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.016) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNEQ:WxR2_uorU7j6UioDK4TP7T4y7XT8PCubaZrX_evEXRM', "expire_date" = '2025-02-13T01:37:30.259629+00:00'::timestamptz WHERE "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNEQ:WxR2_uorU7j6UioDK4TP7T4y7XT8PCubaZrX_evEXRM', datetime.datetime(2025, 2, 13, 1, 37, 30, 259629, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.016) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:37:35.592367+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 37, 35, 592367, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."login" = 'leo' LIMIT 21; args=('leo',); alias=default
+(0.000) UPDATE "usuarios" SET "last_login" = '2025-02-13T00:37:39.254250+00:00'::timestamptz WHERE "usuarios"."id" = 1; args=(datetime.datetime(2025, 2, 13, 0, 37, 39, 254250, tzinfo=datetime.timezone.utc), 1); alias=default
+(0.000) SELECT "licencas"."lice_id", "licencas"."lice_docu", "licencas"."lice_nome", "licencas"."lice_emai", "licencas"."lice_bloq", "licencas"."lice_data_cria" FROM "licencas" WHERE "licencas"."lice_id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNEZ:j7olNVr84ibAbkInGsFemKMB9cyi-pAoK3retrsUPYY', "expire_date" = '2025-02-13T01:37:39.285849+00:00'::timestamptz WHERE "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNEZ:j7olNVr84ibAbkInGsFemKMB9cyi-pAoK3retrsUPYY', datetime.datetime(2025, 2, 13, 1, 37, 39, 285849, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:37:39.306560+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 37, 39, 306560, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.016) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) 
+            SELECT DISTINCT e1.enti_clie, e1.enti_nome
+            FROM pedidosvenda 
+            LEFT JOIN entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+            WHERE pedi_canc = false  -- Certifique-se de filtrar pedidos cancelados
+
+            ORDER BY e1.enti_nome ASC;
+        ; args=None; alias=default
+(0.015) 
+        SELECT 
+            MAX(pedi_vend) AS "COD VENDEDOR",
+            MAX(e1.enti_nome) AS "Nome Vendedor",
+            COUNT(DISTINCT pedi_nume) AS "Total Pedidos",  -- Ajuste aqui
+            SUM(pedi_tota) AS "Total Valor dos Pedidos"
+        FROM 
+            pedidosvenda
+        LEFT JOIN 
+            entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
+
+        WHERE 
+            pedi_canc = false  -- Filtrar pedidos cancelados
+
+    
+        GROUP BY 
+            pedi_vend, e1.enti_nome
+        ORDER BY 
+            e1.enti_nome ASC;
+    ; args=[]; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNEZ:j7olNVr84ibAbkInGsFemKMB9cyi-pAoK3retrsUPYY', "expire_date" = '2025-02-13T01:37:39.333298+00:00'::timestamptz WHERE "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNEZ:j7olNVr84ibAbkInGsFemKMB9cyi-pAoK3retrsUPYY', datetime.datetime(2025, 2, 13, 1, 37, 39, 333298, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:37:40.945217+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 37, 40, 945217, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:38:03.261478+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 38, 3, 261478, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) 
+        WITH UltimosPedidos AS (
+            SELECT
+                pedi_nume,
+                e.enti_nome AS cliente,
+                pedi_data,
+                notas_contato,
+                v.enti_nome AS vendedor,
+                ROW_NUMBER() OVER (PARTITION BY e.enti_nome ORDER BY p.pedi_data DESC) AS rn
+            FROM pedidosvenda p
+            LEFT JOIN entidades e ON pedi_forn = e.enti_clie AND pedi_empr = e.enti_empr
+            LEFT JOIN entidades v ON pedi_vend = v.enti_clie AND pedi_empr = v.enti_empr
+        )
+        SELECT
+            pedi_nume,
+            cliente,
+            pedi_data,
+            notas_contato,
+            vendedor
+        FROM UltimosPedidos
+        WHERE rn = 1
+        AND pedi_data <= '2025-02-05'::date
+     ORDER BY pedi_data DESC;; args=[datetime.date(2025, 2, 5)]; alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNEx:XfSxxNzjhrteJGom3yNSmQdqWILMHMAohpgP_5MNhE8', "expire_date" = '2025-02-13T01:38:03.354437+00:00'::timestamptz WHERE "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNEx:XfSxxNzjhrteJGom3yNSmQdqWILMHMAohpgP_5MNhE8', datetime.datetime(2025, 2, 13, 1, 38, 3, 354437, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:38:06.062685+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 38, 6, 62685, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.000) SELECT "licencas"."lice_id", "licencas"."lice_docu", "licencas"."lice_nome", "licencas"."lice_emai", "licencas"."lice_bloq", "licencas"."lice_data_cria" FROM "licencas" WHERE "licencas"."lice_id" = 1 LIMIT 21; args=(1,); alias=default
+(0.031) SELECT COUNT(*) AS "__count" FROM "entidades"; args=(); alias=lacera
+(0.000) COMMIT; args=None; alias=default
+(0.015) SELECT "entidades"."id", "entidades"."enti_empr", "entidades"."enti_clie", "entidades"."enti_nome", "entidades"."enti_tipo_enti", "entidades"."enti_fant", "entidades"."enti_cpf", "entidades"."enti_cnpj", "entidades"."enti_insc_esta", "entidades"."enti_cep", "entidades"."enti_ende", "entidades"."enti_nume", "entidades"."enti_cida", "entidades"."enti_esta", "entidades"."enti_fone", "entidades"."enti_celu", "entidades"."enti_emai", "entidades"."enti_emai_empr" FROM "entidades" ORDER BY "entidades"."enti_clie" ASC LIMIT 15; args=(); alias=lacera
+(0.000) BEGIN; args=None; alias=default
+(0.000) UPDATE "django_session" SET "session_data" = '.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNF0:XFQai8YZMg5XImpG0aSp1k62qPvVNXkLUxv1c1C2EjA', "expire_date" = '2025-02-13T01:38:06.316917+00:00'::timestamptz WHERE "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'; args=('.eJxVjssOwiAURP-FdUOEUgGX7v0Gcl_YaoWkj5Xx322TLnQ7Z-Zk3irBuvRpnWVKA6uLMqr5zRDoKWUH_IByr5pqWaYB9V7RB531rbKM16P7J-hh7rd1IBfBEWJk5xl95yD4aNrcMnsBCc5k8mg7c8qBO2E2ZDk6RHu2OdpNut8zjRoHkkKQSn3JJh6BZAL1-QJs0kJ7:1tiNF0:XFQai8YZMg5XImpG0aSp1k62qPvVNXkLUxv1c1C2EjA', datetime.datetime(2025, 2, 13, 1, 38, 6, 316917, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) COMMIT; args=None; alias=default
+(0.000) SELECT "django_session"."session_key", "django_session"."session_data", "django_session"."expire_date" FROM "django_session" WHERE ("django_session"."expire_date" > '2025-02-13T00:38:08.523488+00:00'::timestamptz AND "django_session"."session_key" = 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o') LIMIT 21; args=(datetime.datetime(2025, 2, 13, 0, 38, 8, 523488, tzinfo=datetime.timezone.utc), 'kya7lih8qvsc8s2zx8ka80y4zoebhm8o'); alias=default
+(0.000) SELECT "usuarios"."password", "usuarios"."last_login", "usuarios"."is_superuser", "usuarios"."id", "usuarios"."licenca_id", "usuarios"."nome", "usuarios"."login", "usuarios"."data_nascimento", "usuarios"."sexo", "usuarios"."email", "usuarios"."telefone", "usuarios"."ativo", "usuarios"."is_staff" FROM "usuarios" WHERE "usuarios"."id" = 1 LIMIT 21; args=(1,); alias=default
+(0.000) BEGIN; args=None; alias=default
+(0.015) 
+        SET search_path TO postgres;  -- Define o schema (banco) correto
+        SELECT 
+            p.pedi_nume AS pedido_id,
+            p.pedi_data AS data_pedido,
+            p.pedi_tota AS valor_total,
+            p.pedi_clie AS cliente,
+            e.enti_nome  AS cliente_nome,
+            p.pedi_vend AS vendedor,
+            i.item_prod AS produto_id,
+            i.item_quan AS quantidade,
+            i.item_suto AS valor_item
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN entidades e ON p.pedi_forn = e.enti_clie
+        LEFT JOIN entidades v ON p.pedi_vend = e.enti_clie
+        WHERE p.pedi_data >= '2016-11-26'
+        ORDER BY p.pedi_data DESC
+    ; args=None; alias=default
+(0.000) COMMIT; args=None; alias=default

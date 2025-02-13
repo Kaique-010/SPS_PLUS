@@ -18,6 +18,7 @@ urlpatterns = [
     path('', include ('Saidas_Produtos.urls')),
     path('', include ('orcamentos.urls')),
     path('', include ('licencas.urls')),
+    path('', include ('IA.urls')),
     
 ]
 
