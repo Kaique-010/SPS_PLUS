@@ -1,193 +1,266 @@
-{% extends 'base.html' %}
-
-{% block title %}Cadastrar Entidade{% endblock %}
-
-{% block content %}
-
-<style>
-  h3 {
-    text-align: center;
-    font-size: 2rem;
-  }
-
-  .crm-icon {
-    font-size: 2rem;
-    margin-right: 10px;
-  }
-
-  .table th,
-  .table td {
-    font-size: 0.85rem;
-  }
-
-  .table thead th {
-    font-size: 0.90rem;
-  }
-
-  .card {
-    background-color: black;
-  }
-</style>
-<br><br><br>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+{% extends 'base.html' %} {% load static %} {% block title %} Cadastrar Produto
+{%endblock %} {% block content %} <br /><br /><br /><br /><br />
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link rel="stylesheet" href="{% static 'produtos/styles.css' %}" />
 
 <div class="container">
   <div class="card">
     <div class="card-body">
-      <h3 class="card-title">Cadastrar Entidade <i class="bi bi-person-check fs-4"></i></h3>
-      <br>
+      <h3 class="card-title">
+        Editar Produto <i class="bi bi-box fs-4"></i>
+      </h3>
+      <br />
+
       <!-- Mensagens de Sucesso e Erro -->
-      {% if messages %}
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags }}">
-        {{ message }}
-      </div>
-      {% endfor %}
-      {% endif %}
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %}
+
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 
-        <div id="pessoal" class="tab-content active">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_empr.id_for_label }}">Empresa</label>
-                {{ form.enti_empr }}
+        <!-- Abas -->
+        <ul class="nav nav-tabs" id="produtoTabs">
+          <li class="nav-item">
+            <a class="nav-link active" id="produto-tab" data-bs-toggle="tab" href="#produto">Dados do Produto</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="precos-tab" data-bs-toggle="tab" href="#precos">Tabela de Preços</a>
+          </li>
+        </ul>
+
+        <div class="tab-content mt-3">
+          <!-- Aba de Dados do Produto -->
+          <div class="tab-pane fade show active" id="produto">
+            <h5>Dados Cadastrais</h5>
+            <br />
+            <center>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label for="{{ form.prod_empr.id_for_label }}">Empresa</label>
+                  {{ form.prod_empr }}
+                </div>
               </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_clie.id_for_label }}">Cliente Número</label>
-                {{ form.enti_clie }} 
+            </center>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_codi.id_for_label }}">Código Produto</label>
+                  {{ form.prod_codi }} {% if form.prod_codi.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_codi.errors|striptags }}
+                  </div>
+                  {% endif %}
+                </div>
               </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_nome.id_for_label }}">Nome completo</label>
-                {{ form.enti_nome }}
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_nome.id_for_label }}">Nome do Produto</label>
+                  {{ form.prod_nome }} {% if form.prod_nome.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_nome.errors|striptags }}
+                  </div>
+                  {% endif %}
+                </div>
               </div>
             </div>
 
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_fant.id_for_label }}">Nome Fantasia</label>
-                {{ form.enti_fant }}
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_unme.id_for_label }}">Unidade de Medida</label>
+                  {{ form.prod_unme }} {% if form.prod_unme.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_unme.errors|striptags }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_grup.id_for_label }}">Grupo</label>
+                  {{ form.prod_grup }} {% if form.prod_grup.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_grup.errors|striptags }}
+                  </div>
+                  {% endif %}
+                  <!-- Link para o cadastro de Grupo -->
+                  <small>
+                    <<a href="{% url 'grupo_create' %}" class="btn btn-plus" title="Adicionar Novo Grupo">
+                      <i class="bi bi-plus-circle"></i>
+                      </a>
+                  </small>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_sugr.id_for_label }}">Subgrupo</label>
+                  {{ form.prod_sugr }} {% if form.prod_sugr.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_sugr.errors|striptags }}
+                  </div>
+                  {% endif %}
+                  <!-- Link para o cadastro de Subgrupo -->
+                  <small><a href="{% url 'subgrupo_create' %}" class="btn btn-plus" title="Adicionar Novo SubGrupo">
+                      <i class="bi bi-plus-circle"></i> </a></small>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_fami.id_for_label }}">Família</label>
+                  {{ form.prod_fami }} {% if form.prod_fami.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_fami.errors|striptags }}
+                  </div>
+                  {% endif %}
+                  <!-- Link para o cadastro de Família -->
+                  <small><a href="{% url 'familia_produto_create' %}" class="btn btn-plus"
+                      title="Adicionar Nova Família">
+                      <i class="bi bi-plus-circle"></i> </a></small>
+                </div>
+              </div>
+            </div>
+
+            <h5>Informações Adicionais</h5>
+            <br />
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_loca.id_for_label }}">Local</label>
+                  {{ form.prod_loca }} {% if form.prod_loca.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_loca.errors|striptags }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_ncm.id_for_label }}">NCM</label>
+                  {{ form.prod_ncm }} {% if form.prod_ncm.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_ncm.errors|striptags }}
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_marc.id_for_label }}">Marca</label>
+                  {{ form.prod_marc }} {% if form.prod_marc.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_marc.errors|striptags }}
+                  </div>
+                  {% endif %}
+
+                  <small>
+                    <a href="{% url 'marca_create' %}" class="btn btn-plus" title="Adicionar Nova Marca">
+                      <i class="bi bi-plus-circle"></i>
+                    </a>
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_codi_fabr.id_for_label }}">Código do Fabricante</label>
+                  {{ form.prod_codi_fabr }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.prod_foto.id_for_label }}">Foto</label>
+                  {{ form.prod_foto }} {% if form.prod_foto.errors %}
+                  <div class="alert alert-danger mt-1">
+                    {{ form.prod_foto.errors|striptags }}
+                  </div>
+                  {% endif %}
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_cpf.id_for_label }}">CPF</label>
-                {{ form.enti_cpf }}
-              </div>
-            </div>
+          <!-- Aba de Tabela de Preços -->
+          <div class="tab-pane fade" id="precos">
+            <h5>Tabela de Preços</h5>
+            {{ formset.management_form }}
 
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_cnpj.id_for_label }}">CNPJ</label>
-                {{ form.enti_cnpj }}
-              </div>
-            </div>
-          </div>
+            <div id="precos-formset">
+              {% for form in formset %}
 
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_insc_esta.id_for_label }}">Inscrição Estadual</label>
-                {{ form.enti_insc_esta }}
-              </div>
-            </div>
+              <div class="preco-item border p-3 mb-2">
+                <div class="row">
+                  <div class="col-md-4">
+                    <label for="{{ form.tabe_prco.id_for_label }}">Preço de Compra</label>
+                    {{ form.tabe_prco }}
+                  </div>
 
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_cep.id_for_label }}">CEP</label>
-                {{ form.enti_cep }}
-              </div>
-            </div>
-          </div>
+                  <div class="col-md-4">
+                    <label for="{{ form.tabe_fret.id_for_label }}">Frete sobre o produto</label>
+                    {{ form.tabe_fret }}
+                  </div>
+                  <div class="col-md-4">
+                    <label for="{{ form.tabe_cuge.id_for_label }}">Custo Gerencial</label>
+                    {{ form.tabe_cuge }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="{{ form.tabe_marg.id_for_label }}">% sobre custo</label>
+                    {{ form.tabe_marg }}
+                  </div>
+                  <div class="col-md-6">
+                    <label for="{{ form.tabe_avis.id_for_label }}">Preço à Vista</label>
+                    {{ form.tabe_avis }}
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <label for="{{ form.tabe_apra.id_for_label }}">% a Prazo</label>
+                    {{ form.tabe_apra }}
+                  </div>
 
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_ende.id_for_label }}">Endereço</label>
-                {{ form.enti_ende }}
-              </div>
-            </div>
+                  <div class="col-md-6">
+                    <label for="{{ form.tabe_praz.id_for_label }}">Preço a Prazo</label>
+                    {{ form.tabe_praz }}
+                  </div>
+                </div>
 
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_nume.id_for_label }}">Número</label>
-                {{ form.enti_nume }}
+                <div class="row">
+                  <div class="col-md-12">
+                    <label for="{{ form.tabe_hist.id_for_label }}">Histórico</label>
+                    {{ form.tabe_hist }}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_cida.id_for_label }}">Cidade</label>
-                {{ form.enti_cida }}
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_esta.id_for_label }}">Estado</label>
-                {{ form.enti_esta }}
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_fone.id_for_label }}">Telefone</label>
-                {{ form.enti_fone }}
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_celu.id_for_label }}">Celular</label>
-                {{ form.enti_celu }}
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_emai.id_for_label }}">Email Pessoal</label>
-                {{ form.enti_emai }}
-              </div>
-            </div>
-
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="{{ form.enti_emai_empr.id_for_label }}">Email da Empresa</label>
-                {{ form.enti_emai_empr }}
-              </div>
+              {% endfor %}
             </div>
           </div>
         </div>
 
-        {% if form.errors %}
-        <div class="alert alert-danger">
-          <ul>
-            {% for field, errors in form.errors.items %}
-            <li>{{ field.label }}: {{ errors|striptags }}</li>
-            {% endfor %}
-          </ul>
+        <div class="mt-3">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <a href="{% url 'produtos_lista.html' %}" class="btn btn-secondary">Cancelar</a>
         </div>
-        {% endif %}
-
-        <button type="submit" class="btn btn-primary">Salvar</button>
       </form>
     </div>
-    <a href="{% url 'entidades' %}" class="btn btn-secondary mt-3">Voltar Para a lista de Pessoas</a>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}

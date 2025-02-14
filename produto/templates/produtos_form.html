@@ -1,9 +1,6 @@
 {% extends 'base.html' %} {% load static %} {% block title %} Cadastrar Produto
 {%endblock %} {% block content %} <br /><br /><br /><br /><br />
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-/>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
 <link rel="stylesheet" href="{% static 'produtos/styles.css' %}" />
 
 <div class="container">
@@ -25,22 +22,10 @@
         <!-- Abas -->
         <ul class="nav nav-tabs" id="produtoTabs">
           <li class="nav-item">
-            <a
-              class="nav-link active"
-              id="produto-tab"
-              data-bs-toggle="tab"
-              href="#produto"
-              >Dados do Produto</a
-            >
+            <a class="nav-link active" id="produto-tab" data-bs-toggle="tab" href="#produto">Dados do Produto</a>
           </li>
           <li class="nav-item">
-            <a
-              class="nav-link"
-              id="precos-tab"
-              data-bs-toggle="tab"
-              href="#precos"
-              >Tabela de Preços</a
-            >
+            <a class="nav-link" id="precos-tab" data-bs-toggle="tab" href="#precos">Tabela de Preços</a>
           </li>
         </ul>
 
@@ -61,12 +46,10 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.produto_codigo.id_for_label }}"
-                    >Código Produto</label
-                  >
-                  {{ form.produto_codigo }} {% if form.produto_codigo.errors %}
+                  <label for="{{ form.prod_codi.id_for_label }}">Código Produto</label>
+                  {{ form.prod_codi }} {% if form.prod_codi.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.produto_codigo.errors|striptags }}
+                    {{ form.prod_codi.errors|striptags }}
                   </div>
                   {% endif %}
                 </div>
@@ -74,12 +57,10 @@
 
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.nome_produto.id_for_label }}"
-                    >Nome do Produto</label
-                  >
-                  {{ form.nome_produto }} {% if form.nome_produto.errors %}
+                  <label for="{{ form.prod_nome.id_for_label }}">Nome do Produto</label>
+                  {{ form.prod_nome }} {% if form.prod_nome.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.nome_produto.errors|striptags }}
+                    {{ form.prod_nome.errors|striptags }}
                   </div>
                   {% endif %}
                 </div>
@@ -89,12 +70,10 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.unidade_medida.id_for_label }}"
-                    >Unidade de Medida</label
-                  >
-                  {{ form.unidade_medida }} {% if form.unidade_medida.errors %}
+                  <label for="{{ form.prod_unme.id_for_label }}">Unidade de Medida</label>
+                  {{ form.prod_unme }} {% if form.prod_unme.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.unidade_medida.errors|striptags }}
+                    {{ form.prod_unme.errors|striptags }}
                   </div>
                   {% endif %}
                 </div>
@@ -102,21 +81,17 @@
 
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.grupo.id_for_label }}">Grupo</label>
-                  {{ form.grupo }} {% if form.grupo.errors %}
+                  <label for="{{ form.prod_grup.id_for_label }}">Grupo</label>
+                  {{ form.prod_grup }} {% if form.prod_grup.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.grupo.errors|striptags }}
+                    {{ form.prod_grup.errors|striptags }}
                   </div>
                   {% endif %}
                   <!-- Link para o cadastro de Grupo -->
                   <small>
-                    <<a
-                      href="{% url 'grupo_create' %}"
-                      class="btn btn-plus"
-                      title="Adicionar Novo Grupo"
-                    >
+                    <<a href="{% url 'grupo_create' %}" class="btn btn-plus" title="Adicionar Novo Grupo">
                       <i class="bi bi-plus-circle"></i>
-                    </a>
+                      </a>
                   </small>
                 </div>
               </div>
@@ -125,41 +100,30 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.subgrupo.id_for_label }}">Subgrupo</label>
-                  {{ form.subgrupo }} {% if form.subgrupo.errors %}
+                  <label for="{{ form.prod_sugr.id_for_label }}">Subgrupo</label>
+                  {{ form.prod_sugr }} {% if form.prod_sugr.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.subgrupo.errors|striptags }}
+                    {{ form.prod_sugr.errors|striptags }}
                   </div>
                   {% endif %}
                   <!-- Link para o cadastro de Subgrupo -->
-                  <small
-                    ><a
-                      href="{% url 'subgrupo_create' %}"
-                      class="btn btn-plus"
-                      title="Adicionar Novo SubGrupo"
-                    >
-                      <i class="bi bi-plus-circle"></i> </a
-                  ></small>
+                  <small><a href="{% url 'subgrupo_create' %}" class="btn btn-plus" title="Adicionar Novo SubGrupo">
+                      <i class="bi bi-plus-circle"></i> </a></small>
                 </div>
               </div>
 
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.familia.id_for_label }}">Família</label>
-                  {{ form.familia }} {% if form.familia.errors %}
+                  <label for="{{ form.prod_fami.id_for_label }}">Família</label>
+                  {{ form.prod_fami }} {% if form.prod_fami.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.familia.errors|striptags }}
+                    {{ form.prod_fami.errors|striptags }}
                   </div>
                   {% endif %}
                   <!-- Link para o cadastro de Família -->
-                  <small
-                    ><a
-                      href="{% url 'familia_produto_create' %}"
-                      class="btn btn-plus"
-                      title="Adicionar Nova Família"
-                    >
-                      <i class="bi bi-plus-circle"></i> </a
-                  ></small>
+                  <small><a href="{% url 'familia_produto_create' %}" class="btn btn-plus"
+                      title="Adicionar Nova Família">
+                      <i class="bi bi-plus-circle"></i> </a></small>
                 </div>
               </div>
             </div>
@@ -170,10 +134,10 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.local.id_for_label }}">Local</label>
-                  {{ form.local }} {% if form.local.errors %}
+                  <label for="{{ form.prod_loca.id_for_label }}">Local</label>
+                  {{ form.prod_loca }} {% if form.prod_loca.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.local.errors|striptags }}
+                    {{ form.prod_loca.errors|striptags }}
                   </div>
                   {% endif %}
                 </div>
@@ -181,10 +145,10 @@
 
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.ncm.id_for_label }}">NCM</label>
-                  {{ form.ncm }} {% if form.ncm.errors %}
+                  <label for="{{ form.prod_ncm.id_for_label }}">NCM</label>
+                  {{ form.prod_ncm }} {% if form.prod_ncm.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.ncm.errors|striptags }}
+                    {{ form.prod_ncm.errors|striptags }}
                   </div>
                   {% endif %}
                 </div>
@@ -194,19 +158,15 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.marca.id_for_label }}">Marca</label>
-                  {{ form.marca }} {% if form.marca.errors %}
+                  <label for="{{ form.prod_marc.id_for_label }}">Marca</label>
+                  {{ form.prod_marc }} {% if form.prod_marc.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.marca.errors|striptags }}
+                    {{ form.prod_marc.errors|striptags }}
                   </div>
                   {% endif %}
 
                   <small>
-                    <a
-                      href="{% url 'marca_create' %}"
-                      class="btn btn-plus"
-                      title="Adicionar Nova Marca"
-                    >
+                    <a href="{% url 'marca_create' %}" class="btn btn-plus" title="Adicionar Nova Marca">
                       <i class="bi bi-plus-circle"></i>
                     </a>
                   </small>
@@ -214,10 +174,8 @@
               </div>
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.codigo_fabricante.id_for_label }}"
-                    >Código do Fabricante</label
-                  >
-                  {{ form.codigo_fabricante }}
+                  <label for="{{ form.prod_codi_fabr.id_for_label }}">Código do Fabricante</label>
+                  {{ form.prod_codi_fabr }}
                 </div>
               </div>
             </div>
@@ -225,10 +183,10 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
-                  <label for="{{ form.foto.id_for_label }}">Foto</label>
-                  {{ form.foto }} {% if form.foto.errors %}
+                  <label for="{{ form.prod_foto.id_for_label }}">Foto</label>
+                  {{ form.prod_foto }} {% if form.prod_foto.errors %}
                   <div class="alert alert-danger mt-1">
-                    {{ form.foto.errors|striptags }}
+                    {{ form.prod_foto.errors|striptags }}
                   </div>
                   {% endif %}
                 </div>
@@ -247,60 +205,44 @@
               <div class="preco-item border p-3 mb-2">
                 <div class="row">
                   <div class="col-md-4">
-                    <label for="{{ form.tabe_prco.id_for_label }}"
-                      >Preço de Compra</label
-                    >
+                    <label for="{{ form.tabe_prco.id_for_label }}">Preço de Compra</label>
                     {{ form.tabe_prco }}
                   </div>
 
                   <div class="col-md-4">
-                    <label for="{{ form.tabe_fret.id_for_label }}"
-                      >Frete sobre o produto</label
-                    >
+                    <label for="{{ form.tabe_fret.id_for_label }}">Frete sobre o produto</label>
                     {{ form.tabe_fret }}
                   </div>
                   <div class="col-md-4">
-                    <label for="{{ form.tabe_cuge.id_for_label }}"
-                      >Custo Gerencial</label
-                    >
+                    <label for="{{ form.tabe_cuge.id_for_label }}">Custo Gerencial</label>
                     {{ form.tabe_cuge }}
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-6">
-                    <label for="{{ form.tabe_marg.id_for_label }}"
-                      >% sobre custo</label
-                    >
+                    <label for="{{ form.tabe_marg.id_for_label }}">% sobre custo</label>
                     {{ form.tabe_marg }}
                   </div>
                   <div class="col-md-6">
-                    <label for="{{ form.tabe_avis.id_for_label }}"
-                      >Preço à Vista</label
-                    >
+                    <label for="{{ form.tabe_avis.id_for_label }}">Preço à Vista</label>
                     {{ form.tabe_avis }}
                   </div>
                 </div>
                 <div class="row">
                   <div class="col-md-6">
-                    <label for="{{ form.tabe_apra.id_for_label }}"
-                      >% a Prazo</label
-                    >
+                    <label for="{{ form.tabe_apra.id_for_label }}">% a Prazo</label>
                     {{ form.tabe_apra }}
                   </div>
 
                   <div class="col-md-6">
-                    <label for="{{ form.tabe_praz.id_for_label }}"
-                      >Preço a Prazo</label
-                    >
+                    <label for="{{ form.tabe_praz.id_for_label }}">Preço a Prazo</label>
                     {{ form.tabe_praz }}
                   </div>
                 </div>
 
                 <div class="row">
                   <div class="col-md-12">
-                    <label for="{{ form.tabe_hist.id_for_label }}"
-                      >Histórico</label
-                    >
+                    <label for="{{ form.tabe_hist.id_for_label }}">Histórico</label>
                     {{ form.tabe_hist }}
                   </div>
                 </div>
@@ -313,9 +255,7 @@
 
         <div class="mt-3">
           <button type="submit" class="btn btn-primary">Salvar</button>
-          <a href="{% url 'produtos_lista.html' %}" class="btn btn-secondary"
-            >Cancelar</a
-          >
+          <a href="{% url 'produtos_lista.html' %}" class="btn btn-secondary">Cancelar</a>
         </div>
       </form>
     </div>

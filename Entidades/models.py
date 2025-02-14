@@ -11,9 +11,8 @@ class Entidades(models.Model):
         ('FU', 'FUNCIONÁRIOS'),
        
     ]
-    id = models.AutoField(primary_key=True, unique=True)
     enti_empr = models.IntegerField(default=1)
-    enti_clie = models.IntegerField(unique=True) 
+    enti_clie = models.IntegerField(unique=True, primary_key=True) 
     enti_nome = models.CharField(max_length=100, default='')
     enti_tipo_enti = models.CharField(max_length=100, choices=TIPO_ENTIDADES, default='1')
     enti_fant = models.CharField(max_length=100, default='')  
@@ -37,8 +36,8 @@ class Entidades(models.Model):
         db_table = 'entidades'
     
     def save(self, *args, **kwargs):
-        if not self.enti_clie:
-    
+        if self.enti_clie is None:  # Usa "is None" em vez de "not"
             max_enti_clie = Entidades.objects.aggregate(max_clie=Max('enti_clie'))['max_clie'] or 0
             self.enti_clie = max_enti_clie + 1
         super().save(*args, **kwargs)
+

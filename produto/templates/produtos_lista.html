@@ -71,11 +71,11 @@
                         <tr>
                             <td>
                                 {% if produto.prod_codi %}
-                                <a href="{% url 'produtos_update' pk=produto.prod_codi %}" class="btn btn-sm"
+                                <a href="{% url 'produtos_update' prod_codi=produto.prod_codi %}" class="btn btn-sm"
                                     style="background-color: #7ab1ec; color: white;">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{% url 'produto_delete' pk=produto.prod_codi %}" class="btn btn-sm"
+                                <a href="{% url 'produto_delete' prod_codi=produto.prod_codi %}" class="btn btn-sm"
                                     style="background-color: #e7a0a7; color: white;">
                                     <i class="bi bi-trash"></i>
                                 </a>

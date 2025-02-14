@@ -194,7 +194,7 @@ def pedidos_por_cliente(request):
 
 def pedidos_necessitam_contato_view(request):
     hoje = date.today()
-    dias_para_contato = 7  
+    dias_para_contato = 3000  
     data_limite = hoje - timedelta(days=dias_para_contato)
     
     # Captura os filtros da requisição GET
@@ -204,42 +204,43 @@ def pedidos_necessitam_contato_view(request):
 
     # Ajusta a consulta SQL com base nos filtros
     query = """
-        WITH UltimosPedidos AS (
-            SELECT
-                pedi_nume AS numero_pedido,
-                e.enti_nome AS cliente,
-                pedi_data AS data,
-                v.enti_nome AS vendedor,
-                ROW_NUMBER() OVER (PARTITION BY e.enti_nome ORDER BY p.pedi_data DESC) AS rn
-            FROM pedidospisos p
-            LEFT JOIN entidades e ON pedi_clie = e.enti_clie AND pedi_empr = e.enti_empr
-            LEFT JOIN entidades v ON pedi_vend = v.enti_clie AND pedi_empr = v.enti_empr
-        )
+    WITH UltimosPedidos AS (
         SELECT
-            numero_pedido,
-            cliente,
-            data,
-            vendedor
-        FROM UltimosPedidos
-        WHERE rn = 1
-        AND pedi_data <= %s
+            p.pedi_nume AS numero_pedido,
+            e.enti_nome AS cliente,
+            p.pedi_data AS data,
+            v.enti_nome AS vendedor,
+            ROW_NUMBER() OVER (PARTITION BY e.enti_nome ORDER BY p.pedi_data DESC) AS rn
+        FROM pedidosvenda p
+        LEFT JOIN entidades e ON p.pedi_forn = e.enti_clie AND p.pedi_empr = e.enti_empr
+        LEFT JOIN entidades v ON p.pedi_vend = v.enti_clie AND p.pedi_empr = v.enti_empr
+    )
+    SELECT
+        numero_pedido,
+        cliente,
+        data,
+        vendedor
+    FROM UltimosPedidos
+    WHERE rn = 1
+    AND data <= %s
     """
 
     # Lista de parâmetros para a consulta
     params = [data_limite]
 
-    # Aplica os filtros opcionais
+    # Aplica os filtros opcionais corretamente
     if filtro_vendedor:
         query += " AND vendedor = %s"
         params.append(filtro_vendedor)
     if filtro_pedido:
-        query += " AND pedi_nume = %s"
+        query += " AND numero_pedido = %s"
         params.append(filtro_pedido)
     if filtro_cliente:
         query += " AND cliente = %s"
         params.append(filtro_cliente)
 
-    query += " ORDER BY pedi_data DESC;"
+    # Ordenação final
+    query += " ORDER BY data DESC;"
 
     with connection.cursor() as cursor:
         cursor.execute(query, params)
@@ -247,7 +248,7 @@ def pedidos_necessitam_contato_view(request):
 
     # Paginação
     paginator = Paginator(pedidos_necessitam_contato, 10)
-    page_number = request.GET.get('page',1)
+    page_number = request.GET.get('page', 1)
     page_obj = paginator.get_page(page_number)
 
     context = {
@@ -258,6 +259,7 @@ def pedidos_necessitam_contato_view(request):
     }
 
     return render(request, 'pedidos_necessitam_contato.html', context)
+
 
 def marcar_contato_realizado(request, pedido_id):
     try:
@@ -283,7 +285,7 @@ def detalhar_contato(request, pedido_id):
             pedi_data,
             notas_contato
         FROM pedidosvenda
-        LEFT JOIN entidades e ON pedi_forn = e.enti_clie AND pedi_empr = e.enti_empr
+        LEFT JOIN public.entidades e ON pedi_forn = e.enti_clie AND pedi_empr = e.enti_empr
         WHERE pedi_nume = %s
     """
     

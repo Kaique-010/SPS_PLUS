@@ -116,22 +116,37 @@ class ProdutoUpdateView(LicenseMixin, UpdateView):
     template_name = 'produtos_update.html'
 
     def get_object(self, queryset=None):
-        """Busca o produto pelo código, garantindo que ele seja tratado corretamente"""
-        return get_object_or_404(Produtos, prod_codi=self.kwargs['pk'])
+        licenca = self.get_license()
+        db_name = licenca.lice_nome if licenca else "default"
+        prod_codi = self.kwargs.get("prod_codi")
+
+        print(f"[DEBUG] Buscando produto  com prod_codi={prod_codi} no banco {db_name}")
+
+        produtos= Produtos.objects.using(db_name).filter(prod_codi=prod_codi).first()
+        
+        if not produtos:
+            raise Http404("Entidade não encontrada.")
+        
+        return produtos
 
     def form_valid(self, form):
-        formset = TabelaprecosFormSet(self.request.POST, instance=self.object)
+        licenca = self.get_license()
+        db_name = licenca.lice_nome if licenca else "default"
+
+        formset = TabelaprecosFormSet(self.request.POST, instance=self.object, queryset=Tabelaprecos.objects.using(db_name).filter(tabe_prod=self.object))
+
         if form.is_valid() and formset.is_valid():
-            with transaction.atomic():
-                produto = form.save()
+            with transaction.atomic(using=db_name):
+                produto = form.save(commit=False)
+                produto.save(using=db_name)
 
                 tabelaprecos_instances = formset.save(commit=False)
                 for instance in tabelaprecos_instances:
                     instance.tabe_prod = produto
-                    instance.save()
+                    instance.save(using=db_name)
 
                 tabelaprecos_ids = [instance.id for instance in tabelaprecos_instances]
-                Tabelaprecos.objects.filter(tabe_prod=produto).exclude(id__in=tabelaprecos_ids).delete()
+                Tabelaprecos.objects.using(db_name).filter(tabe_prod=produto).exclude(id__in=tabelaprecos_ids).delete()
 
             messages.success(self.request, "Produto atualizado com sucesso!")
             return redirect('produtos_lista')
@@ -140,7 +155,11 @@ class ProdutoUpdateView(LicenseMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['formset'] = TabelaprecosFormSet(instance=self.object)
+        licenca = self.get_license()
+        db_name = licenca.lice_nome if licenca else "default"
+        
+        context['formset'] = TabelaprecosFormSet(instance=self.object, queryset=Tabelaprecos.objects.using(db_name).filter(tabe_prod=self.object))
+        
         return context
 
 class ProdutoDeleteView(LicenseMixin, DeleteView):

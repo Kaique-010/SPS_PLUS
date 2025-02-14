@@ -86,10 +86,10 @@ class Marca(models.Model):
         return self.nome
 
 class Tabelaprecos(models.Model):
-    id = models.AutoField(primary_key=True) 
+
     tabe_empr = models.IntegerField(default=1)  
     tabe_fili = models.IntegerField(default=1)
-    tabe_prod = models.ForeignKey("Produtos", verbose_name="Produto", on_delete=models.CASCADE, default=1)
+    tabe_prod = models.ForeignKey("Produtos", verbose_name="Produto", on_delete=models.CASCADE, default=1, primary_key=True, db_column='tabe_prod')
     tabe_prco = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_icms = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_desc = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
@@ -144,7 +144,7 @@ class Produtos(models.Model):
         verbose_name_plural = 'Produtos'
 
     def __str__(self):
-        return f'{self.nome_produto} ({self.produto_codigo})'
+        return f'{self.prod_nome} - ({self.prod_codi})'
     
     def imagem_tag(self):
         try:
