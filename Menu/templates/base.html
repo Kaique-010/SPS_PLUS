@@ -320,16 +320,127 @@
       <div class="modal-content">
         <span class="close">&times;</span>
         <h2>📊 Insights do Sistema</h2>
-        <p>
-          <strong>Produto Mais Vendido:</strong>
-          <span id="produto-mais-vendido"></span>
-        </p>
-        <p><strong>Melhor Vendedor:</strong> <span id="vendedor-top"></span></p>
-        <p><strong>Melhor Cliente:</strong> <span id="cliente-top"></span></p>
-        <p>
-          <strong>Dia com Mais Vendas:</strong>
-          <span id="dia-mais-vendas"></span>
-        </p>
+
+        <!-- Nav Tabs -->
+        <ul class="nav nav-tabs" id="insightsTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link active"
+              id="vendas-tab"
+              data-bs-toggle="tab"
+              href="#vendas"
+              role="tab"
+              aria-controls="vendas"
+              aria-selected="true"
+              >Vendas</a
+            >
+          </li>
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link"
+              id="estoque-tab"
+              data-bs-toggle="tab"
+              href="#estoque"
+              role="tab"
+              aria-controls="estoque"
+              aria-selected="false"
+              >Estoque</a
+            >
+          </li>
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link"
+              id="clientes-inativos-tab"
+              data-bs-toggle="tab"
+              href="#clientes-inativos"
+              role="tab"
+              aria-controls="clientes-inativos"
+              aria-selected="false"
+              >Clientes Inativos</a
+            >
+          </li>
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link"
+              id="contato-aniversario-tab"
+              data-bs-toggle="tab"
+              href="#contato-aniversario"
+              role="tab"
+              aria-controls="contato-aniversario"
+              aria-selected="false"
+              >Contato por Aniversário</a
+            >
+          </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="insightsTabContent">
+          <!-- Aba de Vendas -->
+          <div
+            class="tab-pane fade show active"
+            id="vendas"
+            role="tabpanel"
+            aria-labelledby="vendas-tab"
+          >
+            <p>
+              <strong>Produto Mais Vendido:</strong>
+              <span id="produto-mais-vendido"></span> (Quantidade:
+              <span id="quantidade-produto"></span>)
+            </p>
+            <p>
+              <strong>Melhor Vendedor:</strong> <span id="vendedor-top"></span>
+            </p>
+            <p>
+              <strong>Melhor Cliente:</strong> <span id="cliente-top"></span>
+            </p>
+            <p>
+              <strong>Dia com Mais Vendas:</strong>
+              <span id="dia-mais-vendas"></span>
+            </p>
+          </div>
+
+          <!-- Aba de Estoque -->
+          <div
+            class="tab-pane fade"
+            id="estoque"
+            role="tabpanel"
+            aria-labelledby="estoque-tab"
+          >
+            <p>
+              <strong>Produto com Menor Estoque:</strong>
+              <span id="produto-menor-estoque"></span>
+            </p>
+            <p>
+              <strong>Estoque Total:</strong> <span id="estoque-total"></span>
+            </p>
+          </div>
+
+          <!-- Aba de Clientes Inativos -->
+          <div
+            class="tab-pane fade"
+            id="clientes-inativos"
+            role="tabpanel"
+            aria-labelledby="clientes-inativos-tab"
+          >
+            <p>
+              <strong>Clientes Inativos:</strong>
+              <span id="clientes-inativos"></span>
+            </p>
+          </div>
+
+          <!-- Aba de Contato por Aniversário -->
+          <div
+            class="tab-pane fade"
+            id="contato-aniversario"
+            role="tabpanel"
+            aria-labelledby="contato-aniversario-tab"
+          >
+            <p>
+              <strong>Clientes com Aniversário no Mês:</strong>
+              <span id="clientes-aniversario"></span>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -348,13 +459,23 @@
         .then((response) => response.json())
         .then((data) => {
           document.getElementById("produto-mais-vendido").textContent =
-            data.produto_mais_vendido;
+            data.produto_mais_vendido.produto;
+          document.getElementById("quantidade-produto").textContent =
+            data.produto_mais_vendido.quantidade;
           document.getElementById("vendedor-top").textContent =
             data.vendedor_top;
           document.getElementById("cliente-top").textContent = data.cliente_top;
           document.getElementById("dia-mais-vendas").textContent =
             data.dia_mais_vendas;
           document.getElementById("modal-insights").style.display = "block";
+          document.getElementById("produto-menor-estoque").textContent =
+            data.produto_menor_estoque;
+          document.getElementById("estoque-total").textContent =
+            data.data.estoque_total;
+          document.getElementById("clientes-inativos").textContent =
+            data.data.clientes_inativos;
+          document.getElementById("clientes-aniversario").textContent =
+            data.data.clientes_aniversario;
         });
     });
 

@@ -96,6 +96,8 @@ def home(request):
         'vendedores': vendedores_list,
         'usuario': usuario
     }
+    request.session['banco_usuario'] = licenca_nome  # Salva o banco correto
+    request.session.modified = True  # Garante que a sessão seja salva
 
     return render(request, 'home.html', context)
 

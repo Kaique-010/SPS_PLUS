@@ -9,8 +9,8 @@ def obter_insights(request):
     try:
         logger.info("Iniciando o processo de obtenção dos insights.")
         
-        # Obtendo os insights
-        insights = gerar_insights()
+        # Agora passando request corretamente
+        insights = gerar_insights(request)
         
         logger.info(f"Insights obtidos com sucesso: {insights}")
 

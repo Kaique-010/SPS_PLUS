@@ -206,21 +206,19 @@ def pedidos_necessitam_contato_view(request):
     query = """
         WITH UltimosPedidos AS (
             SELECT
-                pedi_nume,
+                pedi_nume AS numero_pedido,
                 e.enti_nome AS cliente,
-                pedi_data,
-                notas_contato,
+                pedi_data AS data,
                 v.enti_nome AS vendedor,
                 ROW_NUMBER() OVER (PARTITION BY e.enti_nome ORDER BY p.pedi_data DESC) AS rn
-            FROM pedidosvenda p
-            LEFT JOIN entidades e ON pedi_forn = e.enti_clie AND pedi_empr = e.enti_empr
+            FROM pedidospisos p
+            LEFT JOIN entidades e ON pedi_clie = e.enti_clie AND pedi_empr = e.enti_empr
             LEFT JOIN entidades v ON pedi_vend = v.enti_clie AND pedi_empr = v.enti_empr
         )
         SELECT
-            pedi_nume,
+            numero_pedido,
             cliente,
-            pedi_data,
-            notas_contato,
+            data,
             vendedor
         FROM UltimosPedidos
         WHERE rn = 1
