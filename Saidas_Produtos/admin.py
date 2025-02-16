@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Saida_Produtos
+from .models import SaidasEstoque
 
-class Saida_ProdutosAdmin(admin.ModelAdmin):
-    list_display = ('prod_codi', 'entidade', 'quantidade', 'criado', 'modificado', 'id', 'documento')
-    list_filter = ('criado', 'modificado', 'prod_codi', 'quantidade')
+class SaidasEstoqueAdmin(admin.ModelAdmin):
+    list_display = ('said_prod', 'said_enti', 'said_tota',  'said_obse')
+    list_filter = ( 'said_prod', 'said_tota')
 
-admin.site.register(Saida_Produtos, Saida_ProdutosAdmin)
+admin.site.register(SaidasEstoque, SaidasEstoqueAdmin)

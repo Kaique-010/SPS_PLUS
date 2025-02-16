@@ -11,13 +11,9 @@ from .views import (
     
 )
 
-router = DefaultRouter()
-
-
 
 urlpatterns = [
 
-    path('api/pedidos', include(router.urls)),
     path('pedidos/por-cliente/', pedidos_por_cliente, name='pedidos_por_cliente'),
     path('pedidos-necessitam-contato/', pedidos_necessitam_contato_view, name='pedidos_necessitam_contato'),
     path('marcar-contato-realizado/<int:pedido_id>/', marcar_contato_realizado, name='marcar_contato_realizado'),

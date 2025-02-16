@@ -1,6 +1,7 @@
 import pandas as pd
+from django.shortcuts import render
 from datetime import datetime, timedelta
-from django.db import connections
+from django.db import connections, connection
 import logging
 
 logger = logging.getLogger(__name__)
@@ -234,3 +235,36 @@ def gerar_insights(request):
         return {"mensagem": "Nenhum dado disponível para análise."}
 
     return insights
+
+
+
+def estoque_analise_view(request):
+    
+    query = """
+        SELECT 
+            e.entr_empr AS empresa, 
+            e.entr_fili AS filial, 
+            e.entr_prod AS produto, 
+            e.entr_data AS data_entrada, 
+            e.entr_tota AS total_entrada,
+            s.said_data AS data_saida,
+            s.said_tota AS total_saida,
+            sp.sapr_sald AS saldo
+        FROM entradasestoque e
+        LEFT JOIN saidasestoque s ON e.entr_prod = s.said_prod
+        LEFT JOIN saldosprodutos sp ON e.entr_prod = sp.sapr_prod
+    """
+    
+    # Executar a consulta e carregar os dados em um DataFrame
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        columns = [col[0] for col in cursor.description]
+        data = cursor.fetchall()
+    
+    df = pd.DataFrame(data, columns=columns)
+    
+    # Renderizar a análise na página
+    context = {
+        'data_preview': df.head().to_html(),  # Exibir os primeiros registros na página
+    }
+    return render(request, 'estoque_analise.html', context)

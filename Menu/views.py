@@ -19,22 +19,21 @@ def dictfetchall(cursor):
 def home(request):
     licenca_nome = request.session.get("licenca_nome", "Desconhecido")
     usuario = get_user(request)  # Obtém o usuário autenticado
+    request.session['usuario_nome'] = usuario.nome  # Armazena o nome do usuário na sessão
     print(f"Usuário autenticado na home? {usuario.is_authenticated}")
     print(f"Usuário: {usuario}")
     print(f"Licença na sessão: {licenca_nome}")
     vendedor = request.GET.get('vendedor', '')
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')
-
+    
     # Obter lista de vendedores
     with connection.cursor() as cursor:
-        cursor.execute("""
+        cursor.execute(""" 
             SELECT DISTINCT e1.enti_clie, e1.enti_nome
             FROM pedidosvenda 
             LEFT JOIN entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
-
             WHERE pedi_canc = false  -- Certifique-se de filtrar pedidos cancelados
-
             ORDER BY e1.enti_nome ASC;
         """)
         vendedores = cursor.fetchall()
@@ -51,10 +50,8 @@ def home(request):
             pedidosvenda
         LEFT JOIN 
             entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
-
         WHERE 
             pedi_canc = false  -- Filtrar pedidos cancelados
-
     """
 
     params = []

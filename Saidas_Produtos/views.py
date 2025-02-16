@@ -3,7 +3,7 @@ from . import models, forms
 from django.urls import reverse_lazy
 
 class SaidasListView(ListView):
-    model = models.Saida_Produtos
+    model = models.SaidasEstoque
     template_name = 'saidaslistas.html'
     context_object_name = 'saidas'
     paginate_by = 10
@@ -20,19 +20,19 @@ class SaidasListView(ListView):
 
 
 class SaidasCreateView(CreateView):
-    model = models.Saida_Produtos
+    model = models.SaidasEstoque
     template_name = 'saidascriar.html'
     form_class = forms.Saidas
     success_url = reverse_lazy('saidaslistas')
 
 
 class SaidasDetailView(DetailView):
-    model = models.Saida_Produtos
+    model = models.SaidasEstoque
     template_name = 'saidasdetalhe.html'
 
 
 class SaidasUpdateView(UpdateView):
-    model = models.Saida_Produtos
+    model = models.SaidasEstoque
     template_name = 'saidaseditar.html'
     form_class = forms.Saidas
     success_url = reverse_lazy('saidaslistas')
@@ -40,7 +40,7 @@ class SaidasUpdateView(UpdateView):
 
 
 class SaidasDeleteView(DeleteView):
-    model = models.Saida_Produtos
+    model = models.SaidasEstoque
     template_name = 'saidasexcluir.html'
     success_url = reverse_lazy('saidaslistas')
 

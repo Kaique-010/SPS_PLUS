@@ -11,12 +11,9 @@ from .views import (
 )
 
 
-# Cria um router para o EntidadesViewSet
-router = DefaultRouter()
-router.register(r'produtos', ProdutosViewSet)
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+
     path('produtos_lista', ProdutoListView.as_view(), name='produtos_lista.html'),
     path('produto/create/', ProdutoCreateView.as_view(), name='produto_create'),
     path('produto/update/<str:prod_codi>/', ProdutoUpdateView.as_view(), name='produtos_update'),

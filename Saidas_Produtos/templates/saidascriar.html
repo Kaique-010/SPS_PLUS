@@ -1,18 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}
-Registrar Saidas
+Registrar saidas
 {% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
 <link rel="stylesheet" href="{% static 'Saidas_Produtos/styles.css' %}" />
 <div class="container">
-
-
   <div class="card">
     <div class="card-body">
-      <h3 class="display-8"> Registrar Saida <i class="bi bi-arrow-down-up"></i></h3>
+      <h3 class="display-8"> Registrar saida <i class="bi bi-arrow-down-up"></i></h3>
       <form method="post" class="form">
         {% csrf_token %}
         <div class="row">
@@ -21,8 +19,8 @@ Registrar Saidas
           </div>
           <div class="col-md-6">
             <div class="form-group">
-              <label for="{{ form.data.id_for_label }}">Data</label>
-              {{ form.data }}
+              <label for="{{ form.said_data.id_for_label }}">Data</label>
+              {{ form.said_data }}
             </div>
           </div>
         </div>
@@ -30,14 +28,14 @@ Registrar Saidas
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
-              <label for="{{ form.entidade.id_for_label }}">Entidade Responsável</label>
-              {{ form.entidade }}
+              <label for="{{ form.said_ent.id_for_label }}">Entidade Responsável</label>
+              {{ form.said_enti }}
             </div>
           </div>
           <div class="col-md-12">
             <div class="form-group">
-              <label for="{{ form.produto_codigo.id_for_label }}">Produto</label>
-              {{ form.produto_codigo }}
+              <label for="{{ form.said_prod.id_for_label }}">Produto</label>
+              {{ form.said_prod }}
             </div>
           </div>
         </div>
@@ -45,36 +43,28 @@ Registrar Saidas
         <div class="row">
           <div class="col-md-6">
             <div class="form-group">
-              <label for="{{ form.quantidade.id_for_label }}">Quantidade</label>
-              {{ form.quantidade }}
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="form-group">
-              <label for="{{ form.documento.id_for_label }}">Documento</label>
-              {{ form.documento }}
+              <label for="{{ form.said_tota.id_for_label }}">Quantidade</label>
+              {{ form.said_tota }}
             </div>
           </div>
         </div>
 
+
         <div class="row">
           <div class="col-md-12">
             <div class="form-group">
-              <label for="{{ form.observacoes.id_for_label }}">Observações</label>
-              {{ form.observacoes }}
+              <label for="{{ form.said_obse.id_for_label }}">Observações</label>
+              {{ form.said_obse }}
             </div>
           </div>
         </div>
         <div class="container-button">
-          <button type="submit" class="btn btn-primary"> Salvar Saída</button>
+          <button type="submit" class="btn btn-primary"> Salvar saida</button>
           <a href="{% url 'saidaslistas'%}" class="btn btn-secondary mt2">Voltar</a>
         </div>
       </form>
     </div>
   </div>
-
 
 </div>
 </div>

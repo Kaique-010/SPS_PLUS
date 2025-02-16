@@ -19,12 +19,7 @@ from rest_framework import filters
 from django.core.paginator import Paginator
 from Entidades import models
 
-class EntidadesViewSet(viewsets.ModelViewSet):
-    queryset = Entidades.objects.filter(enti_empr=1)
-    serializer_class = EntidadesSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['nome']
-    
+
     
 
 def dictfetchall(cursor):

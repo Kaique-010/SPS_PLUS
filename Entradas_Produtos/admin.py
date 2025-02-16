@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import Entrada_Produtos
+from .models import EntradaEstoque
 
-class Entrada_ProdutosAdmin(admin.ModelAdmin):
-    list_display = ('prod_codi', 'entidade', 'quantidade', 'criado', 'modificado', 'id', 'documento')
-    list_filter = ('criado', 'modificado', 'prod_codi', 'quantidade')
+class EntradaEstoqueAdmin(admin.ModelAdmin):
+    list_display = ('entr_prod', 'entr_enti', 'entr_tota',  'entr_obse')
+    list_filter = ('entr_prod', 'entr_tota')
 
-admin.site.register(Entrada_Produtos, Entrada_ProdutosAdmin)
+admin.site.register(EntradaEstoque, EntradaEstoqueAdmin)

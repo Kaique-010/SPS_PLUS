@@ -4,17 +4,19 @@ from produto.models import SaldoProduto
 from django.core.exceptions import ValidationError
 
 class Saidas(forms.ModelForm):
-    class Meta:
-        model = models.Saida_Produtos
-        fields = ['data', 'entidade', 'prod_codi', 'quantidade', 'documento', 'observacoes']
+    class Meta:    
+        model = models.SaidasEstoque
+        fields = ['said_data', 'said_empr', 'said_fili', 'said_prod', 'said_enti', 'said_obse', 'said_tota']
         widgets = {
-            'data': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'entidade': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Entidade Responsável'}),
-            'prod_codi': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Produto'}),
-            'quantidade': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Insira a Quantidade'}),
-            'documento': forms.NumberInput(attrs={'class': 'form-control', 'Placeholder': 'Documento se Necessário'}),
-            'observacoes': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'said_data': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'said_enti': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Entidade Responsável'}),
+            'said_prod': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Produto'}),
+            'said_fili': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Insira a Filial'}),
+            'said_empr': forms.NumberInput(attrs={'class': 'form-control', 'Placeholder': 'Insira a Empresa'}),
+            'said_obse': forms.NumberInput(attrs={'class': 'form-control', 'Placeholder': 'Insira o Documento'}),
+            'said_tota': forms.NumberInput(attrs={'class': 'form-control', 'rows': 3}),
         }
+
 
     def clean_quantidade(self):
         quantidade = self.cleaned_data.get('quantidade')

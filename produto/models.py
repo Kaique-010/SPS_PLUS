@@ -86,10 +86,11 @@ class Marca(models.Model):
         return self.nome
 
 class Tabelaprecos(models.Model):
-
     tabe_empr = models.IntegerField(default=1)  
     tabe_fili = models.IntegerField(default=1)
-    tabe_prod = models.ForeignKey("Produtos", verbose_name="Produto", on_delete=models.CASCADE, default=1, primary_key=True, db_column='tabe_prod')
+    tabe_prod = models.ForeignKey(
+        "Produtos", verbose_name="Produto", on_delete=models.CASCADE, default=1, db_column="tabe_prod"
+    )
     tabe_prco = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_icms = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_desc = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
@@ -104,8 +105,8 @@ class Tabelaprecos(models.Model):
     tabe_praz = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True)
     tabe_apra = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_vare = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
-    field_log_data = models.DateField(db_column='_log_data', blank=True, null=True) 
-    field_log_time = models.TimeField(db_column='_log_time', blank=True, null=True) 
+    field_log_data = models.DateField(db_column="_log_data", blank=True, null=True)
+    field_log_time = models.TimeField(db_column="_log_time", blank=True, null=True)
     tabe_valo_st = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_perc_reaj = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_hist = models.TextField(blank=True, null=True)
@@ -114,10 +115,11 @@ class Tabelaprecos(models.Model):
     tabe_perc_st = models.DecimalField(max_digits=7, decimal_places=4, blank=True, null=True)
 
     class Meta:
-        db_table = 'tabelaprecos'
-        unique_together = (('tabe_empr', 'tabe_fili', 'tabe_prod'),)
-
-
+        db_table = "tabelaprecos"
+        unique_together = (("tabe_empr", "tabe_fili", "tabe_prod"),)
+        constraints = [
+            models.UniqueConstraint(fields=["tabe_empr", "tabe_fili", "tabe_prod"], name="primary_key_tabelaprecos")
+        ]
 
 
 
@@ -155,16 +157,16 @@ class Produtos(models.Model):
     imagem_tag.short_description = 'Imagem'
 
 
-
 class SaldoProduto(models.Model):
-    sapr_empr = models.ForeignKey(Empresas, on_delete=models.CASCADE,primary_key=True) 
+    id= None
+    sapr_empr = models.ForeignKey(Empresas, on_delete=models.CASCADE)
     sapr_fili = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     sapr_prod = models.ForeignKey(Produtos, on_delete=models.CASCADE, db_column='sapr_prod') 
     sapr_sald = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True)
 
     class Meta:
-      
         db_table = 'saldosprodutos'
-    
+        unique_together = ('sapr_empr', 'sapr_fili', 'sapr_prod')  # 🔹 Garante que não existam duplicatas
+
     def __str__(self):
         return f'Produto {self.sapr_prod.prod_nome} - Saldo: {self.sapr_sald}'

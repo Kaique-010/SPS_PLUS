@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'Saidas_Produtos',
     'Ordemservico',
     'orcamentos',
+    'previsao',
+    
     
 ]
 
@@ -62,8 +64,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'licencas.middleware.ThreadLocalMiddleware',
-
-    
+    'licencas.middleware.UsuarioLicencaMiddleware',   
 
 ]
 
@@ -83,6 +84,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'licencas.context_processors.usuario_licenca',
             ],
         },
     },

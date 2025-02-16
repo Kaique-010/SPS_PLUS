@@ -19,8 +19,8 @@ from licencas.mixins import LicenseMixin
 from produto.serializers import ProdutosSerializers
 from produto.models import Produtos, GrupoProduto, SubgrupoProduto, FamiliaProduto, Marca, Tabelaprecos
 from .forms import ProdutosForm, GrupoForm, SubgrupoForm, FamiliaForm, MarcaForm, TabelaprecosFormSet
-from Entradas_Produtos.models import Entrada_Produtos
-from Saidas_Produtos.models import Saida_Produtos
+from Entradas_Produtos.models import EntradaEstoque
+from Saidas_Produtos.models import SaidasEstoque
 from produto.models import SaldoProduto
 from django.views.generic import DeleteView, ListView, CreateView, UpdateView
 
@@ -286,32 +286,75 @@ class FamiliaProdutoDeleteView(LicenseMixin, DeleteView):
         context['familia_produto'] = self.object
         return context
 
+
 def saldo(request):
+    # Obter a licença e o banco de dados da licença
+    licenca = getattr(request.user, 'licenca', None)
+    db_name = licenca.lice_nome if licenca else 'default'
+
     # Filtros de produto e período
     produto_selecionado = request.GET.get('produto', '')
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')
 
-    entradas = Entrada_Produtos.objects.all()
-    saidas = Saida_Produtos.objects.all()
+    # Buscar todas as entradas e saídas no banco correto
+    entradas = EntradaEstoque.objects.using(db_name)
+    saidas = SaidasEstoque.objects.using(db_name)
 
+    # Filtrar por produto, se necessário
     if produto_selecionado:
-        entradas = entradas.filter(prod_codi=produto_selecionado)
-        saidas = saidas.filter(prod_codi=produto_selecionado)
+        entradas = entradas.filter(entr_prod=produto_selecionado)
+        saidas = saidas.filter(said_prod=produto_selecionado)
 
+    # Converter e filtrar por data
     if data_inicio:
-        entradas = entradas.filter(data_entrada__gte=data_inicio)
-        saidas = saidas.filter(data_saida__gte=data_inicio)
+        data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d').date()
+        entradas = entradas.filter(entr_data__gte=data_inicio)
+        saidas = saidas.filter(said_data__gte=data_inicio)
 
     if data_fim:
-        entradas = entradas.filter(data_entrada__lte=data_fim)
-        saidas = saidas.filter(data_saida__lte=data_fim)
+        data_fim = datetime.strptime(data_fim, '%Y-%m-%d').date()
+        entradas = entradas.filter(entr_data__lte=data_fim)
+        saidas = saidas.filter(said_data__lte=data_fim)
 
-    saldo_estoque = entradas.aggregate(total_entrada=Sum('quantidade'))['total_entrada'] or 0
-    total_saida = saidas.aggregate(total_saida=Sum('quantidade'))['total_saida'] or 0
+    # Cálculo do saldo
+    saldo_estoque = entradas.aggregate(total_entrada=Sum('entr_quan'))['total_entrada'] or 0
+    total_saida = saidas.aggregate(total_saida=Sum('said_quan'))['total_saida'] or 0
     saldo_produto = saldo_estoque - total_saida
 
-    return render(request, 'saldo_produto.html', {'saldo_produto': saldo_produto})
+    # Buscar produtos no banco correto
+    produtos = Produtos.objects.using(db_name).all()
+    produtos_filtrados = [produto.prod_nome for produto in produtos]
+
+    # Preparar dados para o gráfico
+    entradas_data = {}
+    saidas_data = {}
+
+    for produto in produtos:
+        # Buscar total de entradas e saídas para cada produto
+        entradas_data[produto.prod_nome] = (
+            EntradaEstoque.objects.using(db_name)
+            .filter(entr_prod=produto)
+            .aggregate(Sum('entr_quan'))['entr_quan__sum'] or 0
+        )
+        saidas_data[produto.prod_nome] = (
+            SaidasEstoque.objects.using(db_name)
+            .filter(said_prod=produto)
+            .aggregate(Sum('said_quan'))['said_quan__sum'] or 0
+        )
+
+
+    print(f"Entradas encontradas: {list(entradas_data.items())}")
+
+
+    return render(request, 'saldos.html', {
+        'saldo_produto': saldo_produto,
+        'produto_selecionado': produto_selecionado,
+        'produtos': produtos,
+        'produtos_filtrados': produtos_filtrados,
+        'entradas_data': entradas_data,
+        'saidas_data': saidas_data,
+    })
 
 
 def dictfetchall(cursor):

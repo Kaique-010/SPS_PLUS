@@ -1,73 +1,90 @@
 <!-- templates/seu_app/partials/footer.html -->
 <style>
-    .footer {
-        text-align: center;
-        margin-bottom: 25%;
-    }
+  .footer {
+    text-align: center;
+    margin-bottom: 25%;
+  }
 
-    .footer ul {
-        list-style-type: none;
-        padding: 0;
-    }
+  .footer ul {
+    list-style-type: none;
+    padding: 0;
+  }
 
-    .footer ul li {
-        display: inline;
-        margin-right: 10px;
-    }
+  .footer ul li {
+    display: inline;
+    margin-right: 10px;
+  }
 
-    .footer a {
-        text-decoration: none;
-    }
+  .footer a {
+    text-decoration: none;
+  }
 
+  .social-icon.facebook i {
+    color: #3b5998;
+  }
 
-    .social-icon.facebook i {
-        color: #3b5998;
+  .social-icon.twitter i {
+    color: #00acee;
+  }
 
-    }
+  .social-icon.instagram i {
+    color: #e4405f;
+  }
 
-    .social-icon.twitter i {
-        color: #00acee;
-    }
+  .social-icon.linkedin i {
+    color: #0e76a8;
+  }
 
-    .social-icon.instagram i {
-        color: #e4405f;
-    }
-
-    .social-icon.linkedin i {
-        color: #0e76a8;
-    }
-
-    .social-icon:hover i {
-        color: #ffb121;
-        /* Cor ao passar o mouse */
-    }
+  .social-icon:hover i {
+    color: #ffb121;
+    /* Cor ao passar o mouse */
+  }
 </style>
-<br>
-<br>
-<br>
+<br />
+<br />
+<br />
 <center>
-    <footer class="footer">
-        <div class="footer-section">
-            <h5>Redes Sociais</h5>
-            <ul class="social-links">
-                <li><a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a></li>
-                <li><a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a></li>
-                <li><a href="#" class="social-icon instagram"><i class="fab fa-instagram"></i></a></li>
-                <li><a href="#" class="social-icon linkedin"><i class="fab fa-linkedin-in"></i></a></li>
-            </ul>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; {{ '2024' }} Spartacus Sistemas. Todos os direitos reservados.</p>
-            <p id="dataAcesso">Acesso em:</p>
-            <p>Usuário: {{ usuario }} - Licença: {{ request.session.licenca_nome }}</p>
+  <footer class="footer">
+    <div class="footer-section">
+      <h5>Redes Sociais</h5>
+      <ul class="social-links">
+        <li>
+          <a href="#" class="social-icon facebook"
+            ><i class="fab fa-facebook-f"></i
+          ></a>
+        </li>
+        <li>
+          <a href="#" class="social-icon twitter"
+            ><i class="fab fa-twitter"></i
+          ></a>
+        </li>
+        <li>
+          <a href="#" class="social-icon instagram"
+            ><i class="fab fa-instagram"></i
+          ></a>
+        </li>
+        <li>
+          <a href="#" class="social-icon linkedin"
+            ><i class="fab fa-linkedin-in"></i
+          ></a>
+        </li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <p>
+        &copy; {{ '2024' }} Spartacus Sistemas. Todos os direitos reservados.
+      </p>
+      <p id="dataAcesso">Acesso em:</p>
+      <p>Usuário: {{ usuario_nome }} - Licença: {{ licenca_nome }}</p>
+    </div>
+  </footer>
+  <script>
+    const dataAtual = new Date();
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const dataFormatada = dataAtual.toLocaleDateString("pt-BR", options);
 
-        </div>
-    </footer>
-    <script>
-        const dataAtual = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const dataFormatada = dataAtual.toLocaleDateString('pt-BR', options);
-
-        document.getElementById('dataAcesso').textContent = `Acesso em: ${dataFormatada}`;
-    </script>
+    document.getElementById(
+      "dataAcesso"
+    ).textContent = `Acesso em: ${dataFormatada}`;
+  </script>
 </center>

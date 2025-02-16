@@ -1,6 +1,9 @@
 {% extends 'base.html' %} {% load static %} {% block title %} Lista de Entradas
 {% endblock %} {% block content %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
 <link rel="stylesheet" href="{% static 'Saidas_Produtos/styles.css' %}" />
 <div class="container">
   <div class="card text-center">
@@ -9,9 +12,18 @@
     </div>
     <div class="row mt-4">
       <div class="col-md-8">
-        <form method="get" action="{% url 'entradaslistas' %}" class="input-group search-bar">
-          <input type="text" class="form-control" name="produto" placeholder="Buscar por Produto"
-            value="{{ request.GET.produto }}" />
+        <form
+          method="get"
+          action="{% url 'entradaslistas' %}"
+          class="input-group search-bar"
+        >
+          <input
+            type="text"
+            class="form-control"
+            name="produto"
+            placeholder="Buscar por Produto"
+            value="{{ request.GET.produto }}"
+          />
           <button class="btn btn-primary" type="submit">
             <i class="bi bi-search"></i> Pesquisar
           </button>
@@ -42,20 +54,29 @@
           {% for entrada in entradas %}
           <tr>
             <td>{{ entrada.id }}</td>
-            <td>{{ entrada.produto_codigo}}</td>
-            <td>{{ entrada.entidade }}</td>
-            <td>{{ entrada.quantidade }}</td>
-            <td>{{ entrada.documento }}</td>
-            <td>{{ entrada.criado }}</td>
+            <td>{{ entrada.entr_prod }}</td>
+            <td>{{ entrada.entr_enti.enti_nome }}</td>
+            <td>{{ entrada.entr_quan }}</td>
+            <td>{{ entrada.entr_obse }}</td>
+            <td>{{ entrada.entr_data }}</td>
             <td>
               <div class="btn-group" role="group">
-                <a href="{% url 'entradasdetalhe' entrada.id %}" class="btn btn-info btn-sm">
+                <a
+                  href="{% url 'entradasdetalhe' entrada.id %}"
+                  class="btn btn-info btn-sm"
+                >
                   <i class="bi bi-eye"></i>
                 </a>
-                <a href="{% url 'entradaseditar' entrada.id %}" class="btn btn-warning btn-sm">
+                <a
+                  href="{% url 'entradaseditar' entrada.id %}"
+                  class="btn btn-warning btn-sm"
+                >
                   <i class="bi bi-pencil"></i>
                 </a>
-                <a href="{% url 'entradasexcluir' entrada.id %}" class="btn btn-danger btn-sm">
+                <a
+                  href="{% url 'entradasexcluir' entrada.id %}"
+                  class="btn btn-danger btn-sm"
+                >
                   <i class="bi bi-trash"></i>
                 </a>
               </div>
@@ -74,3 +95,4 @@
     {% include 'parcials/pagination.html' %}
   </div>
   {% endblock %}
+</div>
