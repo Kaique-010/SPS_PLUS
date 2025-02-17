@@ -1,7 +1,10 @@
 from datetime import date, timedelta
+from decimal import Decimal
+import decimal
 import json
 import csv
 import os
+from django.core.paginator import Paginator
 from datetime import datetime
 from django.db.models import Sum
 from django.db import connection, transaction
@@ -288,72 +291,58 @@ class FamiliaProdutoDeleteView(LicenseMixin, DeleteView):
 
 
 def saldo(request):
-    # Obter a licença e o banco de dados da licença
     licenca = getattr(request.user, 'licenca', None)
-    db_name = licenca.lice_nome if licenca else 'default'
+    db_name = licenca.lice_nome if licenca else 'default'  # Define o banco correto
 
-    # Filtros de produto e período
+    # Carregar produtos
+    produtos = Produtos.objects.using(db_name).only('prod_nome', 'prod_codi')
+
     produto_selecionado = request.GET.get('produto', '')
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')
 
-    # Buscar todas as entradas e saídas no banco correto
-    entradas = EntradaEstoque.objects.using(db_name)
-    saidas = SaidasEstoque.objects.using(db_name)
+    # Consultas para entradas e saídas com agregações diretas
+    entradas = EntradaEstoque.objects.using(db_name).only('entr_prod', 'entr_tota', 'entr_data')
+    saidas = SaidasEstoque.objects.using(db_name).only('said_prod', 'said_tota', 'said_data')
 
-    # Filtrar por produto, se necessário
+    # Se produto for selecionado, filtrar as entradas e saídas
     if produto_selecionado:
-        entradas = entradas.filter(entr_prod=produto_selecionado)
-        saidas = saidas.filter(said_prod=produto_selecionado)
+        entradas = entradas.filter(entr_prod__prod_codi=produto_selecionado)
+        saidas = saidas.filter(said_prod__prod_codi=produto_selecionado)
 
-    # Converter e filtrar por data
-    if data_inicio:
-        data_inicio = datetime.strptime(data_inicio, '%Y-%m-%d').date()
-        entradas = entradas.filter(entr_data__gte=data_inicio)
-        saidas = saidas.filter(said_data__gte=data_inicio)
+    # Filtro por intervalo de data
+    if data_inicio and data_fim:
+        entradas = entradas.filter(entr_data__range=[data_inicio, data_fim])
+        saidas = saidas.filter(said_data__range=[data_inicio, data_fim])
 
-    if data_fim:
-        data_fim = datetime.strptime(data_fim, '%Y-%m-%d').date()
-        entradas = entradas.filter(entr_data__lte=data_fim)
-        saidas = saidas.filter(said_data__lte=data_fim)
+    # Agregação de entradas e saídas
+    total_entradas = entradas.aggregate(total_entradas=Sum('entr_tota'))['total_entradas'] or 0
+    total_saidas = saidas.aggregate(total_saidas=Sum('said_tota'))['total_saidas'] or 0
 
-    # Cálculo do saldo
-    saldo_estoque = entradas.aggregate(total_entrada=Sum('entr_quan'))['total_entrada'] or 0
-    total_saida = saidas.aggregate(total_saida=Sum('said_quan'))['total_saida'] or 0
-    saldo_produto = saldo_estoque - total_saida
+    # Calcular saldo
+    saldo_produto_selecionado = total_entradas - total_saidas
 
-    # Buscar produtos no banco correto
-    produtos = Produtos.objects.using(db_name).all()
-    produtos_filtrados = [produto.prod_nome for produto in produtos]
+    # Paginando as entradas e saídas
+    entradas_data = list(entradas.values('entr_prod').annotate(total_entradas=Sum('entr_tota')).iterator())
+    saidas_data = list(saidas.values('said_prod').annotate(total_saidas=Sum('said_tota')).iterator())
 
-    # Preparar dados para o gráfico
-    entradas_data = {}
-    saidas_data = {}
+    entradas_paginator = Paginator(entradas_data, 50)
+    saidas_paginator = Paginator(saidas_data, 50)
 
-    for produto in produtos:
-        # Buscar total de entradas e saídas para cada produto
-        entradas_data[produto.prod_nome] = (
-            EntradaEstoque.objects.using(db_name)
-            .filter(entr_prod=produto)
-            .aggregate(Sum('entr_quan'))['entr_quan__sum'] or 0
-        )
-        saidas_data[produto.prod_nome] = (
-            SaidasEstoque.objects.using(db_name)
-            .filter(said_prod=produto)
-            .aggregate(Sum('said_quan'))['said_quan__sum'] or 0
-        )
+    page_entradas = request.GET.get('page_entradas', 1)
+    page_saidas = request.GET.get('page_saidas', 1)
+    entradas_page = entradas_paginator.get_page(page_entradas)
+    saidas_page = saidas_paginator.get_page(page_saidas)
 
-
-    print(f"Entradas encontradas: {list(entradas_data.items())}")
-
-
+    # Passando todos os dados para o template
     return render(request, 'saldos.html', {
-        'saldo_produto': saldo_produto,
-        'produto_selecionado': produto_selecionado,
         'produtos': produtos,
-        'produtos_filtrados': produtos_filtrados,
-        'entradas_data': entradas_data,
-        'saidas_data': saidas_data,
+        'produto_selecionado': produto_selecionado,
+        'saldo_produto_selecionado': saldo_produto_selecionado,  # Passando o saldo
+        'entradas_page': entradas_page,
+        'saidas_page': saidas_page,
+        'entradas_data': entradas_data[:10],  # Apenas 10 para o gráfico
+        'saidas_data': saidas_data[:10]
     })
 
 
@@ -463,3 +452,10 @@ def dictfetchall(cursor):
         dict(zip(columns, row))
         for row in cursor.fetchall()
     ]
+
+
+
+def decimal_to_float(obj):
+    if isinstance(obj, Decimal):
+        return float(obj)
+    raise TypeError(f"Type {type(obj)} not serializable")

@@ -19,7 +19,7 @@ urlpatterns = [
     path('', include ('orcamentos.urls')),
     path('', include ('licencas.urls')),
     path('', include ('IA.urls')),
-    path('api/', include('previsao.urls')),
+    path('', include('previsao.urls')),
     
 ]
 

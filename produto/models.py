@@ -86,11 +86,12 @@ class Marca(models.Model):
         return self.nome
 
 class Tabelaprecos(models.Model):
+    id = None
     tabe_empr = models.IntegerField(default=1)  
     tabe_fili = models.IntegerField(default=1)
     tabe_prod = models.ForeignKey(
-        "Produtos", verbose_name="Produto", on_delete=models.CASCADE, default=1, db_column="tabe_prod"
-    )
+        "Produtos", verbose_name="Produto", on_delete=models.CASCADE, default=1, db_column="tabe_prod", primary_key=True)
+    
     tabe_prco = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_icms = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
     tabe_desc = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
@@ -158,11 +159,11 @@ class Produtos(models.Model):
 
 
 class SaldoProduto(models.Model):
-    id= None
-    sapr_empr = models.ForeignKey(Empresas, on_delete=models.CASCADE)
-    sapr_fili = models.ForeignKey(Filiais, on_delete=models.CASCADE)
-    sapr_prod = models.ForeignKey(Produtos, on_delete=models.CASCADE, db_column='sapr_prod') 
-    sapr_sald = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True)
+    id = None
+    sapr_empr = models.ForeignKey(Empresas, on_delete=models.CASCADE, db_column='sapr_empr')
+    sapr_fili = models.ForeignKey(Filiais, on_delete=models.CASCADE, db_column='sapr_fili')
+    sapr_prod = models.ForeignKey(Produtos, on_delete=models.CASCADE, db_column='sapr_prod', primary_key=True)
+    sapr_sald = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True, db_column='sapr_sald')
 
     class Meta:
         db_table = 'saldosprodutos'

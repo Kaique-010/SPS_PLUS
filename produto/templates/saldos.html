@@ -19,49 +19,48 @@
         text-align: center;
         background-color: rgb(84, 126, 104);
     }
-    
+
     .btn-primary:hover {
         background-color: #000000;
     }
 
     .card {
         background: linear-gradient(#0a2b2e, #000000);
-        border-radius: 25px; /* Bordas arredondadas */
+        border-radius: 25px;
         box-shadow: 0 10px 16px rgba(0, 0, 0, 0.1);
         transition: transform 0.2s, box-shadow 0.2s;
     }
 
     .card:hover {
-        transform: scale(1.02); /* Efeito de zoom ao passar o mouse */
-        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2); /* Sombra mais intensa */
+        transform: scale(1.02);
+        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
     }
 
     .card-body {
-        backdrop-filter: blur(20px); /* Efeito de desfoque */
-        padding: 20px; /* Adiciona padding */
+        backdrop-filter: blur(20px);
+        padding: 80px;
+        color: aliceblue;
     }
 
-    .form-select, 
+    .form-select,
     .form-control {
         border-radius: 10px;
     }
 
-    /* Aumentando o container */
     .container {
-        max-width: 75%; /* Aumenta a largura do container */
-        margin-top: 90px;  
+        max-width: 70%;
+        margin-top: 150px;
     }
 
-    /* Ajustando o gráfico */
     canvas {
-        max-height: 240px; /* Altura do gráfico */
+        max-height: 300px;
+        width: 100%;
     }
 
-    /* Melhorando a aparência da lista de saldos */
     .list-group-item {
-        background-color: transparent; /* Fundo transparente */
-        color: rgb(255, 255, 255); /* Texto em branco para itens da lista */
-        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5); /* Sombra para destaque */
+        background-color: transparent;
+        color: rgb(255, 255, 255);
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
     }
 </style>
 
@@ -76,7 +75,8 @@
                         <select name="produto" id="produto" class="form-select">
                             <option value="">Todos os Produtos</option>
                             {% for produto in produtos %}
-                            <option value="{{ produto.prod_nome }}" {% if produto_selecionado == produto.prod_nome %}selected{% endif %}>
+                            <option value="{{ produto.prod_codi }}" {% if produto_selecionado==produto.prod_codi
+                                %}selected{% endif %}>
                                 {{ produto.prod_nome }}
                             </option>
                             {% endfor %}
@@ -84,7 +84,8 @@
                     </div>
                     <div class="col-md-3">
                         <label for="data_inicio" class="form-label">Data Início</label>
-                        <input type="date" name="data_inicio" id="data_inicio" class="form-control" value="{{ data_inicio }}">
+                        <input type="date" name="data_inicio" id="data_inicio" class="form-control"
+                            value="{{ data_inicio }}">
                     </div>
                     <div class="col-md-3">
                         <label for="data_fim" class="form-label">Data Fim</label>
@@ -95,60 +96,85 @@
                     </div>
                 </form>
             </div>
-            <h2>Gráfico de Entradas e Saídas</h2>
-            <canvas id="entradaSaidaChart"></canvas>
 
+            <!-- Gráfico de Entradas e Saídas -->
+            <canvas id="graficoSaldo"></canvas>
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
             <script>
-                const produtosFiltrados = {{ produtos_filtrados|json_script:"produtos-filtrados" }};
-                const entradasData = {{ entradas_data|json_script:"entradas-data" }};
-                const saidasData = {{ saidas_data|json_script:"saidas-data" }};
-            
-                const ctx = document.getElementById('entradaSaidaChart').getContext('2d');
-                const entradaSaidaChart = new Chart(ctx, {
+                var ctx = document.getElementById('graficoSaldo').getContext('2d');
+                var chart = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: produtosFiltrados,
-                        datasets: [
-                            {
-                                label: 'Entradas',
-                                data: entradasData,
-                                backgroundColor: 'rgba(20, 127, 160, 0.6)',
-                                borderColor: 'rgba(54, 162, 235, 1)',
-                                borderWidth: 1
+                        labels: [{% for entrada in entradas_data %}"{{ entrada.entr_prod }}",{% endfor %}],
+                datasets: [
+                    {
+                        label: 'Entradas',
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)', // Azul mais moderno
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        data: [{% for entrada in entradas_data %}{{ entrada.total_entradas }}, {% endfor %}]
                             },
-                            {
-                                label: 'Saídas',
-                                data: saidasData,
-                                backgroundColor: 'rgba(179, 47, 47, 0.6)',
-                                borderColor: 'rgba(255, 99, 132, 1)',
-                                borderWidth: 1
+                {
+                    label: 'Saídas',
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)', // Rosa mais suave
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1,
+                                    data: [{% for saida in saidas_data %} { { saida.total_saidas } }, {% endfor %}]
                             }
                         ]
                     },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true
+                options: {
+                    responsive: true,
+                        maintainAspectRatio: false,
+                            scales: {
+                        y: {
+                            beginAtZero: true,
+                                ticks: {
+                                stepSize: 10
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)'
                             }
                         }
+                    },
+                    plugins: {
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                                bodyColor: '#fff',
+                                    borderColor: '#fff',
+                                        borderWidth: 1
+                        }
+                    },
+                    hover: {
+                        mode: 'nearest',
+                            intersect: true
                     }
+                }
                 });
             </script>
 
-            <h2 class="mt-5">Saldo Atual por Produto</h2>
+            {% if produto_selecionado %}
             <ul class="list-group">
-                {% for produto, saldo in saldos.items %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
-                    {{ produto }}
-                    <span class="badge bg-success rounded-pill">{{ saldo }}</span>
+                    {{ produto_selecionado }}
+                    <h2>Saldo Atual: <span class="badge bg-primary">{{ saldo_produto_selecionado }}</span></h2>
                 </li>
-                {% empty %}
-                <li class="list-group-item">Nenhum saldo registrado.</li>
+            </ul>
+            {% else %}
+            <ul class="list-group">
+                {% for produto in saldos_produtos %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ produto.prod_nome }}
+                    <span class="badge bg-primary">{{ produto.saldo_atual }}</span>
+                </li>
                 {% endfor %}
             </ul>
+            {% endif %}
         </div>
     </div>
 </div>

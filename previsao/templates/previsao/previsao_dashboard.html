@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container {
+        margin-top: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    h1 {
+        color: antiquewhite;
+    }
+
+
+
+    form {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 10px;
+        display: flex;
+       
+        color: antiquewhite;
+    }
+
+    input,
+    select,
+    button {
+        padding: 8px;
+        margin: 5px;
+        border-radius: 5px;
+    }
+
+    button {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background: #45a049;
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container">
+    <h1>Previsão de Estoque</h1>
+
+    {% if erro %}
+    <p style="color: red;">{{ erro }}</p>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <label for="produto">Produto:</label>
+        <select name="produto" id="produto">
+            {% for produto in produtos %}
+            <option value="{{ produto.id }}">{{ produto.prod_nome }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="empresa">Empresa:</label>
+        <input type="text" name="empresa" required>
+
+        <label for="filial">Filial:</label>
+        <input type="text" name="filial" required>
+
+        <label for="dias">Dias de Previsão:</label>
+        <input type="number" name="dias" value="30" min="1" required>
+
+        <button type="submit">Gerar Previsão</button>
+    </form>
+
+    {% if previsao %}
+    <h2>Resultados da Previsão</h2>
+    <canvas id="grafico"></canvas>
+
+    <script>
+        const labels = {{ labels| safe }};
+        const data = {{ data| safe }};
+
+        const ctx = document.getElementById('grafico').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Saldo Previsto',
+                    data: data,
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 0, 255, 0.2)',
+                    fill: true
+                }]
+            }
+        });
+    </script>
+    {% endif %}
+</div>
+{% endblock %}

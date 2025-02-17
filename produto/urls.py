@@ -42,6 +42,7 @@ urlpatterns = [
     path('familias/deletar/<int:pk>/', FamiliaProdutoDeleteView.as_view(), name='familia_produto_delete'),
     
     path('saldos/', saldo, name='saldo'), 
+
 ] 
 # Servindo arquivos de mídia em modo de depuração
 if settings.DEBUG:
