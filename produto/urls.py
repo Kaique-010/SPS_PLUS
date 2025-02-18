@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProdutosViewSet, exportar_produtos,ProdutoListView, ProdutoCreateView, ProdutoUpdateView, ProdutoDeleteView
+from .views import ProdutosViewSet, buscar_produtos, exportar_produtos,ProdutoListView, ProdutoCreateView, ProdutoUpdateView, ProdutoDeleteView
 from .views import GrupoListView, GrupoCreateView, GrupoUpdateView, GrupoDeleteView
 from .views import SubgrupoListView, SubgrupoCreateView, SubgrupoUpdateView, SubgrupoDeleteView
 from .views import (
@@ -42,6 +42,7 @@ urlpatterns = [
     path('familias/deletar/<int:pk>/', FamiliaProdutoDeleteView.as_view(), name='familia_produto_delete'),
     
     path('saldos/', saldo, name='saldo'), 
+    path('buscar-produtos/', buscar_produtos, name='buscar_produtos'),
 
 ] 
 # Servindo arquivos de mídia em modo de depuração

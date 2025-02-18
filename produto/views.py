@@ -13,7 +13,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf import settings
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.urls import reverse_lazy
@@ -459,3 +459,11 @@ def decimal_to_float(obj):
     if isinstance(obj, Decimal):
         return float(obj)
     raise TypeError(f"Type {type(obj)} not serializable")
+
+
+
+def buscar_produtos(request):
+    query = request.GET.get('q', '')
+    produtos = Produtos.objects.filter(prod_nome__icontains=query)
+    resultado = [{'prod_codi': produto.prod_codi, 'prod_nome': produto.prod_nome} for produto in produtos]
+    return JsonResponse(resultado, safe=False)

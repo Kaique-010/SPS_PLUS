@@ -75,9 +75,8 @@
                         <select name="produto" id="produto" class="form-select">
                             <option value="">Todos os Produtos</option>
                             {% for produto in produtos %}
-                            <option value="{{ produto.prod_codi }}" {% if produto_selecionado==produto.prod_codi
-                                %}selected{% endif %}>
-                                {{ produto.prod_nome }}
+                            <option value="{{ produto.prod_codi }}" 
+                            {% if produto_selecionado == produto.prod_codi%}selected{% endif %}>{{ produto.prod_nome }}
                             </option>
                             {% endfor %}
                         </select>
