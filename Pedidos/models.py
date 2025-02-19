@@ -1,6 +1,7 @@
 # models.py
 from django.db import models
 from Entidades.models import Entidades
+from produto.models import Produtos
 
 TIPO_FINANCEIRO = [
     ('0', 'À VISTA'),
@@ -43,7 +44,7 @@ class Itenspedidovenda(models.Model):
     iped_fili = models.IntegerField(unique=True)
     iped_pedi = models.ForeignKey(PedidoVenda, on_delete=models.CASCADE, related_name="itens_pedido")
     iped_item = models.IntegerField()
-    iped_prod = models.CharField(max_length=20, blank=True, null=True, db_column='prod_codi') 
+    iped_prod = models.ForeignKey(Produtos, on_delete=models.CASCADE, db_column='prod_codi') 
     iped_quan = models.DecimalField(max_digits=15, decimal_places=5, blank=True, null=True)
     iped_unit = models.DecimalField(max_digits=15, decimal_places=5, blank=True, null=True)
     iped_tota = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)

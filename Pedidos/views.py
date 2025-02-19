@@ -56,13 +56,13 @@ class PedidoVendaCreateView(CreateView):
             ultimo_item = Itenspedidovenda.objects.filter(iped_pedi=pedido).order_by('-iped_item').first()
             proximo_numero = (ultimo_item.iped_item + 1) if ultimo_item else 1
 
-            itens = formset.save(commit=False)  # Evita salvar diretamente para modificar antes
+            itens = formset.save(commit=False)  
             for idx, item in enumerate(itens, start=proximo_numero):
-                item.iped_pedi = pedido  # Associa o pedido ao item
-                item.iped_item = idx  # Define o número sequencial do item
+                item.iped_pedi = pedido  
+                item.iped_item = idx  
                 item.save()
 
-                print(f"Item Salvo: {item}")  # Debug do item salvo
+                print(f"Item Salvo: {item}")  
 
             messages.success(self.request, 'Pedido e itens salvos com sucesso!')
             return redirect(self.success_url)

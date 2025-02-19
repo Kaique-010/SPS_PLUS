@@ -8,6 +8,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.http import Http404
 from django.urls import reverse_lazy
+import openpyxl
 import requests
 from licencas.mixins import LicenseMixin
 from .models import Entidades
@@ -99,7 +100,20 @@ class EntidadeCreateView(LicenseMixin, CreateView):
 
         print(f"📌 Tentando salvar no banco: {db_name}")
 
-        return super().form_valid(form)  # Aqui o Django já chama `save()`
+        try:
+            response = super().form_valid(form)  # Aqui o Django já chama `save()`
+            messages.success(self.request, "Entidade criada com sucesso!")
+            return response
+        except Exception as e:
+            form.add_error(None, f"Erro ao salvar a entidade: {e}")
+            return self.form_invalid(form)
+
+    def get_success_url(self):
+        # Confirma que a licença ainda está disponível antes de redirecionar
+        if not self.get_license():
+            print("🚨 Erro: Licença não encontrada antes de redirecionar!")
+            return redirect('erro_view')  # Redireciona para uma página de erro apropriada
+        return super().get_success_url()
 
 
 

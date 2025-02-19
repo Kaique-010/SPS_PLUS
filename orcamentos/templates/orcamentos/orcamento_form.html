@@ -6,7 +6,7 @@
 {% block content %}
 
 <br><br>
-<link rel="stylesheet" href="{% static 'orcamentos/style.css' %}?v={{ STATIC_VERSION }}" />
+<link rel="stylesheet" href="{% static 'orcamentos/dstyle.css' %}?v={{ STATIC_VERSION }}" />
 
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -19,6 +19,37 @@
             <h3 class="card-title text-center">Orçamento de Venda <i class="bi bi-file-earmark-text fs-4"></i></h3>
             <hr />
 
+            <!-- Exibe erros do formulário principal e do formset -->
+            {% if form.errors or pecas_formset.errors %}
+            <div class="alert alert-danger">
+                <strong>Erros no formulário:</strong>
+                <ul>
+                    <!-- Erros do formulário principal -->
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+
+                    <!-- Erros do formset -->
+                    {% for form in pecas_formset %}
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Exibe mensagens de sucesso/erro -->
             {% if messages %}
             {% for message in messages %}
             <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -91,11 +122,9 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Cliente</label>
-                                    <!-- Campo de texto para busca -->
-                                    <input type="text" id="cliente" placeholder="Digite o nome do cliente" class="form-control" autocomplete="off">
-                                    <!-- Campo oculto já definido no form (pedi_forn) -->
+                                    <input type="text" id="cliente" placeholder="Digite o nome do cliente"
+                                        class="form-control" autocomplete="off">
                                     {{ form.pedi_forn }}
-                                    <!-- Lista de sugestões -->
                                     <ul id="lista-clientes" class="list-group"></ul>
                                 </div>
                             </div>
@@ -103,15 +132,16 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Vendedor</label>
-                                    <input type="text" id="vendedor" placeholder="Digite o nome do vendedor" class="form-control" autocomplete="off">
+                                    <input type="text" id="vendedor" placeholder="Digite o nome do vendedor"
+                                        class="form-control" autocomplete="off">
                                     {{ form.pedi_vend }}
                                     <ul id="lista-vendedores" class="list-group"></ul>
                                 </div>
                             </div>
                         </div>
-                        
-                        
-                        <h5 style="text-align: center; margin-top: 35px; margin-bottom: 25px; color: rgb(20, 35, 46);">Itens do Orçamento</h5>
+
+                        <h5 style="text-align: center; margin-top: 35px; margin-bottom: 25px; color: rgb(20, 35, 46);">
+                            Itens do Orçamento</h5>
                         <table class="table-responsive">
                             <thead>
                                 <tr>
@@ -128,7 +158,6 @@
                                 {% for form in pecas_formset %}
                                 <tr class="item-row">
                                     <td>
-                                        <!-- Campo de busca com autocomplete -->
                                         <input type="text" class="form-control busca-produto"
                                             placeholder="Buscar produto..." autocomplete="on">
                                         <input type="hidden" name="{{ form.prefix }}-peca_codi" class="produto-id">
@@ -209,15 +238,12 @@
                 <br><br>
                 <div class="container-buttons">
                     <button type="submit" class="btn btn-success">Criar Orçamento</button>
-                        <a href="{% url 'orcamento_list' %}" class="btn btn-danger">Voltar para a lista de orçamentos</a>
-                    </div>
+                    <a href="{% url 'orcamento_list' %}" class="btn btn-danger">Voltar para a lista de orçamentos</a>
                 </div>
+            </form>
         </div>
-        </form>
     </div>
 </div>
-</div>
-
 <!-- JavaScript -->
 <script>
     // Função para atualizar o total do orçamento
@@ -388,61 +414,61 @@
 
     });
 
-    $("#cliente").on("input", function() {
-    let query = $(this).val();
-    if (query.length > 1) {
-        $.ajax({
-            url: "{% url 'buscar_clientes' %}",
-            data: { 'term': query },  // Use 'term' aqui
-            success: function(data) {
-                $("#lista-clientes").empty();
-                $.each(data, function(index, cliente) {
-                    $("#lista-clientes").append(`<li class="list-group-item" data-id="${cliente.id}">${cliente.nome}</li>`);
-                });
-            }
-        });
-    } else {
+    $("#cliente").on("input", function () {
+        let query = $(this).val();
+        if (query.length > 1) {
+            $.ajax({
+                url: "{% url 'buscar_clientes' %}",
+                data: { 'term': query },  // Use 'term' aqui
+                success: function (data) {
+                    $("#lista-clientes").empty();
+                    $.each(data, function (index, cliente) {
+                        $("#lista-clientes").append(`<li class="list-group-item" data-id="${cliente.id}">${cliente.nome}</li>`);
+                    });
+                }
+            });
+        } else {
+            $("#lista-clientes").empty();
+        }
+    });
+
+    // Ao clicar em um item da lista de clientes
+    $(document).on('click', '#lista-clientes li', function () {
+        let id = $(this).data('id');
+        let nome = $(this).text();
+        $("#cliente").val(nome); // Atualiza o campo de busca com o nome
+        // Atualiza o campo oculto do formulário (pedi_forn)
+        $("[name='pedi_forn']").val(id);
         $("#lista-clientes").empty();
-    }
-});
+    });
 
-// Ao clicar em um item da lista de clientes
-$(document).on('click', '#lista-clientes li', function() {
-    let id = $(this).data('id');
-    let nome = $(this).text();
-    $("#cliente").val(nome); // Atualiza o campo de busca com o nome
-    // Atualiza o campo oculto do formulário (pedi_forn)
-    $("[name='pedi_forn']").val(id);
-    $("#lista-clientes").empty();
-});
+    // Autocomplete para Vendedores
+    $("#vendedor").on("input", function () {
+        let query = $(this).val();
+        if (query.length > 1) {
+            $.ajax({
+                url: "{% url 'buscar_vendedores' %}",
+                data: { 'term': query },  // Use 'term' aqui também
+                success: function (data) {
+                    $("#lista-vendedores").empty();
+                    $.each(data, function (index, vendedor) {
+                        $("#lista-vendedores").append(`<li class="list-group-item" data-id="${vendedor.id}">${vendedor.nome}</li>`);
+                    });
+                }
+            });
+        } else {
+            $("#lista-vendedores").empty();
+        }
+    });
 
-// Autocomplete para Vendedores
-$("#vendedor").on("input", function() {
-    let query = $(this).val();
-    if (query.length > 1) {
-        $.ajax({
-            url: "{% url 'buscar_vendedores' %}",
-            data: { 'term': query },  // Use 'term' aqui também
-            success: function(data) {
-                $("#lista-vendedores").empty();
-                $.each(data, function(index, vendedor) {
-                    $("#lista-vendedores").append(`<li class="list-group-item" data-id="${vendedor.id}">${vendedor.nome}</li>`);
-                });
-            }
-        });
-    } else {
+    // Ao clicar em um item da lista de vendedores
+    $(document).on('click', '#lista-vendedores li', function () {
+        let id = $(this).data('id');
+        let nome = $(this).text();
+        $("#vendedor").val(nome); // Atualiza o campo de busca com o nome
+        // Atualiza o campo oculto do formulário (pedi_vend)
+        $("[name='pedi_vend']").val(id);
         $("#lista-vendedores").empty();
-    }
-});
-
-// Ao clicar em um item da lista de vendedores
-$(document).on('click', '#lista-vendedores li', function() {
-    let id = $(this).data('id');
-    let nome = $(this).text();
-    $("#vendedor").val(nome); // Atualiza o campo de busca com o nome
-    // Atualiza o campo oculto do formulário (pedi_vend)
-    $("[name='pedi_vend']").val(id);
-    $("#lista-vendedores").empty();
-});
+    });
 </script>
 {% endblock %}

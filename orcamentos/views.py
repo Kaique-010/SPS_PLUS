@@ -1,36 +1,52 @@
 from django.forms import inlineformset_factory
 from django.http import JsonResponse
+from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
-
 from Entidades.models import Entidades
+from licencas.mixins import LicenseMixin
 from produto.models import Produtos
 from .models import Orcamento, OrcamentoPecas
 from .forms import OrcamentoForm, OrcamentoPecasForm, OrcamentoPecasInlineFormSet
 
-class OrcamentoListView(ListView):
+class OrcamentoListView(LicenseMixin,ListView):
     model = Orcamento
     template_name = "orcamentos/orcamento_list.html"
     context_object_name = "orcamentos"
-    paginate_by = 20
+    paginate_by = 10
 
     def get_queryset(self):
         licenca = getattr(self.request.user, 'licenca', None)
         db_name = licenca.lice_nome if licenca else 'default'
 
-        # Ordenar explicitamente o QuerySet aqui
-        orcamentos = Orcamento.objects.using(db_name).select_related('pedi_forn', 'pedi_vend').order_by('pedi_nume')  # Ordenação explícita
+        numero = self.request.GET.get('pedi_nume', '').strip()
+        cliente = self.request.GET.get('pedi_forn', '').strip()
+        vendedor = self.request.GET.get('pedi_vend', '').strip()
 
-        for orc in orcamentos:
-            print(f"Orçamento {orc.pedi_nume} - Cliente: {orc.pedi_forn.enti_nome if orc.pedi_forn else 'N/A'} - "
-                  f"Vendedor: {orc.pedi_vend.enti_nome if orc.pedi_vend else ''}")
+        orcamentos = Orcamento.objects.using(db_name).select_related('pedi_forn', 'pedi_vend').order_by('pedi_nume')
+
+        if numero:
+            orcamentos = orcamentos.filter(pedi_nume__icontains=numero)
+
+        if cliente:
+            orcamentos = orcamentos.filter(pedi_forn__enti_nome__icontains=cliente)
+
+        if vendedor:
+            orcamentos = orcamentos.filter(pedi_vend__enti_nome__icontains=vendedor)
 
         return orcamentos
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pedi_nume'] = self.request.GET.get('pedi_nume', '')
+        context['pedi_forn'] = self.request.GET.get('pedi_forn', '')
+        context['pedi_vend'] = self.request.GET.get('pedi_vend', '')
+        return context
 
-class OrcamentoCreateView(CreateView):
+
+class OrcamentoCreateView(LicenseMixin,CreateView):
     model = Orcamento
     form_class = OrcamentoForm
     template_name = "orcamentos/orcamento_form.html"
@@ -48,42 +64,48 @@ class OrcamentoCreateView(CreateView):
         licenca = getattr(self.request.user, 'licenca', None)
         db_name = licenca.lice_nome if licenca else 'default'
 
-        # Aqui você pode adicionar as entidades relacionadas ao orçamento
-        context['clientes'] = Entidades.objects.using(db_name).filter(enti_tipo_enti='CL').values('enti_nome')
-        context['vendedores'] = Entidades.objects.using(db_name).filter(enti_tipo_enti__in=['VE', 'AM']).values('enti_nome')
+        context['clientes'] = Entidades.objects.using(db_name).filter(enti_tipo_enti='CL')
+        context['vendedores'] = Entidades.objects.using(db_name).filter(enti_tipo_enti__in=['VE', 'AM'])
 
         return context
 
     def form_valid(self, form):
-        orcamento = form.save(commit=False)
+        print("🔹 Dados do POST:", self.request.POST)  # Debug
 
-        # Obtém a licença do usuário e define o banco correto
+        orcamento = form.save(commit=False)
         licenca = getattr(self.request.user, 'licenca', None)
         db_name = licenca.lice_nome if licenca else 'default'
+        orcamento.save(using=db_name)  # Salvar corretamente no banco correto
 
-        # Salva o orçamento no banco correto
-        orcamento.save(using=db_name)
-
-        context = self.get_context_data()
-        pecas_formset = context['pecas_formset']
+        pecas_formset = OrcamentoPecasInlineFormSet(self.request.POST, instance=orcamento)
 
         if pecas_formset.is_valid():
-            pecas_formset.instance = orcamento
-            pecas_formset.save(using=db_name)  # Salva o formset no banco correto
+            pecas = pecas_formset.save(commit=False)
 
-            for peca_form in pecas_formset:
-                peca = peca_form.save(commit=False)
-                peca.peca_empr = orcamento.pedi_empr
-                peca.peca_fili = orcamento.pedi_fili
-                peca.save(using=db_name)  # Salva a peça no banco correto
+            for peca in pecas:
+                produto = Produtos.objects.using(db_name).filter(prod_codi=peca.peca_codi).first()
+                if produto:
+                    peca.peca_codi = produto  # Associa o objeto correto
+                    peca.peca_empr = orcamento.pedi_empr
+                    peca.peca_fili = orcamento.pedi_fili
+                    peca.save(using=db_name)
 
-            return redirect(self.success_url)
+            messages.success(self.request, "Orçamento salvo com sucesso!")
 
-        return self.form_invalid(form)  
+            return super().form_valid(form)  # Chamar a função corretamente
+
+        else:
+            form.add_error(None, f"Produto com código {peca.peca_codi} não encontrado!")
+            print("❌ Erros no formset:", pecas_formset.errors)  # Debug para ver erros do formset
+
+        # Se o formset não for válido, adicionar erros ao form principal e chamar form_invalid
+        for erro in pecas_formset.errors:
+            form.add_error(None, erro)
+
+        return self.form_invalid(form)
 
 
-
-class OrcamentoUpdateView(UpdateView):
+class OrcamentoUpdateView(LicenseMixin,UpdateView):
     model = Orcamento
     form_class = OrcamentoForm
     template_name = 'orcamentos/orcamento_form.html'
@@ -129,7 +151,7 @@ class OrcamentoUpdateView(UpdateView):
 
 
 
-class OrcamentoDetailView(DetailView):
+class OrcamentoDetailView(LicenseMixin,DetailView):
     model = Orcamento
     template_name = "orcamentos/orcamento_detail.html"
     context_object_name = "orcamento"

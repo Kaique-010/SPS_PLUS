@@ -55,15 +55,16 @@ class OrcamentoPecas(models.Model):
     peca_id = models.AutoField(primary_key=True)
     peca_empr = models.IntegerField()
     peca_fili = models.IntegerField()
-    peca_pedi = models.ForeignKey(Orcamento, on_delete=models.CASCADE, related_name="pecas")
-    peca_codi = models.ForeignKey(Produtos,  on_delete=models.CASCADE, related_name="produtos")
+    peca_orca = models.ForeignKey(Orcamento, on_delete=models.CASCADE, related_name="pecas", db_column='peca_orca')
+    peca_codi = models.ForeignKey(Produtos,  on_delete=models.CASCADE, related_name="produtos", db_column='peca_codi')
     peca_quan = models.DecimalField(max_digits=10, decimal_places=2)
     peca_unit = models.DecimalField(max_digits=10, decimal_places=2)
     peca_tota = models.DecimalField(max_digits=15, decimal_places=2)
+    peca_comp = models.TextField(max_length=200, null=True, blank=True)
 
 
     class Meta:
-        db_table = 'orcamentotopecas'
+        db_table = 'orcamentopecas'
     
     
     def save(self, *args, **kwargs):

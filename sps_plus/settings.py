@@ -173,6 +173,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'Entradas_Produtos/static'),
     os.path.join(BASE_DIR, 'orcamentos/static'),
     os.path.join(BASE_DIR, 'licencas/static'),
+    os.path.join(BASE_DIR, 'orcamentos/static'),
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

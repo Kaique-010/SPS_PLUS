@@ -10,6 +10,7 @@ from django.db.models import Sum
 from django.db import connection, transaction
 from django.db.models import OuterRef, Subquery
 from django.core.paginator import Paginator
+from django.forms import ValidationError
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.conf import settings
@@ -243,6 +244,36 @@ class MarcaCreateView(LicenseMixin, CreateView):
     form_class = MarcaForm
     template_name = 'marca_create.html'
     success_url = reverse_lazy('marcas_list')
+    
+    def get_queryset(self):
+        licenca = self.get_license()
+
+        if licenca is None:
+            # Lidar com o caso em que a licença não está disponível
+            print("🚨 Erro: Licença não encontrada.")
+            return Marca.objects.none()  # Ou redirecionar para uma página de erro
+
+        db_name = licenca.lice_nome if hasattr(licenca, 'lice_nome') else "default"
+        return super().get_queryset()
+    
+    def form_valid(self, form):
+        # Verifica se o usuário está autenticado
+        if not self.request.user.is_authenticated:
+            raise ValidationError("Usuário não autenticado.")
+        
+        # Validar se o usuário tem uma licença associada
+        licenca = self.get_license()
+        if not licenca:
+            raise ValidationError("Usuário não tem licença associada.")
+        
+        # Definir a licença no formulário antes de salvar
+        form.instance.licenca = licenca
+
+        # Definir o banco de dados da licença
+        self.set_database_for_license(licenca)  # Passa o objeto de licença
+
+        return super().form_valid(form)
+
 
 class MarcaUpdateView(LicenseMixin, UpdateView):
     model = Marca

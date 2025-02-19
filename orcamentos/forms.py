@@ -50,9 +50,9 @@ class OrcamentoForm(forms.ModelForm):
 class OrcamentoPecasForm(forms.ModelForm):
     class Meta:
         model = OrcamentoPecas  # Corrigido, sem parênteses
-        fields = ['peca_pedi', 'peca_codi', 'peca_quan', 'peca_unit', 'peca_tota']
+        fields = ['peca_orca', 'peca_codi', 'peca_quan', 'peca_unit', 'peca_tota']
         widgets = {
-            'peca_pedi': forms.Select(attrs={'class': 'form-control'}),
+            'peca_orca': forms.Select(attrs={'class': 'form-control'}),
             'peca_codi': forms.Select(attrs={'class': 'form-control'}),
             'peca_quan': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peca_unit': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),

@@ -19,14 +19,14 @@
             <hr />
 
             {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                        {{ message }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                {% endfor %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
             {% endif %}
 
             <form method="post" enctype="multipart/form-data">
@@ -59,9 +59,9 @@
                         <div class="form-group">
                             <label for="{{ form.pedi_forn.id_for_label }}">Cliente</label>
                             <select name="{{ form.pedi_forn.name }}" id="{{ form.pedi_forn.id_for_label }}"
-                                    class="form-control">
+                                class="form-control">
                                 {% for choice in form.pedi_forn.field.choices %}
-                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -73,9 +73,9 @@
                         <div class="form-group">
                             <label for="{{ form.pedi_vend.id_for_label }}">Vendedor</label>
                             <select name="{{ form.pedi_vend.name }}" id="{{ form.pedi_vend.id_for_label }}"
-                                    class="form-control">
+                                class="form-control">
                                 {% for choice in form.pedi_vend.field.choices %}
-                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -85,9 +85,9 @@
                         <div class="form-group">
                             <label for="{{ form.pedi_fina.id_for_label }}">Tipo Financeiro</label>
                             <select name="{{ form.pedi_fina.name }}" id="{{ form.pedi_fina.id_for_label }}"
-                                    class="form-control">
+                                class="form-control">
                                 {% for choice in form.pedi_fina.field.choices %}
-                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -96,8 +96,8 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="id_pedi_tota">Subtotal</label>
-                            <input type="text" name="{{ form.pedi_tota.name }}" id="id_pedi_tota"
-                                   class="form-control" value="{{ form.pedi_tota.value }}" readonly>
+                            <input type="text" name="{{ form.pedi_tota.name }}" id="id_pedi_tota" class="form-control"
+                                value="{{ form.pedi_tota.value }}" readonly>
                         </div>
                     </div>
                 </div>
@@ -122,17 +122,17 @@
                                 <select name="{{ form.prefix }}-iped_prod" class="form-control" required>
                                     <option value="">Escolha um produto</option>
                                     {% for produto in produtos %}
-                                    <option value="{{ produto.produto_codigo }}">{{ produto.nome_produto }}</option>
+                                    <option value="{{ produto.prod_codi }}">{{ produto.prod_nome }}</option>
                                     {% endfor %}
                                 </select>
                             </td>
                             <td>
                                 <input type="number" name="{{ form.prefix }}-iped_quan" class="form-control quantidade"
-                                       min="1" value="1" required>
+                                    min="1" value="1" required>
                             </td>
                             <td>
                                 <input type="text" name="{{ form.prefix }}-iped_unit"
-                                       class="form-control preco-unitario" step="0.01" value="0.00" required>
+                                    class="form-control preco-unitario" step="0.01" value="0.00" required>
                             </td>
                             <td>
                                 <button type="button" class="btn btn-danger remove-item">Remover</button>

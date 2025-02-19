@@ -10,18 +10,22 @@
   justify-items: end;
   text-align: end;
   margin-right: 5%;
-  padding: 10%;
+  padding: 5%;
 }
 
 table {
   text-align: center;
 }
 
+h5 {
+  text-align: center;
+  margin: 2%;
+}
 /*Dados do Orçamento */
 
 h4 {
   text-align: center;
-  margin: 4%;
+  margin: 2%;
 }
 
 h3 {
@@ -30,29 +34,66 @@ h3 {
   text-align: center;
   margin: 2%;
 }
-.container h3 {
-  color: black;
+
+form.row {
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  color: antiquewhite;
+}
+
+form.row .form-control {
+  border: 2px solid #576069; /* Borda azul */
+  border-radius: 2px;
+  padding: 10px;
+}
+
+form.row .form-control:focus {
+  border-color: #0056b3;
+  box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+}
+
+form.row .btn-primary {
+  background-color: #384f68;
+  border: none;
+  font-weight: bold;
+}
+
+form.row .btn-primary:hover {
+  background-color: #bea13a;
 }
 
 .card {
   padding: 5%;
-  background: linear-gradient(rgb(226, 247, 254), rgb(206, 206, 206));
+  background: linear-gradient(rgb(133, 153, 162), rgb(206, 206, 206));
   border: 2px solid rgb(26, 112, 138);
-  /* Borda do cartão */
   border-radius: 8px;
 }
 
-/* Ajuste o tamanho dos campos para caber melhor na tela */
+.card h3 {
+  text-shadow: #28a745;
+  color: antiquewhite;
+}
 .form-row input {
-  max-width: 100px; /* Limitar a largura dos campos */
+  max-width: 100px;
   margin-bottom: 5px;
 }
 
-/* Ajuste os botões e tabelas */
 .table th,
 .table td {
   text-align: center;
   vertical-align: middle;
+}
+
+.table th,
+.table td {
+  font-size: 0.85rem; /* Tamanho uniforme para células */
+  padding: 0.4rem; /* Ajuste o padding conforme necessário */
+  line-height: 1.2; /* Melhora a legibilidade com altura da linha ajustada */
+}
+
+.table thead th {
+  font-size: 0.9rem; /* Tamanho uniforme para cabeçalhos */
 }
 
 #formset {
@@ -68,11 +109,32 @@ h3 {
 .container-buttons {
   align-items: start;
   justify-content: space-between;
-  padding: 10rem;
   margin: 2%;
 }
 
-.btn btn-success {
-  background-color: brown;
-  color: bisque;
+.container-new a.btn {
+  background-color: #354380; /* Cor verde */
+  border-color: #92c1cf;
+  font-weight: bold;
+  color: aliceblue;
+}
+
+.container-new a.btn:hover {
+  background-color: #d0b088;
+  color: black; /* Tom mais escuro ao passar o mouse */
+}
+
+@media (max-width: 768px) {
+  .card {
+    margin-top: 5rem;
+  }
+  .search-form .form-col {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.8rem;
+  }
 }
