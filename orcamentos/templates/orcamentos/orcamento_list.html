@@ -1,92 +1,105 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Orçamentos
-{% endblock %} {% block content %}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+{% extends 'base.html' %} {% load static %} 
+
+{% block title %}Orçamentos{% endblock %} 
+
+{% block content %}
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+  crossorigin="anonymous"
+/>
 <link rel="stylesheet" href="{% static 'orcamentos/style.css' %}" />
 
-<div class="container mt-5">
+<div class="container">
     <div class="container-orc">
+        <div class="card">
+          <h3  style="color: black;">Orçamentos <i class="bi bi-file-break-fill fs-3 "></i></h3>
 
-        <h3>Orçamentos <i class="bi bi-file-break-fill fs-3"></i></h3>
+      <div class="container-new">
+        <a href="{% url 'orcamento_form' %}" class="btn btn-primary mt-2">
+          <i class="bi bi-plus"></i> Orçamento
+        </a>
+      </div>
+      
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Data de Criação</th>
+              <th>Cliente</th>
+              <th>Total Orçamento</th>
+              <th>Vendedor</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for orcamento in orcamentos %}
+            <tr>
+              <td>{{ orcamento.pedi_nume }}</td>
+              <td>{{ orcamento.pedi_data }}</td>
+              <td>{{ orcamento.pedi_forn.enti_nome }}</td> <!-- Nome do Cliente -->
+              <td>{{ orcamento.pedi_tota }}</td>
+              <td>
+                {% if orcamento.pedi_vend %}{{ orcamento.pedi_vend.enti_nome }}{% else %}Sem Vendedor{% endif %}
+              </td> <!-- Nome do Vendedor -->
+              <td>
+                <a href="{% url 'orcamento_detail' orcamento.pk %}">Detalhes</a> |
+                <a href="{% url 'orcamento_update' orcamento.pk %}">Editar</a> |
+                <a href="{% url 'orcamento_delete' orcamento.pk %}">Excluir</a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      
+      <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">
+          {% if orcamentos.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1">&laquo; Primeira</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ orcamentos.previous_page_number }}">Anterior</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link">Anterior</a>
+          </li>
+          {% endif %}
 
-        <div class="container-new">
-            <a href="{% url 'orcamento_form' %}" class="btn btn-primary mt-2"> <i class="bi bi-plus"></i> Orçamento</a>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Data de Criação</th>
-                        <th>Cliente</th>
-                        <th>Total Orçamento</th>
-                        <th>Vendedor</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for orcamento in orcamentos %}
-                    <tr>
-                        <td>{{ orcamento.pedi_nume }}</td>
-                        <td>{{ orcamento.pedi_data }}</td>
-                        <td>{{ orcamento.pedi_forn.enti_nome }}</td> {# Nome do Cliente #}
-                        <td>{{ orcamento.pedi_tota }}</td>
-                        <td>{% if orcamento.pedi_vend %}{{ orcamento.pedi_vend.enti_nome }}{% else %}Sem Vendedor{% endif %}</td>
-                        {# Nome do Vendedor #}
-                        <td>
-                            <a href="{% url 'orcamento_detail' orcamento.pk %}">Detalhes</a> |
-                            <a href="{% url 'orcamento_update' orcamento.pk %}">Editar</a> |
-                            <a href="{% url 'orcamento_delete' orcamento.pk %}">Excluir</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+          {% for num in orcamentos.paginator.page_range %}
+          {% if orcamentos.number == num %}
+          <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+          </li>
+          {% else %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+          {% endif %}
+          {% endfor %}
 
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    {% if orcamentos.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1">&laquo; Primeira</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ orcamentos.previous_page_number }}">Anterior</a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <a class="page-link">Anterior</a>
-                    </li>
-                    {% endif %}
+          {% if orcamentos.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ orcamentos.next_page_number }}">Próxima</a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ orcamentos.paginator.num_pages }}">Última &raquo;</a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <a class="page-link">Próxima</a>
+          </li>
+          {% endif %}
+        </ul>
+      </nav>
+      
+      <p>{{ orcamentos.paginator.num_pages }} páginas no total.</p>
+    </div>
+  </div>
+</div>
 
-                    <!-- Páginas -->
-                    {% for num in orcamentos.paginator.page_range %}
-                    {% if orcamentos.number == num %}
-                    <li class="page-item active">
-                        <span class="page-link">{{ num }}</span>
-                    </li>
-                    {% else %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                    {% endif %}
-                    {% endfor %}
-
-                    {% if orcamentos.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ orcamentos.next_page_number }}">Próxima</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ orcamentos.paginator.num_pages }}">Última &raquo;</a>
-                    </li>
-                    {% else %}
-                    <li class="page-item disabled">
-                        <a class="page-link">Próxima</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
-            <p>{{ orcamentos.paginator.num_pages }} páginas no total.</p>
-
-
-
-            {% endblock %}
+{% endblock %}

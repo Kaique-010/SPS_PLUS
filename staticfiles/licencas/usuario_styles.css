@@ -1,0 +1,22 @@
+.container {
+  margin-top: 120px;
+}
+
+.container h2 {
+  text-align: center;
+  color: blanchedalmond;
+  margin-bottom: 40px;
+}
+
+.container label {
+  text-align: left;
+  color: antiquewhite;
+  font-weight: bolder;
+}
+
+form {
+  padding: 50px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+  margin-bottom: 1rem;
+}

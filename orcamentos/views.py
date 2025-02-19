@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 
+from Entidades.models import Entidades
 from produto.models import Produtos
 from .models import Orcamento, OrcamentoPecas
 from .forms import OrcamentoForm, OrcamentoPecasForm, OrcamentoPecasInlineFormSet
@@ -37,7 +38,7 @@ class OrcamentoCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         if self.request.POST:
             context['pecas_formset'] = OrcamentoPecasInlineFormSet(self.request.POST)
         else:
@@ -48,8 +49,8 @@ class OrcamentoCreateView(CreateView):
         db_name = licenca.lice_nome if licenca else 'default'
 
         # Aqui você pode adicionar as entidades relacionadas ao orçamento
-        context['clientes'] = Orcamento.objects.using(db_name).values('pedi_forn__enti_nome')  # Exemplo de cliente
-        context['vendedores'] = Orcamento.objects.using(db_name).values('pedi_vend__enti_nome')  # Exemplo de vendedor
+        context['clientes'] = Entidades.objects.using(db_name).filter(enti_tipo_enti='CL').values('enti_nome')
+        context['vendedores'] = Entidades.objects.using(db_name).filter(enti_tipo_enti__in=['VE', 'AM']).values('enti_nome')
 
         return context
 
@@ -68,18 +69,18 @@ class OrcamentoCreateView(CreateView):
 
         if pecas_formset.is_valid():
             pecas_formset.instance = orcamento
+            pecas_formset.save(using=db_name)  # Salva o formset no banco correto
 
             for peca_form in pecas_formset:
                 peca = peca_form.save(commit=False)
                 peca.peca_empr = orcamento.pedi_empr
                 peca.peca_fili = orcamento.pedi_fili
+                peca.save(using=db_name)  # Salva a peça no banco correto
 
-                # Salva a peça no banco correto
-                peca.save(using=db_name)
+            return redirect(self.success_url)
 
-            pecas_formset.save()
+        return self.form_invalid(form)  
 
-        return redirect(self.success_url)
 
 
 class OrcamentoUpdateView(UpdateView):
@@ -160,3 +161,40 @@ def buscar_produtos(request):
     } for produto in produtos]
     
     return JsonResponse(resultado, safe=False)
+
+
+def buscar_clientes(request):
+    term = request.GET.get('term', '').strip()
+    licenca = getattr(request.user, 'licenca', None)
+    db_name = licenca.lice_nome if licenca else 'default'
+
+    if term:
+        clientes = Entidades.objects.using(db_name).filter(
+            enti_tipo_enti__in=['CL', 'AM'], 
+            enti_nome__icontains=term
+        )[:10]
+    else:
+        clientes = Entidades.objects.using(db_name).filter(
+            enti_tipo_enti__in=['CL', 'AM']
+        )[:10]
+    
+    data = [{'id': cliente.enti_clie, 'nome': cliente.enti_nome} for cliente in clientes]
+    return JsonResponse(data, safe=False)
+
+def buscar_vendedores(request):
+    term = request.GET.get('term', '').strip()
+    licenca = getattr(request.user, 'licenca', None)
+    db_name = licenca.lice_nome if licenca else 'default'
+
+    if term:
+        vendedores = Entidades.objects.using(db_name).filter(
+            enti_tipo_enti__in=['VE', 'AM'], 
+            enti_nome__icontains=term
+        )[:10]
+    else:
+        vendedores = Entidades.objects.using(db_name).filter(
+            enti_tipo_enti__in=['VE', 'AM']
+        )[:10]
+
+    data = [{'id': vendedor.enti_clie, 'nome': vendedor.enti_nome} for vendedor in vendedores]
+    return JsonResponse(data, safe=False)

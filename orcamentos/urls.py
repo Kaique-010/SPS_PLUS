@@ -16,4 +16,6 @@ urlpatterns = [
     path("<int:pk>/", OrcamentoDetailView.as_view(), name="orcamento_detail"),
     path("<int:pk>/excluir/", OrcamentoDeleteView.as_view(), name="orcamento_delete"),
     path('buscar_produtos/', views.buscar_produtos, name='buscar_produtos'),
+    path('buscar-clientes/', views.buscar_clientes, name='buscar_clientes'),
+    path('buscar-vendedores/', views.buscar_vendedores, name='buscar_vendedores'),
 ]

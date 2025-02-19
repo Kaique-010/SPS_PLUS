@@ -1,63 +1,59 @@
 from django import forms
+from Entidades.models import Entidades
 from produto.models import Produtos
 from .models import Orcamento, OrcamentoPecas
 from django.forms import inlineformset_factory
+from django.db.models import Max
+
 
 class OrcamentoForm(forms.ModelForm):
     class Meta:
         model = Orcamento
         fields = [
             'pedi_empr', 'pedi_fili', 'pedi_nume', 'pedi_data', 'pedi_forn',
-            'pedi_vend','pedi_fret_por','pedi_obse', 'pedi_vali',
+            'pedi_vend', 'pedi_fret_por', 'pedi_obse', 'pedi_vali',
             'pedi_desc', 'pedi_tota', 'pedi_tipo', 'pedi_fret'
         ]
         widgets = {
             'pedi_empr': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Empresa'}),
             'pedi_fili': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Filial'}),
             'pedi_nume': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Código do orçamento'}),
-            'pedi_data': forms.DateInput(attrs={'class': 'form-control',  'type': 'date'}, format='%Y-%m-%d'),
-            'pedi_forn': forms.Select(attrs={'class': 'form-control'}),
-            'pedi_vend': forms.Select(attrs={'class': 'form-control'}),
+            'pedi_data': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'),
+            'pedi_forn': forms.HiddenInput(),
+            'pedi_vend': forms.HiddenInput(),
             'pedi_fret_por': forms.NumberInput(attrs={'class': 'form-control'}),
             'pedi_fret': forms.NumberInput(attrs={'class': 'form-control'}),
-            'pedi_vali': forms.DateInput(attrs={'class': 'form-control',  'type': 'date'}, format='%Y-%m-%d'),
-            'pedi_tipo_impo': forms.TextInput(attrs={'class': 'form-control'}),
-            'pedi_praz_entr': forms.TextInput(attrs={'class': 'form-control'}),
+            'pedi_vali': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}, format='%Y-%m-%d'),
             'pedi_obse': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'pedi_valo_fret': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'pedi_valo_outr': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'pedi_valo_desc': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-            'pedi_valo_tota': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'pedi_desc': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'pedi_tota': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['pedi_forn'].queryset = Entidades.objects.filter(enti_tipo_enti__in=['CL', 'AM'])  # Clientes e Ambos
+        self.fields['pedi_vend'].queryset = Entidades.objects.filter(enti_tipo_enti__in=['VE', 'AM'])  # Vendedores e Ambos
+
     def save(self, commit=True):
-        
         orcamento = super().save(commit=False)
-        
-       
-        if orcamento.pedi_codi == 0 or orcamento.pedi_codi is None:
-           
-            orcamento.pedi_codi = 1 
-        
-        
+
+        if orcamento.pedi_nume is None or orcamento.pedi_nume == 0:
+            max_nume = Orcamento.objects.aggregate(max_nume=Max('pedi_nume'))['max_nume'] or 0
+            orcamento.pedi_nume = max_nume + 1
+
         if commit:
             orcamento.save()
-        
+
         return orcamento
 
 
 class OrcamentoPecasForm(forms.ModelForm):
-    peca_codi = forms.ModelChoiceField(
-        queryset=Produtos.objects.all(),
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        
-    )
-
     class Meta:
-        model = OrcamentoPecas()
+        model = OrcamentoPecas  # Corrigido, sem parênteses
         fields = ['peca_pedi', 'peca_codi', 'peca_quan', 'peca_unit', 'peca_tota']
         widgets = {
             'peca_pedi': forms.Select(attrs={'class': 'form-control'}),
+            'peca_codi': forms.Select(attrs={'class': 'form-control'}),
             'peca_quan': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peca_unit': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
             'peca_tota': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
@@ -79,7 +75,7 @@ class OrcamentoPecasForm(forms.ModelForm):
 OrcamentoPecasInlineFormSet = inlineformset_factory(
     Orcamento,
     OrcamentoPecas,
-    fields="__all__",
+    form=OrcamentoPecasForm,
     extra=1,
     can_delete=True
 )

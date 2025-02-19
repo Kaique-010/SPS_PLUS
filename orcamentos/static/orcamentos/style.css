@@ -1,6 +1,6 @@
 .container-orc {
-  margin-top: 5%;
-  margin-bottom: 10%;
+  margin-top: 2%;
+  margin-bottom: 5%;
   text-align: center;
   padding: 10%;
 }
@@ -17,6 +17,10 @@ table {
   text-align: center;
 }
 
+h5 {
+  text-align: center;
+  margin: 4%;
+}
 /*Dados do Orçamento */
 
 h4 {
@@ -25,10 +29,13 @@ h4 {
 }
 
 h3 {
-  color: aliceblue;
+  color: black;
   text-emphasis: initial;
   text-align: center;
   margin: 2%;
+}
+.container h3 {
+  color: black;
 }
 
 .card {
@@ -62,4 +69,32 @@ h3 {
   margin-top: 20px;
 }
 
+.container-buttons {
+  align-items: start;
+  justify-content: space-between;
+  margin: 2%;
+}
 
+.btn-success {
+  background-color: #28a745;
+  color: white;
+  border: none;
+}
+
+.btn-custom-red {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+}
+
+.btn-custom-blue {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.btn-custom-green:hover,
+.btn-custom-red:hover,
+.btn-custom-blue:hover {
+  opacity: 0.8;
+}

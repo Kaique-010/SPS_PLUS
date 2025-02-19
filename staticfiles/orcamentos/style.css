@@ -1,0 +1,78 @@
+.container-orc {
+  margin-top: 2%;
+  margin-bottom: 5%;
+  text-align: center;
+  padding: 10%;
+}
+
+.container-new {
+  align-items: end;
+  justify-items: end;
+  text-align: end;
+  margin-right: 5%;
+  padding: 10%;
+}
+
+table {
+  text-align: center;
+}
+
+/*Dados do Orçamento */
+
+h4 {
+  text-align: center;
+  margin: 4%;
+}
+
+h3 {
+  color: black;
+  text-emphasis: initial;
+  text-align: center;
+  margin: 2%;
+}
+.container h3 {
+  color: black;
+}
+
+.card {
+  padding: 5%;
+  background: linear-gradient(rgb(226, 247, 254), rgb(206, 206, 206));
+  border: 2px solid rgb(26, 112, 138);
+  /* Borda do cartão */
+  border-radius: 8px;
+}
+
+/* Ajuste o tamanho dos campos para caber melhor na tela */
+.form-row input {
+  max-width: 100px; /* Limitar a largura dos campos */
+  margin-bottom: 5px;
+}
+
+/* Ajuste os botões e tabelas */
+.table th,
+.table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#formset {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+#addItemBtn {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.container-buttons {
+  align-items: start;
+  justify-content: space-between;
+  padding: 10rem;
+  margin: 2%;
+}
+
+.btn btn-success {
+  background-color: brown;
+  color: bisque;
+}

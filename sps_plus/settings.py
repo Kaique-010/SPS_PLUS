@@ -3,6 +3,8 @@ import os
 from dotenv import load_dotenv
 from django.db import connections
 from licencas.database_utils import load_databases
+import time
+STATIC_VERSION = str(int(time.time()))
 
 
 load_dotenv()
