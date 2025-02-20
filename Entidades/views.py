@@ -172,14 +172,30 @@ class EntidadeUpdateView(LicenseMixin, UpdateView):
 
 
 
+class EntidadeDeleteView(LicenseMixin, DeleteView):
+    model = models.Entidades
+    template_name = 'entidade_confirm_delete.html'
+    success_url = reverse_lazy('entidades')
 
-def entidade_delete(LicenseMixin,request, pk):
-    entidade = get_object_or_404(Entidades, pk=pk)
-    if request.method == 'POST':
-        entidade.delete()
-        return redirect('entidades')
-    messages.success(request, "Entidade excluida com sucesso!")
-    return render(request, 'entidade_confirm_delete.html', {'entidade': entidade})
+    def get_object(self, queryset=None):
+        db_name = self.get_license().lice_nome if self.get_license() else "default"
+        enti_clie = self.kwargs.get("enti_clie")  # Obtenha o enti_clie da URL
+
+        print(f"[DEBUG] Buscando entidade com enti_clie={enti_clie} no banco {db_name}")
+
+        entidade = models.Entidades.objects.using(db_name).filter(enti_clie=enti_clie).first()
+
+        if not entidade:
+            raise Http404("Entidade não encontrada.")
+
+        return entidade
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.delete_object(self.object)  # Chama o método delete_object para excluir
+        messages.success(request, "Entidade excluída com sucesso!")
+        return redirect(self.get_success_url())
+
 
 
 def buscar_cep(cep):

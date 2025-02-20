@@ -1,15 +1,18 @@
 from django.db import models
-from licencas.models import Usuarios 
+from licencas.models import Empresas, Filiais, Usuarios 
 
 class Fazenda(models.Model):
     nome = models.CharField(max_length=255)
     localizacao = models.CharField(max_length=255, blank=True, null=True)
-    
+    empr_faze = models.ForeignKey(Empresas, on_delete=models.CASCADE, db_column='empr_faze') 
+    fili_faze = models.ForeignKey(Filiais, on_delete=models.CASCADE, db_column='empr_fili')  
+
     class Meta:
         db_table = 'fazendas'
-    
+
     def __str__(self):
-        return self.nome
+        return f'Fazenda {self.id}: {self.nome}'
+
 
 class Talhao(models.Model):
     fazenda = models.ForeignKey(Fazenda, on_delete=models.CASCADE, related_name='talhoes')
@@ -29,7 +32,7 @@ class Talhao(models.Model):
         db_table = 'talhoes'
     
     def __str__(self):
-        return f"{self.nome} ({self.fazenda.nome})"
+        return f"{self.nome} ({self.fazenda.id -self.fazenda.nome})"
 
 class CategoriaProduto(models.Model):
     nome = models.CharField(max_length=255, unique=True)

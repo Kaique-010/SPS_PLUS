@@ -44,6 +44,8 @@ class EmpresasForm(forms.ModelForm):
             'empr_bair': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bairro', 'maxlength': '100'}),
             'empr_emai': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-mail'}),
         }
+        
+    
 
 
 class FiliaisForm(forms.ModelForm):
@@ -115,3 +117,18 @@ class LoginForm(AuthenticationForm):
         if username:
             return username.strip()
         return username
+
+
+class UsuarioCreationForm(UserCreationForm):
+    nome = forms.CharField(max_length=100)
+    email = forms.EmailField()
+
+    class Meta:
+        model = Usuarios
+        fields = ('login', 'nome', 'email', 'password1', 'password2')  # Ajuste para 'login' no lugar de 'usua_login'
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+        return user

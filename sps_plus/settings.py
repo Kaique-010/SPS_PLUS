@@ -68,6 +68,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'licencas.middleware.ThreadLocalMiddleware',
     'licencas.middleware.UsuarioLicencaMiddleware',   
+    'licencas.middleware.DatabaseRouterMiddleware',   
+    'licencas.middleware.LicenseMiddleware',   
 
 ]
 
@@ -244,3 +246,4 @@ LOGGING = {
         },
     },
 }
+

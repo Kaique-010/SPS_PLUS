@@ -3,6 +3,7 @@ from django.urls import path
 from django.contrib.auth.views import LoginView
 from .views import LicencasListView, LicencasCreateView, LicencasUpdateView, LicencasDetailView, LicencasDeleteView
 from . import views
+from .views import select_license
 from .views import (
     EmpresaListView, EmpresaCreateView, EmpresaUpdateView, EmpresaDetailView, EmpresaDeleteView,
     FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView, UsuarioCreateView, UsuarioLoginView, test_session,LogoutView,
@@ -44,5 +45,6 @@ urlpatterns = [
     
     # Rota para seleção de empresa e filial para usuários comuns
     path('select_company_branch/', views.select_company_branch, name='select_company_branch'),
+    path('select-license/', select_license, name='select_license'),
 ]
 

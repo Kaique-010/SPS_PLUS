@@ -23,6 +23,7 @@ class TalhaoForm(forms.ModelForm):
 
 
 
+
 class CategoriaProdutoForm(forms.ModelForm):
     class Meta:
         model = CategoriaProduto

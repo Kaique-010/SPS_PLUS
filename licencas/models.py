@@ -72,41 +72,31 @@ class Filiais(models.Model):
 
 
 class UsuarioManager(BaseUserManager):
-    def get_queryset(self):
-        qs = super().get_queryset()
-        try:
-            from licencas.middleware import get_current_request
-            request = get_current_request()
-            if request and hasattr(request, 'user') and not request.user.is_superuser:
-                return qs.filter(empresas__in=request.user.empresas.all(), filiais__in=request.user.filiais.all()).distinct()
-        except Exception as e:
-            print(f"Erro ao recuperar request no UsuarioManager: {e}")
-        return qs
-
-    def create_user(self, usua_login, usua_nome, usua_senh, **extra_fields):
-        if not usua_login:
-            raise ValueError("O campo login é obrigatório")
-        user = self.model(usua_login=usua_login, usua_nome=usua_nome, **extra_fields)
-        user.set_password(usua_senh)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, usua_login, usua_nome, usua_emai, password, **extra_fields):
-        if not usua_emai:
-            raise ValueError('O superusuário deve ter um e-mail válido.')
-        usua_emai = self.normalize_email(usua_emai)
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        
-        user = self.model(
-            usua_login=usua_login,
-            usua_nome=usua_nome,
-            usua_emai=usua_emai,
-            **extra_fields
-        )
+    def create_user(self, login, nome, email, password=None, **extra_fields):
+        """
+        Cria e retorna um usuário com login, nome, email e senha.
+        """
+        if not email:
+            raise ValueError('O email deve ser fornecido')
+        email = self.normalize_email(email)
+        user = self.model(login=login, nome=nome, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return user
+
+    def create_superuser(self, login, nome, email, password=None, **extra_fields):
+        """
+        Cria e retorna um superusuário com login, nome, email e senha.
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        
+        # Atribuindo uma licença ao superusuário, mesmo que ele não precise de uma específica
+        licenca = Licencas.objects.first()  # Pega a primeira licença no banco (ou escolha outra lógica)
+        if licenca:
+            extra_fields.setdefault('licenca', licenca)
+
+        return self.create_user(login, nome, email, password, **extra_fields)
 
 
 class Usuarios(AbstractBaseUser, PermissionsMixin):

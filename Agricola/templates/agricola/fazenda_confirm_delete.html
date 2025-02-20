@@ -1,6 +1,7 @@
-{% extends "base.html" %}
+{% extends 'base.html' %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'agricola/styles.css' %}" />
 
-{% block content %}
+<div class="container mt-5">
   <h2>Confirmar Exclusão de Fazenda</h2>
   <p>Você tem certeza que deseja excluir a fazenda "{{ object.nome }}"?</p>
   <form method="post">
@@ -8,4 +9,5 @@
     <button type="submit">Confirmar Exclusão</button>
     <a href="{% url 'fazenda_list' %}">Cancelar</a>
   </form>
+</div>
 {% endblock %}
