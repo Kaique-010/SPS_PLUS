@@ -1,0 +1,23 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'agricola/styles.css' %}" />
+
+<div class="container mt-5">
+  <h2>
+    {% if object %}Atualizar{% else %}Cadastrar{% endif %} Fazendas
+    <i class="bi bi-arrow-left-circle"></i>
+  </h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %} {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">
+        {% if object %}Atualizar{% else %}Criar{% endif %}
+      </button>
+      <a href="{% url 'fazenda_list' %}"class="btn btn-danger"
+        >Voltar à lista</a
+      >
+    </div>
+  </form>
+
+
+  {% endblock %}
+</div>

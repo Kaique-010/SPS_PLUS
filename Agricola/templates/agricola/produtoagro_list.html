@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lista de Produtos Agro{% endblock %}
+
+{% block content %}
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'agricola/liststyles.css' %}">
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-body">
+      <center>
+        <h2 class="mb-4">Lista de Produtos Agrícolas</h2>
+      </center>
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %}
+      <a href="{% url 'produtoagro_form' %}" class="btn btn-success float-end"
+        >Novo Produto</a
+      >
+    </div>
+    <div class="container">
+      {% if produtos %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Ações</th>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Tipo</th>
+              <th>Descrição</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for produto in produtos %}
+            <tr>
+              <td>
+                <a
+                  href="{% url 'produtoagro_update' produto.id %}"
+                  class="btn btn-sm"
+                  style="background-color: #7ab1ec; color: white"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a
+                  href="{% url 'produtoagro_delete' produto.id %}"
+                  class="btn btn-sm"
+                  style="background-color: #e7a0a7; color: white"
+                >
+                  <i class="bi bi-trash"></i>
+                </a>
+              </td>
+              <td>{{ produto.id }}</td>
+              <td>{{ produto.nome }}</td>
+              <td>{{ produto.tipo }}</td>
+              <td>{{ produto.descricao }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>Não há produtos para exibir.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

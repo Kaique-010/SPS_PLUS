@@ -1,0 +1,51 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<link rel="stylesheet" href="{% static 'agricola/styles.css' %}" />
+
+<h2>Movimentações de Estoque</h2>
+
+<div class="container">
+  <form method="GET">
+    <label for="data_inicial">Data Inicial:</label>
+    <input type="date" name="data_inicial" id="data_inicial" />
+
+    <label for="data_final">Data Final:</label>
+    <input type="date" name="data_final" id="data_final" />
+
+    <label for="tipo">Tipo:</label>
+    <select name="tipo" id="tipo">
+      <option value="">Todos</option>
+      <option value="entrada">Entrada</option>
+      <option value="saida">Saída</option>
+    </select>
+
+    <button type="submit">Filtrar</button>
+    <button type="submit" name="exportar" value="true">Exportar</button>
+  </form>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Produto</th>
+        <th>Quantidade</th>
+        <th>Observações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for movimentacao in movimentacoes %}
+      <tr>
+        <td>{{ movimentacao.data }}</td>
+        <td>{{ movimentacao.tipo }}</td>
+        <td>{{ movimentacao.produto }}</td>
+        <td>{{ movimentacao.quantidade }}</td>
+        <td>{{ movimentacao.observacoes }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <a href="{% url 'estoque_dashboard' %}" class="btn btn-secondary">Voltar</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lista de Categorias{% endblock %}
+
+{% block content %}
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'agricola/liststyles.css' %}">
+
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-body">
+      <center>
+        <h2 class="mb-4">Lista de Categorias de Produto</h2>
+      </center>
+      <div class="container-search mb-4">
+        <form method="get" class="search-form">
+          <input
+            type="text"
+            name="search"
+            placeholder="Buscar categoria"
+            value="{{ request.GET.search }}"
+            class="form-control"
+          />
+          <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+        </form>
+      </div>
+      <a href="{% url 'categoria_produto_form' %}" class="btn btn-success mb-3"
+        >Nova Categoria</a
+      >
+      {% if categorias %}
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Ações</th>
+            <th>ID</th>
+            <th>Nome</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for categoria in categorias %}
+          <tr>
+            <td>
+              <a
+                href="{% url 'categoria_produto_update' categoria.id %}"
+                class="btn btn-warning btn-sm"
+                >Editar</a
+              >
+              <a
+                href="{% url 'categoria_produto_delete' categoria.id %}"
+                class="btn btn-danger btn-sm"
+                >Excluir</a
+              >
+            </td>
+            <td>{{ categoria.id }}</td>
+            <td>{{ categoria.nome }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p>Nenhuma categoria encontrada.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

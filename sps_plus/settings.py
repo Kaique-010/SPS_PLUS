@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     
     #Aplicações
+    'Agricola',
     'Entidades',
     'Entradas_Produtos',
     'licencas',

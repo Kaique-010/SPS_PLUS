@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lista de Estoques de Fazendas{% endblock %}
+
+{% block content %}
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'agricola/liststyles.css' %}">
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-body">
+      <center>
+        <h2 class="mb-4">Lista de Estoques de Fazenda</h2>
+      </center>
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %}
+      <a
+        href="{% url 'estoquefazenda_form' %}"
+        class="btn btn-success float-end"
+        >Novo Estoque</a
+      >
+    </div>
+    <div class="container">
+      {% if estoques %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Ações</th>
+              <th>ID</th>
+              <th>Produto</th>
+              <th>Quantidade</th>
+              <th>Fazenda</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for estoque in estoques %}
+            <tr>
+              <td>
+                <a
+                  href="{% url 'estoquefazenda_update' estoque.id %}"
+                  class="btn btn-sm"
+                  style="background-color: #7ab1ec; color: white"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a
+                  href="{% url 'estoquefazenda_delete' estoque.id %}"
+                  class="btn btn-sm"
+                  style="background-color: #e7a0a7; color: white"
+                >
+                  <i class="bi bi-trash"></i>
+                </a>
+              </td>
+              <td>{{ estoque.id }}</td>
+              <td>{{ estoque.produto.nome }}</td>
+              <td>{{ estoque.quantidade }}</td>
+              <td>{{ estoque.fazenda.nome }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>Não há estoques para exibir.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

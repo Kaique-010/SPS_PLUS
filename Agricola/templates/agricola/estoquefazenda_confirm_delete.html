@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Confirmar Exclusão de Estoque da Fazenda</h2>
+  <p>Você tem certeza que deseja excluir o estoque "{{ object.nome }}"?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirmar Exclusão</button>
+    <a href="{% url 'estoquefazenda_list' %}">Cancelar</a>
+  </form>
+{% endblock %}

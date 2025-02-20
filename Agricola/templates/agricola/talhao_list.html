@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lista de Talhões{% endblock %}
+
+{% block content %}
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'agricola/liststyles.css' %}">
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <center>
+                <h2 class="mb-4">Lista de Talhões</h2>
+            </center>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            <div class="container-search">
+                <form method="get" class="search-form mb-4">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <input type="text" name="nome" class="form-control" value="{{ request.GET.nome }}" placeholder="Filtrar por nome">
+                        </div>
+                        <div class="form-group col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <a href="{% url 'talhao_form' %}" class="btn btn-success float-end">Novo Talhão</a>
+        </div>
+        <div class="container">
+            {% if talhoes %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Ações</th>
+                            <th>ID</th>
+                            <th>Nome</th>
+                            <th>Área</th>
+                            <th>Descrição</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for talhao in talhoes %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'talhao_update' talhao.id %}" class="btn btn-sm" style="background-color: #7ab1ec; color: white;">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="{% url 'talhao_delete' talhao.id %}" class="btn btn-sm" style="background-color: #e7a0a7; color: white;">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                            <td>{{ talhao.id }}</td>
+                            <td>{{ talhao.nome }}</td>
+                            <td>{{ talhao.area }}</td>
+                            <td>{{ talhao.descricao }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>Não há talhões para exibir.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

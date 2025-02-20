@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lista de Ciclos{% endblock %}
+
+{% block content %}
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'agricola/liststyles.css' %}">
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-body">
+      <center>
+        <h2 class="mb-4">Lista de Ciclos Florestais</h2>
+      </center>
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %}
+      <a
+        href="{% url 'cicloflorestal_form' %}"
+        class="btn btn-success float-end"
+        >Novo Ciclo</a
+      >
+    </div>
+    <div class="container">
+      {% if ciclos %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Ações</th>
+              <th>ID</th>
+              <th>Nome</th>
+              <th>Data de Início</th>
+              <th>Data de Término</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for ciclo in ciclos %}
+            <tr>
+              <td>
+                <a
+                  href="{% url 'ciclo_update' ciclo.id %}"
+                  class="btn btn-sm"
+                  style="background-color: #7ab1ec; color: white"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a
+                  href="{% url 'ciclo_delete' ciclo.id %}"
+                  class="btn btn-sm"
+                  style="background-color: #e7a0a7; color: white"
+                >
+                  <i class="bi bi-trash"></i>
+                </a>
+              </td>
+              <td>{{ ciclo.id }}</td>
+              <td>{{ ciclo.nome }}</td>
+              <td>{{ ciclo.data_inicio }}</td>
+              <td>{{ ciclo.data_termino }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>Não há ciclos florestais para exibir.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

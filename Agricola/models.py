@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import User 
+from licencas.models import Usuarios 
 
 class Fazenda(models.Model):
     nome = models.CharField(max_length=255)
@@ -88,7 +88,7 @@ class MovimentacaoEstoque(models.Model):
     quantidade = models.DecimalField(max_digits=10, decimal_places=2)
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
     data = models.DateTimeField(auto_now_add=True)
-    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    usuario = models.ForeignKey(Usuarios, on_delete=models.SET_NULL, null=True, blank=True)
     documento_referencia = models.CharField(max_length=255, blank=True, null=True)
     motivo = models.CharField(max_length=255, blank=True, null=True)
     custo_unitario = models.DecimalField(
@@ -114,7 +114,7 @@ class AplicacaoInsumos(models.Model):
         help_text="Quantidade de insumo aplicada"
     )
     data = models.DateTimeField(auto_now_add=True)
-    responsavel = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    responsavel = models.ForeignKey(Usuarios, on_delete=models.SET_NULL, null=True, blank=True)
     observacoes = models.TextField(blank=True, null=True)
     
     class Meta:
@@ -166,7 +166,7 @@ class EventoAnimal(models.Model):
         help_text="Custo associado a esse evento (se aplicável)"
     )
     descricao = models.TextField(blank=True, null=True)
-    usuario = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    usuario = models.ForeignKey(Usuarios, on_delete=models.SET_NULL, null=True, blank=True)
     
     class Meta:
         db_table = 'eventos_animais'
@@ -211,3 +211,21 @@ class CicloFlorestal(models.Model):
     
     def __str__(self):
         return f"{self.cultura} no {self.talhao} - Plantado em {self.data_plantio}"
+
+
+
+class HistoricoMovimentacao(models.Model):
+    movimentacao = models.ForeignKey(MovimentacaoEstoque, on_delete=models.CASCADE, related_name="historico")
+    fazenda = models.ForeignKey(Fazenda, on_delete=models.CASCADE)
+    produto = models.ForeignKey(ProdutoAgro, on_delete=models.CASCADE)
+    quantidade = models.DecimalField(max_digits=10, decimal_places=2)
+    tipo = models.CharField(max_length=10, choices=MovimentacaoEstoque.TIPO_CHOICES)
+    data = models.DateTimeField(auto_now_add=True)
+    usuario = models.ForeignKey(Usuarios, on_delete=models.SET_NULL, null=True, blank=True)
+    observacoes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        db_table = "historico_movimentacoes"
+
+    def __str__(self):
+        return f"{self.fazenda} - {self.produto} ({self.tipo} de {self.quantidade}) em {self.data}"

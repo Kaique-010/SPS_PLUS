@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Confirmar Exclusão de Ciclo Florestal</h2>
+  <p>Você tem certeza que deseja excluir o ciclo "{{ object.nome }}"?</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Confirmar Exclusão</button>
+    <a href="{% url 'cicloflorestal_list' %}">Cancelar</a>
+  </form>
+{% endblock %}

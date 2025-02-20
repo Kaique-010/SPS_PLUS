@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lista de Movimentações {% endblock %}
+
+{% block content %}
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'agricola/liststyles.css' %}">
+<div class="container mt-5">
+  <div class="card">
+    <div class="card-body">
+      <center>
+        <h2 class="mb-4">Lista de Movimentações de Estoque</h2>
+      </center>
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+      {% endfor %} {% endif %}
+      <a
+        href="{% url 'movimentacaoestoque_form' %}"
+        class="btn btn-success float-end"
+        >Nova Movimentação</a
+      >
+    </div>
+    <div class="container">
+      {% if movimentacoes %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Ações</th>
+              <th>ID</th>
+              <th>Produto</th>
+              <th>Quantidade</th>
+              <th>Tipo de Movimentação</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for movimentacao in movimentacoes %}
+            <tr>
+              <td>
+                <a
+                  href="{% url 'movimentacaoestoque_update' movimentacao.id %}"
+                  class="btn btn-sm"
+                  style="background-color: #7ab1ec; color: white"
+                >
+                  <i class="bi bi-pencil"></i>
+                </a>
+                <a
+                  href="{% url 'movimentacaoestoque_delete' movimentacao.id %}"
+                  class="btn btn-sm"
+                  style="background-color: #e7a0a7; color: white"
+                >
+                  <i class="bi bi-trash"></i>
+                </a>
+              </td>
+              <td>{{ movimentacao.id }}</td>
+              <td>{{ movimentacao.produto.nome }}</td>
+              <td>{{ movimentacao.quantidade }}</td>
+              <td>{{ movimentacao.tipo_movimentacao }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>Não há movimentações para exibir.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

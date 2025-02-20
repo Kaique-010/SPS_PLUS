@@ -1,0 +1,72 @@
+/* Estilo do título */
+.form-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #007bff; /* Cor primária */
+}
+
+/* Estilo do container */
+.container {
+  max-width: 1200px; /* Largura máxima do formulário */
+  padding: 70px;
+  background: linear-gradient(rgb(52, 52, 74), rgb(145, 157, 161));
+  border-radius: 8px; /* Bordas arredondadas */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: antiquewhite;
+  font-size: medium;
+}
+.container-mt-5 {
+  margin-top: 100px; /* Ajuste conforme necessário */
+}
+
+/* Estilo dos campos do formulário */
+.animal-form p {
+  margin-bottom: 25px;
+  color: #c82333;
+}
+
+.container form label {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 1%;
+  font-weight: bolder;
+}
+/* Estilo dos botões */
+.btn {
+  padding: 10px 25px; /* Tamanho do botão */
+  border: none; /* Remove borda padrão */
+  border-radius: 10px; /* Bordas arredondadas */
+  cursor: pointer; /* Muda o cursor ao passar o mouse */
+}
+
+.btn-primary {
+  background-color: #373b78; /* Cor do botão primário */
+  color: white; /* Texto branco */
+  transition: background-color 0.3s; /* Transição suave */
+}
+
+.btn-primary:hover {
+  background-color: #ba9c4b; /* Cor mais escura ao passar o mouse */
+}
+
+.btn-danger {
+  background-color: #a13a44; /* Cor do botão de perigo */
+  color: white; /* Texto branco */
+  transition: background-color 0.3s; /* Transição suave */
+}
+
+.btn-danger:hover {
+  background-color: #c82333; /* Cor mais escura ao passar o mouse */
+}
+
+.container-buttons {
+  display: flex; /* Flexbox para alinhar os botões */
+  justify-content: space-around;
+  margin-top: 20px; /* Espaço acima dos botões */
+}
+
+h2 {
+  margin-bottom: 5rem;
+  text-align: center;
+}

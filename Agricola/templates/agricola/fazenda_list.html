@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Lista de Fazendas{% endblock %}
+
+{% block content %}
+
+<br><br><br>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'agricola/liststyles.css' %}">
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body">
+            <center>
+                <h2 class="mb-4">Lista de Fazendas</h2>
+            </center>
+            <div class="container-search mb-4">
+                <form method="get" class="search-form">
+                    <input type="text" name="search" placeholder="Buscar fazenda" value="{{ request.GET.search }}" class="form-control">
+                    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+                </form>
+            </div>
+            <a href="{% url 'fazenda_form' %}" class="btn btn-success mb-3">Nova Fazenda</a>
+            {% if fazendas %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Ações</th>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Localização</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fazenda in fazendas %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'fazenda_update' fazenda.id %}" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="{% url 'fazenda_delete' fazenda.id %}" class="btn btn-danger btn-sm">Excluir</a>
+                        </td>
+                        <td>{{ fazenda.id }}</td>
+                        <td>{{ fazenda.nome }}</td>
+                        <td>{{ fazenda.localizacao }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Nenhuma fazenda encontrada.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
