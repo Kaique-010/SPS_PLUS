@@ -65,11 +65,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',  
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'licencas.middleware.ThreadLocalMiddleware',
-    'licencas.middleware.UsuarioLicencaMiddleware',   
-    'licencas.middleware.DatabaseRouterMiddleware',   
-    'licencas.middleware.LicenseMiddleware',   
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', 
 
 ]
 
@@ -158,7 +154,7 @@ USE_I18N = True
 USE_TZ = True
 
 DATABASE_ROUTERS = [ "licencas.db_router.LicenseDatabaseManager",
-                     "licencas.db_router.LicenseDatabaseRouter",
+                    
                     
                     ]
 

@@ -1,49 +1,79 @@
-{% extends 'base.html' %} {% block content %}
-{%load static%}
+{% extends 'base.html' %} {% load static %} {%block content%}
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
 <link rel="stylesheet" href="{% static 'licencas/form_styles.css' %}" />
+
 <div class="container">
   <h1>Criar Licença</h1>
   <form method="post">
     {% csrf_token %}
 
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="{{ form.lice_docu.id_for_label }}"
+            >Documento (CPF/CNPJ)</label
+          >
+          {{ form.lice_docu }} {% if form.lice_docu.errors %}
+          <div class="alert alert-danger">
+            {% for error in form.lice_docu.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col-md-12">
         <div class="form-group">
-          <label for="{{  form.lice_docu.id_for_label }}">Documento (CPF/CNPJ)</label>
-          {{ form.lice_docu }}
+          <label for="{{ form.lice_nome.id_for_label }}">Nome Empresa</label>
+          {{ form.lice_nome }} {% if form.lice_nome.errors %}
+          <div class="alert alert-danger">
+            {% for error in form.lice_nome.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
+
     <div class="row">
       <div class="col-md-12">
         <div class="form-group">
-          <label for="{{  form.lice_nome.id_for_label }}">Nome Empresa</label>
-          {{ form.lice_nome }}
+          <label for="{{ form.lice_emai.id_for_label }}">E-mail</label>
+          {{ form.lice_emai }} {% if form.lice_emai.errors %}
+          <div class="alert alert-danger">
+            {% for error in form.lice_emai.errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
+
     <div class="row">
       <div class="col-md-12">
         <div class="form-group">
-          <label for="{{  form.lice_emai.id_for_label }}">E-mail</label>
-          {{ form.lice_emai }}
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
-        <div class="form-group">
-          <label for="{{  form.lice_bloq.id_for_label }}">Ativa? </label>
+          <label for="{{ form.lice_bloq.id_for_label }}">Ativa?</label>
           {{ form.lice_bloq }}
         </div>
       </div>
     </div>
+
     <button type="submit" class="btn badge-success">Salvar</button>
   </form>
-  <br><br>
-  <a href="{% url 'licenca_list' %}" class="btn btn-danger">Voltar para a lista de licenças</a>
+
+  <br /><br />
+  <a href="{% url 'licenca_list' %}" class="btn btn-danger"
+    >Voltar para a lista de licenças</a
+  >
 </div>
+
 {% endblock %}

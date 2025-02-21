@@ -14,6 +14,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
+from licencas.db_router import LicenseDatabaseManager
 from licencas.mixins import LicenseMixin
 from .models import Licencas, Filiais, Empresas
 from .forms import LicencasForm, EmpresasForm, FiliaisForm, LoginForm
@@ -147,31 +148,58 @@ class LicencasListView(LicenseMixin, ListView):
     template_name = "licencas/licencas_list.html"
     context_object_name = "licencas"
 
-    def get_queryset(self):
-        self.set_db()  # Certifica que estamos no banco correto antes da consulta
-        queryset = super().get_queryset().using(self.db_name).order_by('lice_id')  # Use o banco correto
 
-        nome = self.request.GET.get('lice_nome', '')
-        lice_id = self.request.GET.get('lice_id', '')
-
-        if nome:
-            queryset = queryset.filter(lice_nome__icontains=nome)
-
-        if lice_id:
-            try:
-                queryset = queryset.filter(lice_id=int(lice_id))
-            except ValueError:
-                pass
-
-        return queryset
-    
-    
-class LicencasCreateView(LicenseMixin,CreateView):
+class LicencasCreateView(CreateView):
     model = Licencas
     form_class = LicencasForm
     template_name = "licencas/licencas_form.html"
     success_url = reverse_lazy("licenca_list")
-    context_object_name = "licencas"
+
+    def form_valid(self, form):
+        lice_docu = form.cleaned_data.get('lice_docu')
+
+        # Verifica se a licença já existe
+        if Licencas.objects.filter(lice_docu=lice_docu).exists():
+            form.add_error('lice_docu', 'Licença com este Documento já existe.')
+            return self.form_invalid(form)
+
+        print("Formulário válido, preparando para salvar...") 
+        licenca = form.save(commit=False)
+        print(f"Dados da licença: {licenca}")
+        licenca.save()
+
+        # Garante que o banco de dados existe e aplica migrações
+        LicenseDatabaseManager.ensure_database_exists(licenca)
+
+        # Criação do superusuário associado à nova licença
+        superuser_email = form.cleaned_data.get('lice_emai')
+        superuser_password = 'roma3030@'
+        superuser_name = 'Admin'  # Você pode passar um parâmetro para personalizar isso
+
+        try:
+            superuser = Usuarios.objects.create_superuser(
+                login=superuser_email,
+                nome=superuser_name,  # Usando o nome do superusuário definido
+                email=superuser_email,
+                password=superuser_password,
+                licenca=licenca,
+                is_staff=True,       # Garante que o superusuário é um membro da equipe
+                is_superuser=True    # Garante que o superusuário tem permissões totais
+            )
+            print("Superusuário criado com sucesso!")
+            print(f"Nome do superusuário: {superuser.nome}, Email: {superuser_email}, Senha: {superuser_password}")
+        except Exception as e:
+            messages.error(self.request, f"Erro ao criar superusuário: {str(e)}")
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        print("Formulário inválido:", form.errors)
+        return super().form_invalid(form)
+
+
+
 
 
 class LicencasUpdateView(LicenseMixin,UpdateView):
@@ -201,30 +229,7 @@ class EmpresaListView(LicenseMixin, ListView):
     template_name = 'empresa_list.html'
     context_object_name = 'empresas'
 
-    def dispatch(self, request, *args, **kwargs):
-        if 'licenca_id' not in request.session:
-            return redirect('select_license')  # Redireciona se não houver licença selecionada
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_queryset(self):
-        queryset = super().get_queryset().order_by('empr_nome')
-        nome = self.request.GET.get('empr_nome', '')
-        documento = self.request.GET.get('empr_docu', '')
-
-        if nome:
-            queryset = queryset.filter(empr_nome__icontains=nome)
-
-        if documento:
-            queryset = queryset.filter(empr_docu__icontains=documento)
-
-        return queryset.filter(licenca=self.get_license()).order_by('empr_nome')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['empr_nome'] = self.request.GET.get('empr_nome', '')
-        context['empr_docu'] = self.request.GET.get('empr_docu', '')
-        return context
-
+    
 
 class EmpresaCreateView(LicenseMixin, CreateView):
     model = Empresas
@@ -254,34 +259,17 @@ class FilialListView(ListView):
     template_name = 'filiais/filial_list.html'  # Ajuste conforme seu template
     context_object_name = 'filiais'
 
-    def get_queryset(self):
-        # Obtém a licença do usuário atual
-        user = self.request.user
-        if user.is_authenticated:
-            return Filiais.objects.filter(empresa__licenca=user.licenca).distinct()
-        return Filiais.objects.none()
-
    
 class FilialCreateView(LicenseMixin, CreateView):
     model = Filiais
     form_class = FiliaisForm
     template_name = 'licencas/filial_create.html'
     success_url = reverse_lazy('filial_list')
-    
-    def form_valid(self, form):
 
-        empresa = self.request.user.empresas.first() 
-        form.instance.empresa = empresa
-        return super().form_valid(form)
-    
 class FilialUpdateView(LicenseMixin, UpdateView):
     model = Filiais
     form_class = FiliaisForm
     template_name = 'licencas/filial_update.html'
-    
-    def form_valid(self, form):
-        form.instance.licenca = self.get_license() 
-        return super().form_valid(form)
 
 class FilialDetailView(DetailView):
     model = Filiais

@@ -84,19 +84,23 @@ class UsuarioManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, login, nome, email, password=None, **extra_fields):
+    def create_superuser(self, login, nome, email, password=None, licenca=None, **extra_fields):
         """
         Cria e retorna um superusuário com login, nome, email e senha.
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-        
-        # Atribuindo uma licença ao superusuário, mesmo que ele não precise de uma específica
-        licenca = Licencas.objects.first()  # Pega a primeira licença no banco (ou escolha outra lógica)
+
+        if not email:
+            raise ValueError('O email deve ser fornecido')
+
         if licenca:
             extra_fields.setdefault('licenca', licenca)
+        else:
+            raise ValueError('Licença deve ser fornecida ao criar superusuário.')
 
         return self.create_user(login, nome, email, password, **extra_fields)
+
 
 
 class Usuarios(AbstractBaseUser, PermissionsMixin):

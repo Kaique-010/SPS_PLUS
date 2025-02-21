@@ -2,69 +2,21 @@ import json
 from django.conf import settings
 from django.db import connections
 from django.db import connection, OperationalError
-from .middleware import get_current_user
 from django.core.management import call_command
 from threading import local
 import psycopg2
 
 
-_thread_locals = local()
-
-class LicenseDatabaseRouter:
-    def db_for_read(self, model, **hints):
-    
-        request = self.get_request()
-        if request:
-            banco = request.session.get("banco_conectado", "default")
-            print(f"🔍 Banco de leitura: {banco}")  # Debug
-            return banco
-        return "default"
-
-    def db_for_write(self, model, **hints):
-        # Obtém o banco da licença a partir da sessão do usuário
-        request = self.get_request()
-        if request:
-            
-            return request.session.get("banco_conectado", "default")
-        return "default"
-
-    def get_request(self):
-        return getattr(_thread_locals, "request", None)
-
-
-class ThreadLocalMiddleware:
-    """Middleware para armazenar a request no thread local"""
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        _thread_locals.request = request
-        response = self.get_response(request)
-        del _thread_locals.request  # Remove a referência após a resposta
-        return response
-
-
 class LicenseDatabaseManager:
-    """
-    Gerencia a criação e configuração de bancos de dados para cada licença.
-    """
-
     @staticmethod
     def ensure_database_exists(licenca):
-        """
-        Verifica se o banco da licença existe, e se não, cria ele e aplica migrações.
-        """
         db_name = licenca.lice_nome
-
         if LicenseDatabaseManager.database_exists(db_name):
             print(f"Banco {db_name} já existe.")
-            return  # Se já existe, não precisa recriar
+            return
 
-        # Criação do banco fora de qualquer transação
         LicenseDatabaseManager.create_database(db_name)
         LicenseDatabaseManager.apply_migrations_to_new_db(db_name)
-
-        # Salva a licença no banco principal e registra o banco no JSON
         licenca.save()
         save_database(db_name)
 
