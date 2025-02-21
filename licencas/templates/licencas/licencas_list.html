@@ -7,6 +7,13 @@
 
 <div class="container">
   <h1 class="my-4">Licenças</h1>
+  {% if messages %}
+  <div class="alert alert-{{ messages.0.tags }}">
+    {% for message in messages %}
+    <div>{{ message }}</div>
+    {% endfor %}
+  </div>
+  {% endif %}
   <div class="container-search">
     <form method="get" class="search-form mb-4">
       <div class="form-row">

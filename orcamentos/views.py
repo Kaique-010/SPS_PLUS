@@ -6,12 +6,12 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DetailView, DeleteView
 from Entidades.models import Entidades
-from licencas.mixins import LicenseMixin
+from licencas.mixins import LicenseDatabaseMixin
 from produto.models import Produtos
 from .models import Orcamento, OrcamentoPecas
 from .forms import OrcamentoForm, OrcamentoPecasForm, OrcamentoPecasInlineFormSet
 
-class OrcamentoListView(LicenseMixin,ListView):
+class OrcamentoListView(LicenseDatabaseMixin,ListView):
     model = Orcamento
     template_name = "orcamentos/orcamento_list.html"
     context_object_name = "orcamentos"
@@ -46,7 +46,7 @@ class OrcamentoListView(LicenseMixin,ListView):
         return context
 
 
-class OrcamentoCreateView(LicenseMixin,CreateView):
+class OrcamentoCreateView(LicenseDatabaseMixin,CreateView):
     model = Orcamento
     form_class = OrcamentoForm
     template_name = "orcamentos/orcamento_form.html"
@@ -105,7 +105,7 @@ class OrcamentoCreateView(LicenseMixin,CreateView):
         return self.form_invalid(form)
 
 
-class OrcamentoUpdateView(LicenseMixin,UpdateView):
+class OrcamentoUpdateView(LicenseDatabaseMixin,UpdateView):
     model = Orcamento
     form_class = OrcamentoForm
     template_name = 'orcamentos/orcamento_form.html'
@@ -151,7 +151,7 @@ class OrcamentoUpdateView(LicenseMixin,UpdateView):
 
 
 
-class OrcamentoDetailView(LicenseMixin,DetailView):
+class OrcamentoDetailView(LicenseDatabaseMixin,DetailView):
     model = Orcamento
     template_name = "orcamentos/orcamento_detail.html"
     context_object_name = "orcamento"

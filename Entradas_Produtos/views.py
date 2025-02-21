@@ -4,9 +4,9 @@ from . import models, forms
 from django.urls import reverse_lazy
 from Entidades.models  import Entidades
 from produto.models import Produtos
-from licencas.mixins import LicenseMixin
+from licencas.mixins import LicenseDatabaseMixin
 
-class EntradasListView(ListView, LicenseMixin):
+class EntradasListView(ListView, LicenseDatabaseMixin):
     model = models.EntradaEstoque
     template_name = 'entradaslistas.html'
     context_object_name = 'entradas'
@@ -26,7 +26,7 @@ class EntradasListView(ListView, LicenseMixin):
 
     
 
-class EntradasCreateView(CreateView, LicenseMixin):
+class EntradasCreateView(CreateView, LicenseDatabaseMixin):
     model = models.EntradaEstoque
     template_name = 'entradascriar.html'
     form_class = forms.Entradas
@@ -42,7 +42,7 @@ class EntradasCreateView(CreateView, LicenseMixin):
 
         return super().form_valid(form)
 
-class EntradasDeleteView(DeleteView, LicenseMixin):
+class EntradasDeleteView(DeleteView, LicenseDatabaseMixin):
     model = models.EntradaEstoque
     template_name = 'entradasexcluir.html'
     success_url = reverse_lazy('entradaslistas')
@@ -57,13 +57,13 @@ class EntradasDeleteView(DeleteView, LicenseMixin):
 
 
 
-class EntradasUpdateView(UpdateView, LicenseMixin):
+class EntradasUpdateView(UpdateView, LicenseDatabaseMixin):
     model = models.EntradaEstoque
     template_name = 'entradaseditar.html'
     form_class = forms.Entradas
     success_url = reverse_lazy('entradaslistas')
 
-class EntradasDetailView(DetailView, LicenseMixin):
+class EntradasDetailView(DetailView, LicenseDatabaseMixin):
     model = models.EntradaEstoque
     template_name = 'entradasdetalhe.html'
 
@@ -76,7 +76,7 @@ class EntradasDetailView(DetailView, LicenseMixin):
         return super().get_object(queryset).using(db_name)
 
 
-class EntradasDeleteView(DeleteView, LicenseMixin):
+class EntradasDeleteView(DeleteView, LicenseDatabaseMixin):
     model = models.EntradaEstoque
     template_name = 'entradasexcluir.html'
     success_url = reverse_lazy('entradaslistas')

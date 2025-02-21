@@ -8,10 +8,7 @@ STATIC_VERSION = str(int(time.time()))
 
 
 load_dotenv()
-print("DB_USER:", os.getenv('DB_USER'))
-print("DB_PASSWORD:", os.getenv('DB_PASSWORD'))
-print("DB_NAME:", os.getenv('DB_NAME'))
-print("DB_PORT:", os.getenv('DB_PORT'))
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -66,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',  
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware', 
+    #'licencas.middleware.LicenseDatabaseMiddleware', 
 
 ]
 
@@ -136,10 +134,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 #modelos de autenticação
-AUTHENTICATION_BACKENDS = [
-    #'licencas.auth_backends.DocumentoAuthBackend',  
+AUTHENTICATION_BACKENDS = [ 
     'django.contrib.auth.backends.ModelBackend',  
-    'licencas.auth_backends.LoginBackend',  
+    'licencas.auth_backends.GlobalAuthBackend',  
 ]
 
 
@@ -180,15 +177,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db' 
-SESSION_COOKIE_AGE = 3600  # Tempo em segundos para expiração do cookie (1 hora
+SESSION_COOKIE_AGE = 3600  # Tempo em segundos para expiração do cookie (1 hora)
 SESSION_COOKIE_NAME = 'sessionid'  # Nome do cookie de sessão
 SESSION_SAVE_EVERY_REQUEST = True  
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False 
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000']
 SESSION_COOKIE_SECURE = False  # Se estiver testando localmente
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"  # Teste com "None" se necessário
 SESSION_DB_ALIAS = "default"  
+
+# Configurações adicionais
+SESSION_COOKIE_PATH = '/'  # Envia o cookie para todas as rotas
+SESSION_COOKIE_DOMAIN = None  # Envia o cookie para todos os subdomínios
 
 LOGOUT_REDIRECT_URL = '/'  # Ou a página que você preferir
 LOGIN_URL = 'login'
@@ -198,48 +198,3 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'https://seu-dominio.com',  # Exemplo para produção
 ]
-
-
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
-        },
-    },
-    'loggers': {
-        'django.db.backends': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'level': 'INFO',  # Pode ser 'DEBUG', 'INFO', 'WARNING', etc.
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',  # Pode ser 'DEBUG' para capturar mais detalhes
-            'propagate': True,
-        },
-        'IA': {  # Seu módulo específico de IA, se necessário
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-}
-

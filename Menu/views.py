@@ -1,35 +1,27 @@
-import json
 from django.shortcuts import render
-from django.contrib.auth import get_user
-from django.contrib.auth.decorators import login_required
 from django.db import connection
-
-from licencas.models import Licencas
-
-
-def dictfetchall(cursor):
-    """Converte o resultado do cursor em uma lista de dicionários."""
-    columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
+from django.contrib.auth.decorators import login_required
+import json
+from licencas.mixins import LicenseDatabaseMixin
 
 @login_required
 def home(request):
-    licenca_nome = request.session.get("licenca_nome", "Desconhecido")
-    usuario = get_user(request)  # Obtém o usuário autenticado
-    request.session['usuario_nome'] = usuario.nome  # Armazena o nome do usuário na sessão
+    mixin = LicenseDatabaseMixin()
+    mixin.setup(request)
+    licenca_nome = request.session.get("licenca_lice_nome")
+    print(f"Licença na home: {licenca_nome}")
+    db_config = request.session.get("db_config")  
+    print(f"DB Config na home: {db_config}")
+    usuario = request.user  # Obtém o usuário autenticado
     print(f"Usuário autenticado na home? {usuario.is_authenticated}")
-    print(f"Usuário: {usuario}")
-    print(f"Licença na sessão: {licenca_nome}")
+
     vendedor = request.GET.get('vendedor', '')
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')
-    
+
     # Obter lista de vendedores
     with connection.cursor() as cursor:
-        cursor.execute(""" 
+        cursor.execute("""
             SELECT DISTINCT e1.enti_clie, e1.enti_nome
             FROM pedidosvenda 
             LEFT JOIN entidades e1 ON pedi_vend = e1.enti_clie AND pedi_empr = e1.enti_empr
@@ -58,7 +50,7 @@ def home(request):
     if vendedor:
         query += " AND e1.enti_clie = %s"
         params.append(vendedor)
-    
+
     if data_inicio:
         query += " AND pedi_data >= %s"
         params.append(data_inicio)
@@ -66,7 +58,7 @@ def home(request):
     if data_fim:
         query += " AND pedi_data <= %s"
         params.append(data_fim)
-    
+
     query += """
         GROUP BY 
             pedi_vend, e1.enti_nome
@@ -76,7 +68,7 @@ def home(request):
 
     with connection.cursor() as cursor:
         cursor.execute(query, params)
-        data = dictfetchall(cursor)
+        data = dictfetchall(cursor)  # Usa a função dictfetchall para converter o resultado
 
     # Prepare data for the chart
     labels = [item['Nome Vendedor'] for item in data]
@@ -93,9 +85,15 @@ def home(request):
         'vendedores': vendedores_list,
         'usuario': usuario
     }
-    request.session['banco_usuario'] = licenca_nome  
-    request.session.modified = True  
 
     return render(request, 'home.html', context)
 
-
+def dictfetchall(cursor):
+    """
+    Retorna todas as linhas de um cursor como uma lista de dicionários.
+    """
+    columns = [col[0] for col in cursor.description]  # Obtém os nomes das colunas
+    return [
+        dict(zip(columns, row))  # Converte cada linha em um dicionário
+        for row in cursor.fetchall()
+    ]

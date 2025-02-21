@@ -3,7 +3,6 @@ from django.urls import path
 from django.contrib.auth.views import LoginView
 from .views import LicencasListView, LicencasCreateView, LicencasUpdateView, LicencasDetailView, LicencasDeleteView
 from . import views
-from .views import select_license
 from .views import (
     EmpresaListView, EmpresaCreateView, EmpresaUpdateView, EmpresaDetailView, EmpresaDeleteView,
     FilialListView, FilialCreateView, FilialUpdateView, FilialDetailView, FilialDeleteView, UsuarioCreateView, UsuarioLoginView, test_session,LogoutView,
@@ -38,13 +37,7 @@ urlpatterns = [
     path("licencas/login/", LoginView.as_view(template_name="licencas/login.html"), name="login"),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('teste', test_session, name='teste'),
-    
-    
-    # Rota para seleção do banco de dados para superusuário
-    path('select_database/', views.select_database, name='select_database'),
-    
-    # Rota para seleção de empresa e filial para usuários comuns
-    path('select_company_branch/', views.select_company_branch, name='select_company_branch'),
-    path('select-license/', select_license, name='select_license'),
+
+
 ]
 

@@ -70,12 +70,12 @@ class LicenseDatabaseManager:
             'PASSWORD': default_db['PASSWORD'],
             'HOST': default_db['HOST'],
             'PORT': default_db['PORT'],
-            'TIME_ZONE': 'America/Sao_Paulo',  # Adicionando TIME_ZONE
-            'CONN_HEALTH_CHECKS': True,  # Adicionando CONN_HEALTH_CHECKS
-            'CONN_MAX_AGE': 600,  # Adicionando CONN_MAX_AGE
-            'AUTOCOMMIT': True,  # Necessário para que as operações de criação de banco funcionem
-            'ATOMIC_REQUESTS': True,  # Necessário para garantir que a transação seja controlada
-            'OPTIONS': {},  # Garantindo que a chave 'OPTIONS' esteja presente
+            'TIME_ZONE': 'America/Sao_Paulo',  
+            'CONN_HEALTH_CHECKS': True,  
+            'CONN_MAX_AGE': 600, 
+            'AUTOCOMMIT': True,  
+            'ATOMIC_REQUESTS': True,  
+            'OPTIONS': {},  
         }
 
         # Forçando a recarga da configuração de banco de dados
@@ -117,13 +117,15 @@ def save_database(db_name):
             'PASSWORD': settings.DATABASES['default']['PASSWORD'],
             'HOST': settings.DATABASES['default']['HOST'],
             'PORT': settings.DATABASES['default']['PORT'],
-            'TIME_ZONE': 'America/Sao_Paulo',  # Adicionando TIME_ZONE
-            'CONN_HEALTH_CHECKS': True,  # Adicionando CONN_HEALTH_CHECKS
-            'CONN_MAX_AGE': 600,  # Adicionando CONN_MAX_AGE
-            'OPTIONS': {},  # Garantindo que a chave 'OPTIONS' esteja presente
+            'TIME_ZONE': 'America/Sao_Paulo', 
+            'CONN_HEALTH_CHECKS': True,  
+            'CONN_MAX_AGE': 600, 
+            'AUTOCOMMIT': True,  
+            'ATOMIC_REQUESTS': True,  
+            'OPTIONS': {},  
         }
 
-        # Aqui você salva ou atualiza o arquivo JSON com as novas configurações de banco de dados
+       
         with open('databases.json', 'w') as f:
             json.dump(databases, f, indent=4)
     else:

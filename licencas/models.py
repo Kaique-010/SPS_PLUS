@@ -9,6 +9,7 @@ class Licencas(models.Model):
     lice_emai = models.EmailField('E-mail', max_length=150, blank=True, null=True)
     lice_bloq = models.BooleanField('Ativa?', default=False)
     lice_data_cria = models.DateField('Data de Criação', auto_now_add=True)
+    db_config = models.JSONField('Configuração do Banco de Dados')
 
     class Meta:
         db_table = 'licencas'
@@ -99,7 +100,12 @@ class UsuarioManager(BaseUserManager):
         else:
             raise ValueError('Licença deve ser fornecida ao criar superusuário.')
 
+        # Garantir que 'licenca' seja um campo obrigatório no modelo de usuários
+        if 'licenca' not in extra_fields:
+            raise ValueError("Licença é obrigatória para criar superusuário.")
+        
         return self.create_user(login, nome, email, password, **extra_fields)
+
 
 
 

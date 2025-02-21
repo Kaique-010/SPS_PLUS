@@ -10,10 +10,10 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from sps_plus import settings
 from .models import CategoriaProduto, Fazenda, Talhao, ProdutoAgro, EstoqueFazenda, MovimentacaoEstoque, AplicacaoInsumos, Animal, EventoAnimal, CicloFlorestal
 from .forms import CategoriaProdutoForm, FazendaForm, TalhaoForm, ProdutoAgroForm, EstoqueFazendaForm, MovimentacaoEstoqueForm, AplicacaoInsumosForm, AnimalForm, EventoAnimalForm, CicloFlorestalForm
-from licencas.mixins import LicenseMixin
+from licencas.mixins import LicenseDatabaseMixin
 
 
-class FazendaListView(LicenseMixin, ListView):
+class FazendaListView(LicenseDatabaseMixin, ListView):
     model = Fazenda
     template_name = "fazenda_list.html"
     context_object_name = 'fazendas'
@@ -23,21 +23,21 @@ class FazendaListView(LicenseMixin, ListView):
         return Fazenda.objects.filter(empresa__licenca=licenca)
 
 
-class FazendaCreateView(LicenseMixin, CreateView):
+class FazendaCreateView(LicenseDatabaseMixin, CreateView):
     model = Fazenda
     form_class = FazendaForm
     template_name = "agricola/fazenda_form.html"
     success_url = reverse_lazy("fazenda_list")
 
 
-class FazendaUpdateView(LicenseMixin, UpdateView):
+class FazendaUpdateView(LicenseDatabaseMixin, UpdateView):
     model = Fazenda
     form_class = FazendaForm
     template_name = "agricola/fazenda_form.html"
     success_url = reverse_lazy("fazenda_list")
 
 
-class FazendaDeleteView(LicenseMixin, DeleteView):
+class FazendaDeleteView(LicenseDatabaseMixin, DeleteView):
     model = Fazenda
     template_name = "agricola/fazenda_confirm_delete.html"
     success_url = reverse_lazy("fazenda_list")
@@ -51,7 +51,7 @@ class FazendaDeleteView(LicenseMixin, DeleteView):
 
 
 # Talhão Views
-class TalhaoListView(LicenseMixin, ListView):
+class TalhaoListView(LicenseDatabaseMixin, ListView):
     model = Talhao
     template_name = "agricola/talhao_list.html"
     context_object_name = 'talhoes'
@@ -60,7 +60,7 @@ class TalhaoListView(LicenseMixin, ListView):
         return Talhao.objects.using(self.db_name).filter(fazenda__licenca=self.get_license())
 
 
-class TalhaoCreateView(LicenseMixin, CreateView):
+class TalhaoCreateView(LicenseDatabaseMixin, CreateView):
     model = Talhao
     form_class = TalhaoForm
     template_name = "agricola/talhao_form.html"
@@ -72,266 +72,266 @@ class TalhaoCreateView(LicenseMixin, CreateView):
         return context
 
 
-class TalhaoUpdateView(LicenseMixin, UpdateView):
+class TalhaoUpdateView(LicenseDatabaseMixin, UpdateView):
     model = Talhao
     form_class = TalhaoForm
     template_name = "agricola/talhao_form.html"
     success_url = reverse_lazy("talhao_list")
     
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class TalhaoDeleteView(LicenseMixin, DeleteView):
+class TalhaoDeleteView(LicenseDatabaseMixin, DeleteView):
     model = Talhao
     template_name = "agricola/talhao_confirm_delete.html"
     success_url = reverse_lazy("talhao_list")
 
 
 # Produto Agro Views
-class ProdutoAgroListView(LicenseMixin, ListView):
+class ProdutoAgroListView(LicenseDatabaseMixin, ListView):
     model = ProdutoAgro
     template_name = "agricola/produtoagro_list.html"
 
 
-class ProdutoAgroCreateView(LicenseMixin, CreateView):
+class ProdutoAgroCreateView(LicenseDatabaseMixin, CreateView):
     model = ProdutoAgro
     form_class = ProdutoAgroForm
     template_name = "agricola/produtoagro_form.html"
     success_url = reverse_lazy("produtoagro_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
-class ProdutoAgroUpdateView(LicenseMixin, UpdateView):
+class ProdutoAgroUpdateView(LicenseDatabaseMixin, UpdateView):
     model = ProdutoAgro
     form_class = ProdutoAgroForm
     template_name = "agricola/produtoagro_form.html"
     success_url = reverse_lazy("produtoagro_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class ProdutoAgroDeleteView(LicenseMixin, DeleteView):
+class ProdutoAgroDeleteView(LicenseDatabaseMixin, DeleteView):
     model = ProdutoAgro
     template_name = "agricola/produtoagro_confirm_delete.html"
     success_url = reverse_lazy("produtoagro_list")
 
 
 # Estoque Fazenda Views
-class EstoqueFazendaListView(LicenseMixin, ListView):
+class EstoqueFazendaListView(LicenseDatabaseMixin, ListView):
     model = EstoqueFazenda
     template_name = "agricola/estoquefazenda_list.html"
 
 
-class EstoqueFazendaCreateView(LicenseMixin, CreateView):
+class EstoqueFazendaCreateView(LicenseDatabaseMixin, CreateView):
     model = EstoqueFazenda
     form_class = EstoqueFazendaForm
     template_name = "agricola/estoquefazenda_form.html"
     success_url = reverse_lazy("estoquefazenda_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
-class EstoqueFazendaUpdateView(LicenseMixin, UpdateView):
+class EstoqueFazendaUpdateView(LicenseDatabaseMixin, UpdateView):
     model = EstoqueFazenda
     form_class = EstoqueFazendaForm
     template_name = "agricola/estoquefazenda_form.html"
     success_url = reverse_lazy("estoquefazenda_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
-class EstoqueFazendaDeleteView(LicenseMixin, DeleteView):
+class EstoqueFazendaDeleteView(LicenseDatabaseMixin, DeleteView):
     model = EstoqueFazenda
     template_name = "agricola/estoquefazenda_confirm_delete.html"
     success_url = reverse_lazy("estoquefazenda_list")
 
 
 # Movimentação Estoque Views
-class MovimentacaoEstoqueListView(LicenseMixin, ListView):
+class MovimentacaoEstoqueListView(LicenseDatabaseMixin, ListView):
     model = MovimentacaoEstoque
     template_name = "agricola/movimentacaoestoque_list.html"
 
 
-class MovimentacaoEstoqueCreateView(LicenseMixin, CreateView):
+class MovimentacaoEstoqueCreateView(LicenseDatabaseMixin, CreateView):
     model = MovimentacaoEstoque
     form_class = MovimentacaoEstoqueForm
     template_name = "agricola/movimentacaoestoque_form.html"
     success_url = reverse_lazy("movimentacaoestoque_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class MovimentacaoEstoqueUpdateView(LicenseMixin, UpdateView):
+class MovimentacaoEstoqueUpdateView(LicenseDatabaseMixin, UpdateView):
     model = MovimentacaoEstoque
     form_class = MovimentacaoEstoqueForm
     template_name = "agricola/movimentacaoestoque_form.html"
     success_url = reverse_lazy("movimentacaoestoque_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class MovimentacaoEstoqueDeleteView(LicenseMixin, DeleteView):
+class MovimentacaoEstoqueDeleteView(LicenseDatabaseMixin, DeleteView):
     model = MovimentacaoEstoque
     template_name = "agricola/movimentacaoestoque_confirm_delete.html"
     success_url = reverse_lazy("movimentacaoestoque_list")
 
 
 # Aplicacao Insumos Views
-class AplicacaoInsumosListView(LicenseMixin, ListView):
+class AplicacaoInsumosListView(LicenseDatabaseMixin, ListView):
     model = AplicacaoInsumos
     template_name = "agricola/aplicacaoinsumos_list.html"
 
 
-class AplicacaoInsumosCreateView(LicenseMixin, CreateView):
+class AplicacaoInsumosCreateView(LicenseDatabaseMixin, CreateView):
     model = AplicacaoInsumos
     form_class = AplicacaoInsumosForm
     template_name = "agricola/aplicacaoinsumos_form.html"
     success_url = reverse_lazy("aplicacaoinsumos_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class AplicacaoInsumosUpdateView(LicenseMixin, UpdateView):
+class AplicacaoInsumosUpdateView(LicenseDatabaseMixin, UpdateView):
     model = AplicacaoInsumos
     form_class = AplicacaoInsumosForm
     template_name = "agricola/aplicacaoinsumos_form.html"
     success_url = reverse_lazy("aplicacaoinsumos_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class AplicacaoInsumosDeleteView(LicenseMixin, DeleteView):
+class AplicacaoInsumosDeleteView(LicenseDatabaseMixin, DeleteView):
     model = AplicacaoInsumos
     template_name = "agricola/aplicacaoinsumos_confirm_delete.html"
     success_url = reverse_lazy("aplicacaoinsumos_list")
 
 
 # Animal Views
-class AnimalListView(LicenseMixin, ListView):
+class AnimalListView(LicenseDatabaseMixin, ListView):
     model = Animal
     template_name = "agricola/animal_list.html"
 
 
-class AnimalCreateView(LicenseMixin, CreateView):
+class AnimalCreateView(LicenseDatabaseMixin, CreateView):
     model = Animal
     form_class = AnimalForm
     template_name = "agricola/animal_form.html"
     success_url = reverse_lazy("animal_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class AnimalUpdateView(LicenseMixin, UpdateView):
+class AnimalUpdateView(LicenseDatabaseMixin, UpdateView):
     model = Animal
     form_class = AnimalForm
     template_name = "agricola/animal_form.html"
     success_url = reverse_lazy("animal_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class AnimalDeleteView(LicenseMixin, DeleteView):
+class AnimalDeleteView(LicenseDatabaseMixin, DeleteView):
     model = Animal
     template_name = "agricola/animal_confirm_delete.html"
     success_url = reverse_lazy("animal_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
 # Evento Animal Views
-class EventoAnimalListView(LicenseMixin, ListView):
+class EventoAnimalListView(LicenseDatabaseMixin, ListView):
     model = EventoAnimal
     template_name = "agricola/eventoanimal_list.html"
 
 
-class EventoAnimalCreateView(LicenseMixin, CreateView):
+class EventoAnimalCreateView(LicenseDatabaseMixin, CreateView):
     model = EventoAnimal
     form_class = EventoAnimalForm
     template_name = "agricola/eventoanimal_form.html"
     success_url = reverse_lazy("eventoanimal_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
-class EventoAnimalUpdateView(LicenseMixin, UpdateView):
+class EventoAnimalUpdateView(LicenseDatabaseMixin, UpdateView):
     model = EventoAnimal
     form_class = EventoAnimalForm
     template_name = "agricola/eventoanimal_form.html"
     success_url = reverse_lazy("eventoanimal_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
-class EventoAnimalDeleteView(LicenseMixin, DeleteView):
+class EventoAnimalDeleteView(LicenseDatabaseMixin, DeleteView):
     model = EventoAnimal
     template_name = "agricola/eventoanimal_confirm_delete.html"
     success_url = reverse_lazy("eventoanimal_list")
 
 
 # Ciclo Florestal Views
-class CicloFlorestalListView(LicenseMixin, ListView):
+class CicloFlorestalListView(LicenseDatabaseMixin, ListView):
     model = CicloFlorestal
     template_name = "agricola/cicloflorestal_list.html"
 
 
-class CicloFlorestalCreateView(LicenseMixin, CreateView):
+class CicloFlorestalCreateView(LicenseDatabaseMixin, CreateView):
     model = CicloFlorestal
     form_class = CicloFlorestalForm
     template_name = "agricola/cicloflorestal_form.html"
     success_url = reverse_lazy("cicloflorestal_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class CicloFlorestalUpdateView(LicenseMixin, UpdateView):
+class CicloFlorestalUpdateView(LicenseDatabaseMixin, UpdateView):
     model = CicloFlorestal
     form_class = CicloFlorestalForm
     template_name = "agricola/cicloflorestal_form.html"
     success_url = reverse_lazy("cicloflorestal_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class CicloFlorestalDeleteView(LicenseMixin, DeleteView):
+class CicloFlorestalDeleteView(LicenseDatabaseMixin, DeleteView):
     model = CicloFlorestal
     template_name = "agricola/cicloflorestal_confirm_delete.html"
     success_url = reverse_lazy("cicloflorestal_list")
 
 # Categoria Produto Views
-class CategoriaProdutoListView(LicenseMixin, ListView):
+class CategoriaProdutoListView(LicenseDatabaseMixin, ListView):
     model = CategoriaProduto
     template_name = "agricola/categoria_produto_list.html"
 
 
 
-class CategoriaProdutoCreateView(LicenseMixin, CreateView):
+class CategoriaProdutoCreateView(LicenseDatabaseMixin, CreateView):
     model = CategoriaProduto
     form_class = CategoriaProdutoForm
     template_name = "agricola/categoria_produto_form.html"
@@ -339,21 +339,21 @@ class CategoriaProdutoCreateView(LicenseMixin, CreateView):
 
     
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
 
-class CategoriaProdutoUpdateView(LicenseMixin, UpdateView):
+class CategoriaProdutoUpdateView(LicenseDatabaseMixin, UpdateView):
     model = CategoriaProduto
     form_class = CategoriaProdutoForm
     template_name = "agricola/categoria_produto_form.html"
     success_url = reverse_lazy("categoria_produto_list")
 
     def form_valid(self, form):
-        """Apenas chama o form_valid do LicenseMixin, que já faz o save corretamente."""
+        """Apenas chama o form_valid do LicenseDatabaseMixin, que já faz o save corretamente."""
         return super().form_valid(form)
 
-class CategoriaProdutoDeleteView(LicenseMixin, DeleteView):
+class CategoriaProdutoDeleteView(LicenseDatabaseMixin, DeleteView):
     model = CategoriaProduto
     template_name = "agricola/categoria_produto_confirm_delete.html"
     success_url = reverse_lazy("categoria_produto_list")
@@ -363,7 +363,7 @@ class CategoriaProdutoDeleteView(LicenseMixin, DeleteView):
 
 
 # Relatório Movimentações
-class RelatorioMovimentacoesView(LicenseMixin, ListView):
+class RelatorioMovimentacoesView(LicenseDatabaseMixin, ListView):
     model = MovimentacaoEstoque
     template_name = "agricola/relatorio_movimentacoes.html"
     context_object_name = "movimentacoes"
