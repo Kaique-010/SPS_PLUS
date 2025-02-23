@@ -2,12 +2,9 @@ from django.shortcuts import render
 from django.db import connection
 from django.contrib.auth.decorators import login_required
 import json
-from licencas.mixins import LicenseDatabaseMixin
 
 @login_required
 def home(request):
-    mixin = LicenseDatabaseMixin()
-    mixin.setup(request)
     licenca_nome = request.session.get("licenca_lice_nome")
     print(f"Licença na home: {licenca_nome}")
     db_config = request.session.get("db_config")  

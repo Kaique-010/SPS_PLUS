@@ -27,6 +27,8 @@ class Talhao(models.Model):
         default="hectares", 
         help_text="Unidade de medida da área (ex: hectares, m²)"
     )
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'talhoes'
@@ -36,6 +38,8 @@ class Talhao(models.Model):
 
 class CategoriaProduto(models.Model):
     nome = models.CharField(max_length=255, unique=True)
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'categorias_produtos'
@@ -55,6 +59,8 @@ class ProdutoAgro(models.Model):
         default=0, 
         help_text="Custo médio do produto"
     )
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'produtos_agro'
@@ -72,7 +78,8 @@ class EstoqueFazenda(models.Model):
         default=0, 
         help_text="Custo médio atualizado com base nas movimentações"
     )
-
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     class Meta:
         unique_together = ('fazenda', 'produto')
         db_table = 'estoque_fazenda'
@@ -85,7 +92,8 @@ class MovimentacaoEstoque(models.Model):
         ('entrada', 'Entrada'),
         ('saida', 'Saída'),
     ]
-    
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     fazenda = models.ForeignKey(Fazenda, on_delete=models.CASCADE, related_name='movimentacoes')
     produto = models.ForeignKey(ProdutoAgro, on_delete=models.CASCADE)
     quantidade = models.DecimalField(max_digits=10, decimal_places=2)
@@ -119,6 +127,8 @@ class AplicacaoInsumos(models.Model):
     data = models.DateTimeField(auto_now_add=True)
     responsavel = models.ForeignKey(Usuarios, on_delete=models.SET_NULL, null=True, blank=True)
     observacoes = models.TextField(blank=True, null=True)
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'aplicacao_insumos'
@@ -142,7 +152,8 @@ class Animal(models.Model):
     sexo = models.CharField(max_length=1, choices=SEXO_CHOICES, blank=True, null=True)
     peso_atual = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     observacoes = models.TextField(blank=True, null=True)
-    
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     class Meta:
         db_table = 'animais'
     
@@ -170,7 +181,8 @@ class EventoAnimal(models.Model):
     )
     descricao = models.TextField(blank=True, null=True)
     usuario = models.ForeignKey(Usuarios, on_delete=models.SET_NULL, null=True, blank=True)
-    
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     class Meta:
         db_table = 'eventos_animais'
     
@@ -208,7 +220,8 @@ class CicloFlorestal(models.Model):
         help_text="Custo total do ciclo (produção, insumos, mão de obra, etc.)"
     )
     observacoes = models.TextField(blank=True, null=True)
-    
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     class Meta:
         db_table = 'ciclos_florestais'
     
@@ -226,7 +239,8 @@ class HistoricoMovimentacao(models.Model):
     data = models.DateTimeField(auto_now_add=True)
     usuario = models.ForeignKey(Usuarios, on_delete=models.SET_NULL, null=True, blank=True)
     observacoes = models.TextField(blank=True, null=True)
-
+    empresa = models.ForeignKey(Empresas, on_delete=models.CASCADE)
+    filial = models.ForeignKey(Filiais, on_delete=models.CASCADE)
     class Meta:
         db_table = "historico_movimentacoes"
 

@@ -4,17 +4,16 @@ from . import models, forms
 from django.urls import reverse_lazy
 from Entidades.models  import Entidades
 from produto.models import Produtos
-from licencas.mixins import LicenseDatabaseMixin
 
-class EntradasListView(ListView, LicenseDatabaseMixin):
+class EntradasListView(ListView):
     model = models.EntradaEstoque
     template_name = 'entradaslistas.html'
     context_object_name = 'entradas'
     paginate_by = 5
 
     def get_queryset(self):
-        licenca = self.get_license()  # Obtém a licença associada ao usuário
-        db_name = licenca.lice_nome if licenca else 'default'
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
 
         queryset = models.EntradaEstoque.objects.using(db_name)  # Utiliza o banco correto para a consulta
         produto = self.request.GET.get('produto')
@@ -26,61 +25,65 @@ class EntradasListView(ListView, LicenseDatabaseMixin):
 
     
 
-class EntradasCreateView(CreateView, LicenseDatabaseMixin):
+class EntradasCreateView(CreateView):
     model = models.EntradaEstoque
     template_name = 'entradascriar.html'
     form_class = forms.Entradas
     success_url = reverse_lazy('entradaslistas')
 
     def form_valid(self, form):
-        # Obter o nome do banco de dados da licença
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else 'default'
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
         
         # Definir o banco de dados para a instância
         form.instance._state.db = db_name
 
         return super().form_valid(form)
 
-class EntradasDeleteView(DeleteView, LicenseDatabaseMixin):
+class EntradasDeleteView(DeleteView):
     model = models.EntradaEstoque
     template_name = 'entradasexcluir.html'
     success_url = reverse_lazy('entradaslistas')
 
     def get_object(self, queryset=None):
-        # Obter o nome do banco de dados da licença
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else 'default'
+
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
 
         # Garantir que a consulta use o banco correto
         return super().get_object(queryset).using(db_name)
 
 
 
-class EntradasUpdateView(UpdateView, LicenseDatabaseMixin):
+class EntradasUpdateView(UpdateView):
     model = models.EntradaEstoque
     template_name = 'entradaseditar.html'
     form_class = forms.Entradas
     success_url = reverse_lazy('entradaslistas')
 
-class EntradasDetailView(DetailView, LicenseDatabaseMixin):
+class EntradasDetailView(DetailView):
     model = models.EntradaEstoque
     template_name = 'entradasdetalhe.html'
 
     def get_object(self, queryset=None):
-        # Obter o nome do banco de dados da licença
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else 'default'
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
 
         # Garantir que a consulta use o banco correto
         return super().get_object(queryset).using(db_name)
 
 
-class EntradasDeleteView(DeleteView, LicenseDatabaseMixin):
+class EntradasDeleteView(DeleteView):
     model = models.EntradaEstoque
     template_name = 'entradasexcluir.html'
     success_url = reverse_lazy('entradaslistas')
 
+    def get_object(self, queryset=None):
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
+
+        # Garantir que a consulta use o banco correto
+        return super().get_object(queryset).using(db_name)
 
 
 

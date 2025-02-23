@@ -1,8 +1,9 @@
-{% extends 'base.html' %}
-{% block content %}
-{% load static %}
+{% extends 'base.html' %} {% block content %} {% load static %}
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
 <link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
 
 <div class="container">
@@ -12,23 +13,40 @@
   <form method="GET" class="mb-4">
     <div class="row">
       <div class="col-md-4">
-        <label for="fili_nome">Nome da filial</label>
-        <input type="text" id="fili_nome" name="fili_nome" class="form-control" value="{{ fili_nome }}" />
+        <label for="empr_nome">Nome da Filial</label>
+        <input
+          type="text"
+          id="empr_nome"
+          name="empr_nome"
+          class="form-control"
+          value="{{ empr_nome }}"
+        />
       </div>
       <div class="col-md-4">
-        <label for="fili_docu">Documento (CNPJ/CPF)</label>
-        <input type="text" id="fili_docu" name="fili_docu" class="form-control" value="{{ fili_docu }}" />
+        <label for="empr_docu">Documento (CNPJ/CPF)</label>
+        <input
+          type="text"
+          id="empr_docu"
+          name="empr_docu"
+          class="form-control"
+          value="{{ empr_docu }}"
+        />
       </div>
       <div class="col-md-4 d-flex align-items-end">
         <button type="submit" class="btn btn-primary">Filtrar</button>
-        <a href="{% url 'filial_list' %}" class="btn btn-secondary ml-2">Limpar</a>
+        <a href="{% url 'filial_list' %}" class="btn btn-secondary ml-2"
+          >Limpar</a
+        >
       </div>
     </div>
   </form>
 
   <div class="container-btn">
-    <a href="{% url 'filial_create' %}" class="btn btn-success mb-4 mt-2 float-end">
-      <i class="bi bi-plus"></i> Nova filial
+    <a
+      href="{% url 'filial_create' %}"
+      class="btn btn-success mb-4 mt-2 float-end"
+    >
+      <i class="bi bi-plus"></i> Nova Filial
     </a>
   </div>
 
@@ -44,21 +62,33 @@
         </tr>
       </thead>
       <tbody>
-        {% for filial in filial %}
+        {% for filial in filiais %}
         <tr>
           <td>
-            <a href="{% url 'filial_detail' filial.pk %}" class="btn btn-primary btn-sm">Visualizar</a>
-            <a href="{% url 'filial_update' filial.pk %}" class="btn btn-warning btn-sm">Editar</a>
-            <a href="{% url 'filial_delete' filial.pk %}" class="btn btn-danger btn-sm">Excluir</a>
+            <a
+              href="{% url 'filial_detail' filial.pk %}"
+              class="btn btn-primary btn-sm"
+              >Visualizar</a
+            >
+            <a
+              href="{% url 'filial_update' filial.pk %}"
+              class="btn btn-warning btn-sm"
+              >Editar</a
+            >
+            <a
+              href="{% url 'filial_delete' filial.pk %}"
+              class="btn btn-danger btn-sm"
+              >Excluir</a
+            >
           </td>
-          <td>{{ filial.fili_id }}</td>
-          <td>{{ filial.fili_nome }}</td>
-          <td>{{ filial.fili_docu }}</td>
-          <td>{{ filial.fili_cida }}</td>
+          <td>{{ filial.empr_codi }}</td>
+          <td>{{ filial.empr_nome }}</td>
+          <td>{{ filial.empr_docu }}</td>
+          <td>{{ filial.empr_cida }}</td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="5" class="text-center">Não há filials cadastradas.</td>
+          <td colspan="5" class="text-center">Não há emprals cadastradas.</td>
         </tr>
         {% endfor %}
       </tbody>

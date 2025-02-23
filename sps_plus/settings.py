@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',  
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware', 
-    #'licencas.middleware.LicenseDatabaseMiddleware', 
+    'licencas.middleware.LicenseDatabaseMiddleware', 
 
 ]
 
@@ -151,9 +151,7 @@ USE_I18N = True
 USE_TZ = True
 
 DATABASE_ROUTERS = [ "licencas.db_router.LicenseDatabaseManager",
-                    
-                    
-                    ]
+ "licencas.db_router.LicenseDatabaseRouter"]
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
@@ -198,3 +196,23 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'https://seu-dominio.com',  # Exemplo para produção
 ]
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "debug.log",
+        },
+    },
+    "loggers": {
+        "django.contrib.sessions": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}

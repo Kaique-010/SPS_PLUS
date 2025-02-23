@@ -1,5 +1,8 @@
 from django.db import models
 from django.db.models import Max
+import logging
+
+logger = logging.getLogger(__name__)
 
 class Entidades(models.Model):
     TIPO_ENTIDADES = [
@@ -34,10 +37,5 @@ class Entidades(models.Model):
 
     class Meta:
         db_table = 'entidades'
-    
-    def save(self, *args, **kwargs):
-        if self.enti_clie is None:  # Usa "is None" em vez de "not"
-            max_enti_clie = Entidades.objects.aggregate(max_clie=Max('enti_clie'))['max_clie'] or 0
-            self.enti_clie = max_enti_clie + 1
-        super().save(*args, **kwargs)
+
 

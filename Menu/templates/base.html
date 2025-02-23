@@ -2,394 +2,556 @@
 
 <!DOCTYPE html>
 <html lang="pt-br" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Home{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{% block title %}Home{% endblock %}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet" />
-</head>
+  <body>
+    {% block content %}
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    {% include 'home.html' %} {% endblock %}
 
-<body>
-  {% block content %}
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-  {% include 'home.html' %} {% endblock %}
+    <style>
+      body {
+        background: linear-gradient(#363851, #ffffff);
+      }
 
-  <style>
-    body {
-      background: linear-gradient(#363851, #ffffff);
-    }
+      .navbar-nav .nav-link {
+        display: flex;
+        align-items: center;
+        color: #ffffff;
+      }
 
-    .navbar-nav .nav-link {
-      display: flex;
-      align-items: center;
-      color: #ffffff;
-    }
+      .navbar-nav .nav-link:hover {
+        background-color: #3398af;
+        border-radius: 5px;
+        color: #ffffff;
+      }
 
-    .navbar-nav .nav-link:hover {
-      background-color: #3398af;
-      border-radius: 5px;
-      color: #ffffff;
-    }
+      .navbar-nav .nav-link i {
+        margin-right: 4px;
+      }
 
-    .navbar-nav .nav-link i {
-      margin-right: 4px;
-    }
+      .navbar-nav .nav-link.active {
+        color: #59a9a4;
+      }
 
-    .navbar-nav .nav-link.active {
-      color: #59a9a4;
-    }
+      .navbar-nav .nav-link.active:hover {
+        color: rgb(254, 255, 255);
+      }
 
-    .navbar-nav .nav-link.active:hover {
-      color: rgb(254, 255, 255);
-    }
+      .navbar-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    .navbar-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+      .navbar-brand {
+        font-size: 15px;
+        margin: 0;
+      }
 
-    .navbar-brand {
-      font-size: 15px;
-      margin: 0;
-    }
+      .logo {
+        height: 55px;
+        vertical-align: middle;
+        margin-right: 8%;
+        margin-left: 5%;
+      }
 
-    .logo {
-      height: 55px;
-      vertical-align: middle;
-      margin-right: 8%;
-      margin-left: 5%;
-    }
+      .bi-house {
+        color: #4a99b0;
+      }
 
-    .bi-house {
-      color: #4a99b0;
-    }
+      .bi-patch-check {
+        color: #2b6ebf;
+      }
 
-    .bi-patch-check {
-      color: #2b6ebf;
-    }
+      .bi-person-gear {
+        color: #ceadf0;
+      }
 
-    .bi-person-gear {
-      color: #ceadf0;
-    }
+      .bi-phone-flip {
+        color: #1e90ff;
+      }
 
-    .bi-phone-flip {
-      color: #1e90ff;
-    }
+      .bi-graph-up {
+        color: #3b7556;
+      }
 
-    .bi-graph-up {
-      color: #3b7556;
-    }
+      .bi-wrench-adjustable {
+        color: #683c58;
+      }
 
-    .bi-wrench-adjustable {
-      color: #683c58;
-    }
+      .bi-file-break-fill {
+        color: darkmagenta;
+      }
 
-    .bi-file-break-fill {
-      color: darkmagenta;
-    }
+      .dropdown-item,
+      .item {
+        background-color: #254d56;
+        color: #ffffff;
+      }
+    </style>
+    <style>
+      .btn-flutuante {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 16px;
+        cursor: pointer;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      }
 
-    .dropdown-item,
-    .item {
-      background-color: #254d56;
-      color: #ffffff;
-    }
-  </style>
-  <style>
-    .btn-flutuante {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 50px;
-      font-size: 16px;
-      cursor: pointer;
-      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-    }
+      .btn-flutuante:hover {
+        background-color: #0056b3;
+      }
 
-    .btn-flutuante:hover {
-      background-color: #0056b3;
-    }
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
 
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.4);
-    }
+      .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 50%;
+        border-radius: 10px;
+        text-align: center;
+      }
 
-    .modal-content {
-      background-color: white;
-      margin: 15% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      width: 50%;
-      border-radius: 10px;
-      text-align: center;
-    }
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+      }
 
-    .close {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+      .close:hover {
+        color: black;
+      }
+    </style>
 
-    .close:hover {
-      color: black;
-    }
-  </style>
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/" style="font-family: 'Fauna', serif"
+          >Spartacus Sistemas</a
+        >
+        <img
+          src="{% static 'logo.png' %}"
+          alt="Spartacus Sistemas Logo"
+          class="logo"
+        />
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="offcanvas"
+          data-bs-target="#offcanvasDarkNavbar"
+          aria-controls="offcanvasDarkNavbar"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div
+          class="offcanvas offcanvas-end text-bg-dark"
+          tabindex="-1"
+          id="offcanvasDarkNavbar"
+          aria-labelledby="offcanvasDarkNavbarLabel"
+        >
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">
+              SPS Mobile
+            </h5>
+            <button
+              type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="offcanvas"
+              aria-label="Close"
+            ></button>
+          </div>
 
-  <nav class="navbar navbar-dark bg-dark fixed-top">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/" style="font-family: 'Fauna', serif">Spartacus Sistemas</a>
-      <img src="{% static 'logo.png' %}" alt="Spartacus Sistemas Logo" class="logo" />
-      <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar"
-        aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar"
-        aria-labelledby="offcanvasDarkNavbarLabel">
-        <div class="offcanvas-header">
-          <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">
-            SPS Mobile
-          </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"
-            aria-label="Close"></button>
-        </div>
+          <div class="offcanvas-body">
+            {% if user.is_authenticated %}
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  aria-current="page"
+                  href="{% url 'home' %}"
+                >
+                  <i class="bi bi-house fs-3"></i> Home
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link active dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-gear-wide-connected fs-4"></i> Parametrizações
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <li>
+                    <a class="dropdown-item" href="{% url 'empresa_list' %}"
+                      >Empresas</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'filial_list' %}"
+                      >Filiais</a
+                    >
+                  </li>
+                </ul>
+                <!-- Fechando a lista de dropdown -->
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link active dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-box-seam fs-4"></i> Agricola
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <li>
+                    <a class="dropdown-item" href="{% url 'animal_list' %}"
+                      >Animais</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'aplicacaoinsumos_list' %}"
+                      >Aplicação de insumos</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'categoria_produto_list' %}"
+                      >Categorias de Produtos Agricolas</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'cicloflorestal_list' %}"
+                      >Ciclos Florestais</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'estoquefazenda_list' %}"
+                      >Estoque Fazenda</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'fazenda_list' %}"
+                      >Fazendas</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'movimentacaoestoque_list' %}"
+                      >Movimentações de estoque</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'produtoagro_list' %}"
+                      >Produtos Agrícolas</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'talhao_list' %}"
+                      >Talhões</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'movimentacoes_list' %}"
+                      >Movimentações em lista</a
+                    >
+                  </li>
+                </ul>
+                <!-- Fechando a lista de dropdown -->
+              </li>
 
-        <div class="offcanvas-body">
-          {% if user.is_authenticated %}
-          <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'home' %}">
-                <i class="bi bi-house fs-3"></i> Home
-              </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <i class="bi bi-gear-wide-connected fs-4"></i> Parametrizações
-              </a>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li>
-                  <a class="dropdown-item" href="{% url 'empresa_list' %}">Empresas</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'filial_list' %}">Filiais</a>
-                </li>
-              </ul>
-              <!-- Fechando a lista de dropdown -->
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <i class="bi bi-box-seam fs-4"></i> Agricola
-              </a>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li>
-                  <a class="dropdown-item" href="{% url 'animal_list' %}">Animais</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'aplicacaoinsumos_list' %}">Aplicação de insumos</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'categoria_produto_list' %}">Categorias de Produtos
-                    Agricolas</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'cicloflorestal_list' %}">Ciclos Florestais</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'estoquefazenda_list' %}">Estoque Fazenda</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'fazenda_list' %}">Fazendas</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'movimentacaoestoque_list' %}">Movimentações de estoque</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'produtoagro_list' %}">Produtos Agrícolas</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'talhao_list' %}">Talhões</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'movimentacoes_list' %}">Movimentações em lista</a>
-                </li>
-              </ul>
-              <!-- Fechando a lista de dropdown -->
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link active" href="/entidades/">
-                <i class="bi bi-person-gear fs-3"></i> Entidades
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/pedidos-necessitam-contato/">
-                <i class="bi bi-phone-flip fs-3"></i> Entrar em Contato
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/dashboard/">
-                <i class="bi bi-graph-up fs-3"></i> Métricas
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'orcamento_list' %}">
-                <i class="bi bi-file-break-fill fs-3"></i> Orçamentos
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/os/">
-                <i class="bi bi-wrench-adjustable fs-4"></i> Ordens de Serviço
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="{% url 'pedidos_por_cliente' %}">
-                <i class="bi bi-patch-check fs-3"></i> Pedidos
-              </a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link active dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <i class="bi bi-box-seam fs-4"></i> Produtos
-              </a>
-              <ul class="dropdown-menu dropdown-menu-dark">
-                <li>
-                  <a class="dropdown-item" href="{% url 'produtos_lista.html' %}">Cadastro de Produtos</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'entradaslistas' %}">Entrada de Estoque</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'familias_produto_list' %}">Familias</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'grupos_list' %}">Grupos</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'marcas_list' %}">Marcas</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'saidaslistas' %}">Saída de estoque</a>
-                </li>
-                <li>
-                  <a class="dropdown-item" href="{% url 'saldo' %}">Saldos Estoque</a>
-                </li>
-              </ul>
-            </li>
-            <form action="{% url 'logout' %}" method="post">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Sair</button>
-            </form>
-          </ul>
-          {% else %}
-          <p>Necessário Estar Logado</p>
-          {% endif %}
+              <li class="nav-item">
+                <a class="nav-link active" href="/entidades/">
+                  <i class="bi bi-person-gear fs-3"></i> Entidades
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/pedidos-necessitam-contato/">
+                  <i class="bi bi-phone-flip fs-3"></i> Entrar em Contato
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/dashboard/">
+                  <i class="bi bi-graph-up fs-3"></i> Métricas
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  aria-current="page"
+                  href="{% url 'orcamento_list' %}"
+                >
+                  <i class="bi bi-file-break-fill fs-3"></i> Orçamentos
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/os/">
+                  <i class="bi bi-wrench-adjustable fs-4"></i> Ordens de Serviço
+                </a>
+              </li>
+              <li class="nav-item">
+                <a
+                  class="nav-link active"
+                  aria-current="page"
+                  href="{% url 'pedidos_por_cliente' %}"
+                >
+                  <i class="bi bi-patch-check fs-3"></i> Pedidos
+                </a>
+              </li>
+              <li class="nav-item dropdown">
+                <a
+                  class="nav-link active dropdown-toggle"
+                  href="#"
+                  role="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bi bi-box-seam fs-4"></i> Produtos
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'produtos_lista.html' %}"
+                      >Cadastro de Produtos</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'entradaslistas' %}"
+                      >Entrada de Estoque</a
+                    >
+                  </li>
+                  <li>
+                    <a
+                      class="dropdown-item"
+                      href="{% url 'familias_produto_list' %}"
+                      >Familias</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'grupos_list' %}"
+                      >Grupos</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'marcas_list' %}"
+                      >Marcas</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'saidaslistas' %}"
+                      >Saída de estoque</a
+                    >
+                  </li>
+                  <li>
+                    <a class="dropdown-item" href="{% url 'saldo' %}"
+                      >Saldos Estoque</a
+                    >
+                  </li>
+                </ul>
+              </li>
+              <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Sair</button>
+              </form>
+            </ul>
+            {% else %}
+            <p>Necessário Estar Logado</p>
+            {% endif %}
+          </div>
         </div>
       </div>
-    </div>
-  </nav>
-  <button id="btn-insights" class="btn-flutuante">📊 Insights</button>
+    </nav>
+    <button id="btn-insights" class="btn-flutuante">📊 Insights</button>
 
-  <div id="modal-insights" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <h2 style="color: #ff5733">📊 Insights do Sistema</h2>
+    <div id="modal-insights" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 style="color: #ff5733">📊 Insights do Sistema</h2>
 
-      <!-- Nav Tabs -->
-      <ul class="nav nav-tabs" id="insightsTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="vendas-tab" data-bs-toggle="tab" href="#vendas" role="tab"
-            aria-controls="vendas" aria-selected="true">Vendas</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="estoque-tab" data-bs-toggle="tab" href="#estoque" role="tab" aria-controls="estoque"
-            aria-selected="false">Estoque</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="clientes-inativos-tab" data-bs-toggle="tab" href="#clientes-inativos" role="tab"
-            aria-controls="clientes-inativos" aria-selected="false">Clientes Inativos</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="contato-aniversario-tab" data-bs-toggle="tab" href="#contato-aniversario" role="tab"
-            aria-controls="contato-aniversario" aria-selected="false">Contato por Aniversário</a>
-        </li>
-      </ul>
+        <!-- Nav Tabs -->
+        <ul class="nav nav-tabs" id="insightsTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link active"
+              id="vendas-tab"
+              data-bs-toggle="tab"
+              href="#vendas"
+              role="tab"
+              aria-controls="vendas"
+              aria-selected="true"
+              >Vendas</a
+            >
+          </li>
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link"
+              id="estoque-tab"
+              data-bs-toggle="tab"
+              href="#estoque"
+              role="tab"
+              aria-controls="estoque"
+              aria-selected="false"
+              >Estoque</a
+            >
+          </li>
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link"
+              id="clientes-inativos-tab"
+              data-bs-toggle="tab"
+              href="#clientes-inativos"
+              role="tab"
+              aria-controls="clientes-inativos"
+              aria-selected="false"
+              >Clientes Inativos</a
+            >
+          </li>
+          <li class="nav-item" role="presentation">
+            <a
+              class="nav-link"
+              id="contato-aniversario-tab"
+              data-bs-toggle="tab"
+              href="#contato-aniversario"
+              role="tab"
+              aria-controls="contato-aniversario"
+              aria-selected="false"
+              >Contato por Aniversário</a
+            >
+          </li>
+        </ul>
 
-      <!-- Tab Content -->
-      <div class="tab-content" id="insightsTabContent">
-        <!-- Aba de Vendas -->
-        <div class="tab-pane fade show active" id="vendas" role="tabpanel" aria-labelledby="vendas-tab">
-          <p>
-            <strong>Produto Mais Vendido:</strong>
-            <span id="produto-mais-vendido"></span> (Quantidade:
-            <span id="quantidade-produto"></span>)
-          </p>
-          <p>
-            <strong>Melhor Vendedor:</strong> <span id="vendedor-top"></span>
-          </p>
-          <p>
-            <strong>Melhor Cliente:</strong> <span id="cliente-top"></span>
-          </p>
-          <p>
-            <strong>Dia com Mais Vendas:</strong>
-            <span id="dia-mais-vendas"></span>
-          </p>
-        </div>
+        <!-- Tab Content -->
+        <div class="tab-content" id="insightsTabContent">
+          <!-- Aba de Vendas -->
+          <div
+            class="tab-pane fade show active"
+            id="vendas"
+            role="tabpanel"
+            aria-labelledby="vendas-tab"
+          >
+            <p>
+              <strong>Produto Mais Vendido:</strong>
+              <span id="produto-mais-vendido"></span> (Quantidade:
+              <span id="quantidade-produto"></span>)
+            </p>
+            <p>
+              <strong>Melhor Vendedor:</strong> <span id="vendedor-top"></span>
+            </p>
+            <p>
+              <strong>Melhor Cliente:</strong> <span id="cliente-top"></span>
+            </p>
+            <p>
+              <strong>Dia com Mais Vendas:</strong>
+              <span id="dia-mais-vendas"></span>
+            </p>
+          </div>
 
-        <!-- 
+          <!-- 
         Estoque -->
-        <div class="tab-pane fade" id="estoque" role="tabpanel" aria-labelledby="estoque-tab">
-          <p>
-            <strong>Produto com Menor Estoque:</strong>
-            <span id="produto-menor-estoque"></span>
-          </p>
-          <p>
-            <strong>Estoque Total:</strong> <span id="estoque-total"></span>
-          </p>
-        </div>
+          <div
+            class="tab-pane fade"
+            id="estoque"
+            role="tabpanel"
+            aria-labelledby="estoque-tab"
+          >
+            <p>
+              <strong>Produto com Menor Estoque:</strong>
+              <span id="produto-menor-estoque"></span>
+            </p>
+            <p>
+              <strong>Estoque Total:</strong> <span id="estoque-total"></span>
+            </p>
+          </div>
 
-        <!-- Aba de Clientes Inativos -->
-        <div class="tab-pane fade" id="clientes-inativos" role="tabpanel" aria-labelledby="clientes-inativos-tab">
-          <p>
-            <strong>Clientes Inativos:</strong>
-            <span id="clientes-inativos"></span>
-          </p>
-        </div>
+          <!-- Aba de Clientes Inativos -->
+          <div
+            class="tab-pane fade"
+            id="clientes-inativos"
+            role="tabpanel"
+            aria-labelledby="clientes-inativos-tab"
+          >
+            <p>
+              <strong>Clientes Inativos:</strong>
+              <span id="clientes-inativos"></span>
+            </p>
+          </div>
 
-        <!-- Aba de Contato por Aniversário -->
-        <div class="tab-pane fade" id="contato-aniversario" role="tabpanel" aria-labelledby="contato-aniversario-tab">
-          <p>
-            <strong>Clientes com Aniversário no Mês:</strong>
-            <span id="clientes-aniversario"></span>
-          </p>
+          <!-- Aba de Contato por Aniversário -->
+          <div
+            class="tab-pane fade"
+            id="contato-aniversario"
+            role="tabpanel"
+            aria-labelledby="contato-aniversario-tab"
+          >
+            <p>
+              <strong>Clientes com Aniversário no Mês:</strong>
+              <span id="clientes-aniversario"></span>
+            </p>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  {% include 'footer.html' %}
+    {% include 'footer.html' %}
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
-</body>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  </body>
 </html>
 <script>
   document

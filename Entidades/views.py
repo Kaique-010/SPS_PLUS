@@ -12,7 +12,6 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 import openpyxl
 import requests
-from licencas.mixins import LicenseDatabaseMixin
 from .models import Entidades
 from django.db.models import Max
 from .serializers import EntidadesSerializer
@@ -33,7 +32,7 @@ def dictfetchall(cursor):
     ]
     
 @method_decorator(login_required, name='dispatch')    
-class EntidadesListView(LicenseDatabaseMixin, ListView):
+class EntidadesListView( ListView):
     model = Entidades
     template_name = 'entidades.html'
     context_object_name = 'entidades'
@@ -57,146 +56,68 @@ class EntidadesListView(LicenseDatabaseMixin, ListView):
 
         return queryset
 
-class EntidadeCreateView(LicenseDatabaseMixin, CreateView):
-    model = models.Entidades
+class EntidadeCreateView(CreateView):
+    model = Entidades
     form_class = EntidadesForm
     template_name = 'entidade_form.html'
     success_url = reverse_lazy('entidades')
-
-    
-
-class EntidadeUpdateView(LicenseDatabaseMixin, UpdateView):
-    model = models.Entidades
-    form_class = EntidadesForm
-    template_name = 'entidade_form.html'
-    success_url = reverse_lazy('entidades')
-
-    def get_object(self, queryset=None):
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else "default"
-        enti_clie = self.kwargs.get("enti_clie")
-
-        print(f"[DEBUG] Buscando entidade com enti_clie={enti_clie} no banco {db_name}")
-
-        entidade = models.Entidades.objects.using(db_name).filter(enti_clie=enti_clie).first()
-        
-        if not entidade:
-            raise Http404("Entidade não encontrada.")
-        
-        return entidade
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs['db_name'] = self.request.session.get('banco')  # Passa o nome do banco da sessão
+        kwargs['request'] = self.request  # Passa o request para o formulário
         return kwargs
-    
-    def form_valid(self, form):
-        """ Valida o formulário e salva a entidade no banco correto """
-        db_name = self.request.session.get('banco')
 
-        if not db_name:
-            form.add_error(None, "Erro: banco de dados não definido.")
-            return self.form_invalid(form)
-
-        # Obtém o objeto correto para edição
-        entidade = self.get_object()
-
-        # Atualiza os campos da entidade com os dados do formulário
-        for field, value in form.cleaned_data.items():
-            setattr(entidade, field, value)
-
-        try:
-            entidade.save(using=db_name)  # Salva a entidade no banco correto
-            messages.success(self.request, "Entidade atualizada com sucesso!")
-        except IntegrityError as e:
-            print(f"[DEBUG] Erro ao atualizar entidade: {e}")
-            messages.error(self.request, "Erro ao atualizar entidade. Verifique os dados.")
-            return self.form_invalid(form)  
-
-        return super().form_valid(form)
-
-   
-
-
-class EntidadeUpdateView(LicenseDatabaseMixin, UpdateView):
-    model = models.Entidades
+class EntidadeUpdateView(UpdateView):
+    model = Entidades
     form_class = EntidadesForm
-    template_name = 'entidade_form.html'
-    success_url = reverse_lazy('entidades')
+    template_name = 'entidade_form.html'  # Template de edição
+    success_url = reverse_lazy('entidades')  # URL para redirecionar após a atualização
 
     def get_object(self, queryset=None):
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else "default"
-        enti_clie = self.kwargs.get("enti_clie")
+        # Obtém o objeto a ser editado do banco de dados ativo
+        db_alias = self.request.db_alias
+        if not db_alias:
+            raise ValueError("Erro: banco de dados não definido. Verifique se o middleware configurou o db_alias corretamente.")
 
-        print(f"[DEBUG] Buscando entidade com enti_clie={enti_clie} no banco {db_name}")
+        # Captura o pk da URL
+        enti_clie = self.kwargs.get('enti_clie')
+        if not enti_clie:
+            raise ValueError("Erro: Enti_clie não encontrado na URL.")
 
-        entidade = models.Entidades.objects.using(db_name).filter(enti_clie=enti_clie).first()
-        
-        if not entidade:
-            raise Http404("Entidade não encontrada.")
-        
-        return entidade
+        # Busca o objeto no banco de dados ativo
+        obj = get_object_or_404(Entidades.objects.using(db_alias), enti_clie= enti_clie)
+        return obj
 
     def get_form_kwargs(self):
+        # Passa o request para o formulário
         kwargs = super().get_form_kwargs()
-        kwargs['db_name'] = self.request.session.get('banco')  # Passa o nome do banco da sessão
+        kwargs['request'] = self.request
         return kwargs
-    
-    def form_valid(self, form):
-        """ Valida o formulário e salva a entidade no banco correto """
-        db_name = self.request.session.get('banco')
 
-        if not db_name:
-            form.add_error(None, "Erro: banco de dados não definido.")
-            return self.form_invalid(form)
-
-        # Obtém o objeto correto para edição
-        entidade = self.get_object()
-
-        # Atualiza os campos da entidade com os dados do formulário
-        for field, value in form.cleaned_data.items():
-            setattr(entidade, field, value)
-
-        try:
-            entidade.save(using=db_name)  # Salva a entidade no banco correto
-            messages.success(self.request, "Entidade atualizada com sucesso!")
-        except IntegrityError as e:
-            print(f"[DEBUG] Erro ao atualizar entidade: {e}")
-            messages.error(self.request, "Erro ao atualizar entidade. Verifique os dados.")
-            return self.form_invalid(form)  
-
-        return super().form_valid(form)
-
-
-
-
-class EntidadeDeleteView(LicenseDatabaseMixin, DeleteView):
-    model = models.Entidades
-    template_name = 'entidade_confirm_delete.html'
-    success_url = reverse_lazy('entidades')
+class EntidadeDeleteView(DeleteView):
+    model = Entidades
+    template_name = 'entidade_confirm_delete.html'  # Template de confirmação de exclusão
+    success_url = reverse_lazy('entidades')  # URL para redirecionar após a exclusão
 
     def get_object(self, queryset=None):
-        db_name = self.request.session.get('banco')  # Obtém o banco da sessão
-        enti_clie = self.kwargs.get("enti_clie")  # Obtenha o enti_clie da URL
+        # Obtém o objeto a ser editado do banco de dados ativo
+        db_alias = self.request.db_alias
+        if not db_alias:
+            raise ValueError("Erro: banco de dados não definido. Verifique se o middleware configurou o db_alias corretamente.")
 
-        if not db_name:
-            raise Http404("Banco de dados não definido na sessão.")
+        # Captura o pk da URL
+        pk = self.kwargs.get('enti_clie')
+        if not pk:
+            raise ValueError("Erro: pk não encontrado na URL.")
 
-        print(f"[DEBUG] Buscando entidade com enti_clie={enti_clie} no banco {db_name}")
+        # Busca o objeto no banco de dados ativo
+        obj = get_object_or_404(Entidades.objects.using(db_alias), pk=pk)
+        return obj
 
-        entidade = models.Entidades.objects.using(db_name).filter(enti_clie=enti_clie).first()
 
-        if not entidade:
-            raise Http404("Entidade não encontrada.")
 
-        return entidade
 
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.delete_object(self.object)  # Chama o método delete_object para excluir
-        messages.success(request, "Entidade excluída com sucesso!")
-        return redirect(self.get_success_url())
+
 
 
 

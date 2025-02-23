@@ -1,27 +1,28 @@
-{% extends 'base.html' %} {% block content %}
-{%load static%}
+{% extends 'base.html' %} {% block content %} {%load static%}
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+/>
 <link rel="stylesheet" href="{% static 'licencas/empr_styles.css' %}" />
 <div class="container">
   <h1>Criar Filial</h1>
 
-  <form method="post" class="mt-4 p-4 ">
+  <form method="post" class="mt-4 p-4">
     {% csrf_token %}
-    <div class="form-group">
-      {{ form.as_p }}
-    </div>
+    <div class="form-group">{{ form.as_p }}</div>
     <button type="submit" class="btn btn-primary">Salvar</button>
   </form>
 
-
-  <a href="{% url 'filial_list' %}" class="btn btn-info ">Voltar para a lista de filiais</a>
+  <a href="{% url 'filial_list' %}" class="btn btn-info"
+    >Voltar para a lista de filiais</a
+  >
 </div>
 
 <script>
-  document.getElementById("id_fili_cep").addEventListener("blur", buscarCEP);
+  document.getElementById("id_empr_cep").addEventListener("blur", buscarCEP);
   function buscarCEP() {
-    var cep = document.getElementById("id_fili_cep").value;
+    var cep = document.getElementById("id_empr_cep").value;
 
     if (cep.length === 8) {
       var url = "https://viacep.com.br/ws/" + cep + "/json/";
@@ -30,9 +31,9 @@
         .then((response) => response.json())
         .then((data) => {
           if (!data.erro) {
-            document.getElementById("id_fili_ende").value = data.logradouro;
-            document.getElementById("id_fili_cida").value = data.localidade;
-            document.getElementById("id_fili_esta").value = data.uf;
+            document.getElementById("id_empr_ende").value = data.logradouro;
+            document.getElementById("id_empr_cida").value = data.localidade;
+            document.getElementById("id_empr_esta").value = data.uf;
           } else {
             alert("CEP não encontrado!");
           }

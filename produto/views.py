@@ -19,7 +19,6 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.urls import reverse_lazy
 from rest_framework import viewsets
-from licencas.mixins import LicenseDatabaseMixin
 from produto.serializers import ProdutosSerializers
 from produto.models import Produtos, GrupoProduto, SubgrupoProduto, FamiliaProduto, Marca, Tabelaprecos
 from .forms import ProdutosForm, GrupoForm, SubgrupoForm, FamiliaForm, MarcaForm, TabelaprecosFormSet
@@ -33,15 +32,15 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     serializer_class = ProdutosSerializers
     filterset_fields = ['nome_produto', 'prod_codi']
     search_fields = ['nome_produto', 'prod_codi']
-class ProdutoListView(LicenseDatabaseMixin, ListView):
+class ProdutoListView( ListView):
     model = Produtos
     template_name = 'produtos_lista.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
     def get_queryset(self):
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else "default"
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
         
         nome = self.request.GET.get('nome_produto', '')
         id_prod = self.request.GET.get('prod_codi', '')
@@ -73,14 +72,14 @@ class ProdutoListView(LicenseDatabaseMixin, ListView):
 
 
 
-class ProdutoCreateView(LicenseDatabaseMixin, CreateView):
+class ProdutoCreateView( CreateView):
     model = Produtos
     form_class = ProdutosForm
     template_name = 'produtos_form.html'
 
     def form_valid(self, form):
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else "default"
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
         formset = TabelaprecosFormSet(self.request.POST)
         if form.is_valid() and formset.is_valid():
             cleaned_data = form.cleaned_data
@@ -114,14 +113,14 @@ class ProdutoCreateView(LicenseDatabaseMixin, CreateView):
 
 
 
-class ProdutoUpdateView(LicenseDatabaseMixin, UpdateView):
+class ProdutoUpdateView( UpdateView):
     model = Produtos
     form_class = ProdutosForm
     template_name = 'produtos_update.html'
 
     def get_object(self, queryset=None):
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else "default"
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
         prod_codi = self.kwargs.get("prod_codi")
 
         print(f"[DEBUG] Buscando produto  com prod_codi={prod_codi} no banco {db_name}")
@@ -134,8 +133,8 @@ class ProdutoUpdateView(LicenseDatabaseMixin, UpdateView):
         return produtos
 
     def form_valid(self, form):
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else "default"
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
 
         formset = TabelaprecosFormSet(self.request.POST, instance=self.object, queryset=Tabelaprecos.objects.using(db_name).filter(tabe_prod=self.object))
 
@@ -159,14 +158,14 @@ class ProdutoUpdateView(LicenseDatabaseMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        licenca = self.get_license()
-        db_name = licenca.lice_nome if licenca else "default"
+        user_licenca = self.request.user.licenca
+        db_name = user_licenca.lice_nome if user_licenca else "default"
         
         context['formset'] = TabelaprecosFormSet(instance=self.object, queryset=Tabelaprecos.objects.using(db_name).filter(tabe_prod=self.object))
         
         return context
 
-class ProdutoDeleteView(LicenseDatabaseMixin, DeleteView):
+class ProdutoDeleteView( DeleteView):
     model = Produtos
     template_name = 'produto_confirm_delete.html'
     success_url = reverse_lazy('produtos_lista')
@@ -176,25 +175,25 @@ class ProdutoDeleteView(LicenseDatabaseMixin, DeleteView):
         messages.success(self.request, f"Produto excluído com sucesso! Código: {produto.prod_codi}")
         return super().delete(request, *args, **kwargs)
 
-class GrupoListView(LicenseDatabaseMixin, ListView):
+class GrupoListView( ListView):
     model = GrupoProduto
     template_name = 'grupos_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class GrupoCreateView(LicenseDatabaseMixin, CreateView):
+class GrupoCreateView( CreateView):
     model = GrupoProduto
     form_class = GrupoForm
     template_name = 'grupo_create.html'
     success_url = reverse_lazy('grupos_list')
 
-class GrupoUpdateView(LicenseDatabaseMixin, UpdateView):
+class GrupoUpdateView( UpdateView):
     model = GrupoProduto
     form_class = GrupoForm
     template_name = 'grupo_update.html'
     success_url = reverse_lazy('grupos_list')
 
-class GrupoDeleteView(LicenseDatabaseMixin, DeleteView):
+class GrupoDeleteView( DeleteView):
     model = GrupoProduto
     template_name = 'grupo_delete.html'
     success_url = reverse_lazy('grupos_list')
@@ -204,25 +203,25 @@ class GrupoDeleteView(LicenseDatabaseMixin, DeleteView):
         context['grupo'] = self.object
         return context
 
-class SubgrupoListView(LicenseDatabaseMixin, ListView):
+class SubgrupoListView( ListView):
     model = SubgrupoProduto
     template_name = 'subgrupos_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class SubgrupoCreateView(LicenseDatabaseMixin, CreateView):
+class SubgrupoCreateView( CreateView):
     model = SubgrupoProduto
     form_class = SubgrupoForm
     template_name = 'subgrupo_create.html'
     success_url = reverse_lazy('subgrupos_list')
 
-class SubgrupoUpdateView(LicenseDatabaseMixin, UpdateView):
+class SubgrupoUpdateView( UpdateView):
     model = SubgrupoProduto
     form_class = GrupoForm
     template_name = 'subgrupo_update.html'
     success_url = reverse_lazy('subgrupos_list')
 
-class SubgrupoDeleteView(LicenseDatabaseMixin, DeleteView):
+class SubgrupoDeleteView( DeleteView):
     model = SubgrupoProduto
     template_name = 'subgrupo_delete.html'
     success_url = reverse_lazy('subgrupos_list')
@@ -233,13 +232,13 @@ class SubgrupoDeleteView(LicenseDatabaseMixin, DeleteView):
         return context
 
 # Views para Marca
-class MarcaListView(LicenseDatabaseMixin, ListView):
+class MarcaListView( ListView):
     model = Marca
     template_name = 'marcas_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class MarcaCreateView(LicenseDatabaseMixin, CreateView):
+class MarcaCreateView( CreateView):
     model = Marca
     form_class = MarcaForm
     template_name = 'marca_create.html'
@@ -275,13 +274,13 @@ class MarcaCreateView(LicenseDatabaseMixin, CreateView):
         return super().form_valid(form)
 
 
-class MarcaUpdateView(LicenseDatabaseMixin, UpdateView):
+class MarcaUpdateView( UpdateView):
     model = Marca
     form_class = MarcaForm
     template_name = 'marca_update.html'
     success_url = reverse_lazy('marcas_list')
 
-class MarcaDeleteView(LicenseDatabaseMixin, DeleteView):
+class MarcaDeleteView( DeleteView):
     model = Marca
     template_name = 'marca_delete.html'
     success_url = reverse_lazy('marcas_list')
@@ -292,25 +291,25 @@ class MarcaDeleteView(LicenseDatabaseMixin, DeleteView):
         return context
 
 # Views para FamiliaProduto
-class FamiliaProdutoListView(LicenseDatabaseMixin, ListView):
+class FamiliaProdutoListView( ListView):
     model = FamiliaProduto
     template_name = 'familias_produto_list.html'
     context_object_name = 'page_obj'
     paginate_by = 10
 
-class FamiliaProdutoCreateView(LicenseDatabaseMixin, CreateView):
+class FamiliaProdutoCreateView( CreateView):
     model = FamiliaProduto
     form_class = FamiliaForm
     template_name = 'familia_produto_create.html'
     success_url = reverse_lazy('familias_produto_list')
 
-class FamiliaProdutoUpdateView(LicenseDatabaseMixin, UpdateView):
+class FamiliaProdutoUpdateView( UpdateView):
     model = FamiliaProduto
     form_class = FamiliaForm
     template_name = 'familia_produto_update.html'
     success_url = reverse_lazy('familias_produto_list')
 
-class FamiliaProdutoDeleteView(LicenseDatabaseMixin, DeleteView):
+class FamiliaProdutoDeleteView( DeleteView):
     model = FamiliaProduto
     template_name = 'familia_produto_delete.html'
     success_url = reverse_lazy('familias_produto_list')

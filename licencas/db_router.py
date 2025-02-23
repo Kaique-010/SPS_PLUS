@@ -1,11 +1,29 @@
 import json
 from django.conf import settings
-from django.db import connections
-from django.db import connection, OperationalError
+from django.db import connections, connection, OperationalError
 from django.core.management import call_command
 from threading import local
 import psycopg2
 
+_local = local()
+
+class LicenseDatabaseRouter:
+    def db_for_read(self, model, **hints):
+        return getattr(_local, "db_alias", "default")
+
+    def db_for_write(self, model, **hints):
+        return getattr(_local, "db_alias", "default")
+
+    def allow_relation(self, obj1, obj2, **hints):
+        return True  # Permitir relações entre bancos
+
+    def allow_migrate(self, db, app_label, model_name=None, **hints):
+        return db == "default"  # Só faz migrações no default
+
+# ✅ Agora a função `set_db_for_request` está acessível
+def set_db_for_request(db_name):
+    """Define o banco de dados para a requisição atual"""
+    _local.db_alias = db_name
 
 class LicenseDatabaseManager:
     @staticmethod

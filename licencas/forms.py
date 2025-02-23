@@ -24,16 +24,12 @@ class LicencasForm(forms.ModelForm):
             'lice_data_cria': forms.DateInput(attrs={'class': 'form-control'}),
         }
 
-
-
-
 class EmpresasForm(forms.ModelForm):
     class Meta:
         model = Empresas
-        fields = ['empr_nome', 'licenca', 'empr_docu', 'empr_ie', 'empr_cep', 'empr_ende', 'empr_nume', 'empr_cida', 'empr_esta', 'empr_bair', 'empr_emai']
+        fields = ['empr_nome', 'empr_docu', 'empr_ie', 'empr_cep', 'empr_ende', 'empr_nume', 'empr_cida', 'empr_esta', 'empr_bair', 'empr_emai']
         widgets = {
             'empr_nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome da Empresa'}),
-            'licenca': forms.Select(attrs={'class': 'form-select'}),
             'empr_docu': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CNPJ/CPF', 'maxlength': '14'}),
             'empr_ie': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Inscrição Estadual'}),
             'empr_cep': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CEP', 'maxlength': '8'}),
@@ -51,21 +47,20 @@ class EmpresasForm(forms.ModelForm):
 class FiliaisForm(forms.ModelForm):
     class Meta:
         model = Filiais
-        fields = ['fili_nome', 'empresa','fili_docu', 'fili_ie', 'fili_cep', 'fili_ende', 'fili_nume', 'fili_cida', 'fili_esta', 'fili_bair', 'fili_emai']
+        fields = ['empr_codi','empr_nome', 'empr_docu', 'empr_ie', 'empr_cep', 'empr_ende', 'empr_nume', 'empr_cida', 'empr_esta', 'empr_bair', 'empr_emai']
         widgets = {
-            'fili_nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome da Filial'}),
-            'empresa': forms.Select(attrs={'class': 'form-select'}),
-            'fili_docu': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CNPJ/CPF', 'maxlength': '14'}),
-            'fili_ie': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Inscrição Estadual'}),
-            'fili_cep': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CEP', 'maxlength': '8'}),
-            'fili_ende': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Endereço'}),
-            'fili_nume': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número'}),
-            'fili_cida': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cidade'}),
-            'fili_esta': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Estado', 'maxlength': '2'}),
-            'fili_bair': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Estado', 'maxlength': '100'}),
-            'fili_emai': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-mail'}),
+            'empr_codi': forms.TextInput(attrs={'class':'form_control', 'placeholder':'Id da Empresa'}),
+            'empr_nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome da Empresa'}),
+            'empr_docu': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CNPJ/CPF', 'maxlength': '14'}),
+            'empr_ie': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Inscrição Estadual'}),
+            'empr_cep': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'CEP', 'maxlength': '8'}),
+            'empr_ende': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Endereço'}),
+            'empr_nume': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número'}),
+            'empr_cida': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Cidade'}),
+            'empr_esta': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Estado', 'maxlength': '2'}),
+            'empr_bair': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bairro', 'maxlength': '100'}),
+            'empr_emai': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'E-mail'}),
         }
-
 
 class UsuarioForm(UserCreationForm):
     class Meta:
