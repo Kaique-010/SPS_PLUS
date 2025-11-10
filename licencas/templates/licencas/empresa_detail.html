@@ -1,14 +1,22 @@
 {% extends 'base.html' %} {% block content %}
 {%load static%}
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
-<div class="container">
-    <h1>Detalhes da Empresa</h1>
-    <p><strong>Nome:</strong> {{ object.empr_nome }}</p>
-    <p><strong>Licença:</strong> {{ object.licenca.lice_nome }}</p>
-    <a href="{% url 'empresa_update' object.pk %}">Editar</a> |
-    <a href="{% url 'empresa_delete' object.pk %}">Excluir</a> |
-    <a href="{% url 'empresa_list' %}">Voltar para a lista de empresas</a>
+<div class="container page-container">
+  <div class="page-header">
+    <h2 class="page-title">Detalhes da Empresa</h2>
+    <div class="page-actions">
+      <a href="{% url 'empresa_list' %}" class="btn btn-secondary">Voltar</a>
+    </div>
+  </div>
+  <div class="card card-corporate">
+    <div class="card-body">
+      <p><strong>Nome:</strong> {{ object.empr_nome }}</p>
+      <p><strong>Licença:</strong> {{ object.licenca.lice_nome }}</p>
+      <div class="d-flex gap-2">
+        <a href="{% url 'empresa_update' object.pk %}" class="btn btn-info">Editar</a>
+        <a href="{% url 'empresa_delete' object.pk %}" class="btn btn-danger">Excluir</a>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

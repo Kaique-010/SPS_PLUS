@@ -15,44 +15,66 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
 
-from licencas.db_router import LicenseDatabaseManager
 from .models import Licencas, Filiais, Empresas
+from licencas.utils import current_alias
 from .forms import LicencasForm, EmpresasForm, FiliaisForm, LoginForm
 from .models import Usuarios
 from .forms import UsuarioForm
 
 
-class UsuarioLoginView(FormView):
+class UsuarioLoginView(LoginView):
     template_name = "licencas/login.html"
     form_class = LoginForm
-    success_url = reverse_lazy("home")
+    redirect_authenticated_user = True
 
     def form_valid(self, form):
-        username = form.cleaned_data["username"]
-        password = form.cleaned_data["password"]
+        # O LoginView já chama login() com form.get_user(). Aqui apenas
+        # garantimos a configuração da sessão (slug/banco) pós-autenticação.
+        response = super().form_valid(form)
 
-        # Autentica o usuário
-        user = authenticate(self.request, username=username, password=password)
+        user = form.get_user()
+        lice_docu = form.cleaned_data.get("lice_docu")
 
         if user:
-            login(self.request, user)
-
-            # Obtém a licença do usuário
-            licenca = getattr(user, "licenca", None)
-            if licenca and licenca.db_config:
-                
-                self.request.session["db_config"] = licenca.db_config
-                self.request.session["licenca_lice_nome"] = licenca.lice_nome
-                self.request.session.modified = True
-                print(f"Licença salva na sessão: {licenca.lice_nome}")
-
-      
+            if lice_docu:
+                from licencas.utils.licencas_loader import carregar_licencas_dict
+                doc = str(lice_docu).replace(".", "").replace("-", "").replace("/", "").strip()
+                by_doc = {x["cnpj"]: x for x in carregar_licencas_dict()}
+                info = by_doc.get(doc)
+                if info:
+                    self.request.session["licenca_lice_nome"] = info["slug"]
+                    self.request.session["banco_usuario"] = info["db_name"]
+                    self.request.session.modified = True
+                    try:
+                        self.request.session.save()
+                    except Exception:
+                        pass
+                    print(f"Sessão configurada via documento: slug={info['slug']} banco={info['db_name']}")
             else:
-                print("🚨 Erro: Usuário não possui uma licença ou banco de dados configurado.")
+                alias = getattr(user._state, 'db', None) or getattr(user, '_auth_db_alias', None)
+                if alias and alias.startswith('cliente_'):
+                    slug = alias.replace('cliente_', '')
+                    db_name = getattr(user, '_cliente_db_name', None)
+                    self.request.session["licenca_lice_nome"] = slug
+                    if db_name:
+                        self.request.session["banco_usuario"] = db_name
+                    self.request.session.modified = True
+                    try:
+                        self.request.session.save()
+                    except Exception:
+                        pass
+                    print(f"Sessão configurada via alias: slug={slug} banco={db_name}")
+                else:
+                    print("Aviso: sessão sem slug configurado; seguindo com padrão.")
 
-            return super().form_valid(form)
+        return response
 
-        return self.form_invalid(form)
+    def get_success_url(self):
+        # Honra ?next=/home/ se presente; caso contrário, fallback para 'home'
+        redirect_to = self.get_redirect_url()
+        if redirect_to:
+            return redirect_to
+        return reverse_lazy("home")
 
 
 
@@ -92,29 +114,12 @@ class LicencasCreateView(CreateView):
         licenca = form.save(commit=False)
         print(f"Dados da licença: {licenca}")
 
-        # Preenche o campo db_config manualmente
-        licenca.db_config = {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": licenca.lice_nome,  # Nome do banco de dados
-            "USER": "postgres",
-            "PASSWORD": "@spartacus201@",
-            "HOST": "localhost",
-            "PORT": "5432",
-            "TIME_ZONE": "America/Sao_Paulo",
-            "CONN_MAX_AGE": 600,
-            "ATOMIC_REQUESTS": True,
-            "CONN_HEALTH_CHECKS": True,
-            "OPTIONS": {}
-        }
-
         try:
             licenca.save()
             print(f"Licença {licenca.lice_nome} salva com sucesso.")
         except Exception as e:
             print(f"Erro ao salvar licença: {str(e)}")
             return self.form_invalid(form)
-
-        LicenseDatabaseManager.ensure_database_exists(licenca)
 
         db_name = licenca.lice_nome
 
@@ -196,10 +201,8 @@ class EmpresaListView(ListView):
 
     
     def get_queryset(self):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-
-        queryset = Empresas.objects.using(db_name)  # Utiliza o banco correto para a consulta
+        alias = current_alias(self.request)
+        queryset = Empresas.objects.using(alias)
         empresas = self.request.GET.get('empr_nome')
 
         if empresas:
@@ -216,8 +219,7 @@ class EmpresaCreateView(CreateView):
     success_url = reverse_lazy("empresa_list")
     
     def form_valid(self, form):
-        db_name = getattr(self.request, "db_alias", "default")  # Obtém o banco da requisição
-        
+        db_name = current_alias(self.request)
         if db_name == "default":
             print("⚠️ Erro: Nenhum banco de dados específico foi definido. Usando default.")
             return self.form_invalid(form)  # Impede salvar no default por erro
@@ -237,12 +239,12 @@ class EmpresaUpdateView( UpdateView):
     template_name = 'licencas/empresa_update.html'
     
     def get_queryset(self):
-        # Filtra o objeto no banco de dados correto
-        return Empresas.objects.using(self.request.db_alias).all()
+        alias = current_alias(self.request)
+        return Empresas.objects.using(alias).all()
 
     def form_valid(self, form):
-        # Salva as alterações no banco de dados correto
-        form.instance.save(using=self.request.db_alias)
+        alias = current_alias(self.request)
+        form.instance.save(using=alias)
         return super().form_valid(form)
     
 @method_decorator(login_required, name='dispatch')
@@ -251,8 +253,8 @@ class EmpresaDetailView(DetailView):
     template_name = 'licencas/empresa_detail.html'
     
     def get_queryset(self):
-        # Filtra o objeto no banco de dados correto
-        return Empresas.objects.using(self.request.db_alias).all()
+        alias = current_alias(self.request)
+        return Empresas.objects.using(alias).all()
 
 
 @method_decorator(login_required, name='dispatch')
@@ -262,13 +264,13 @@ class EmpresaDeleteView(DeleteView):
     success_url = reverse_lazy('empresa_list')
     
     def get_queryset(self):
-        # Filtra o objeto no banco de dados correto
-        return Empresas.objects.using(self.request.db_alias).all()
+        alias = current_alias(self.request)
+        return Empresas.objects.using(alias).all()
 
     def delete(self, request, *args, **kwargs):
-        # Exclui o objeto do banco de dados correto
+        alias = current_alias(request)
         self.object = self.get_object()
-        self.object.delete(using=self.request.db_alias)
+        self.object.delete(using=alias)
         return super().delete(request, *args, **kwargs)
     
 
@@ -278,10 +280,8 @@ class FilialListView(ListView):
     context_object_name = 'filiais'
 
     def get_queryset(self):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-
-        queryset = Filiais.objects.using(db_name)
+        alias = current_alias(self.request)
+        queryset = Filiais.objects.using(alias)
         filiais = self.request.GET.get('empr_nome')
 
         if filiais:
@@ -302,15 +302,12 @@ class FilialCreateView(CreateView):
     
     def form_valid(self, form):
          with transaction.atomic():
-            db_name = getattr(self.request, "db_alias", "default")  # Obtém o banco da requisição
-            
+            db_name = current_alias(self.request)
             if db_name == "default":
                 print("⚠️ Erro: Nenhum banco de dados específico foi definido. Usando default.")
-                return self.form_invalid(form)  # Impede salvar no default por erro
-
-            form.instance._state.db = db_name  # Salva a empresa no banco correto
-            print(f"✅ Salvando empresa no banco: {db_name}")  # Log para depuração
-
+                return self.form_invalid(form)
+            form.instance._state.db = db_name
+            print(f"✅ Salvando empresa no banco: {db_name}")
             return super().form_valid(form)
 
 

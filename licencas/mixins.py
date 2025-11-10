@@ -1,7 +1,8 @@
 from django.conf import settings
 from django.db import connections
 from django.http import Http404
-from .models import Licencas
+from licencas.utils import current_alias, current_slug
+from licencas.utils.licencas_loader import carregar_licencas_dict
 
 class LicenseDatabaseMixin:
     """
@@ -12,18 +13,29 @@ class LicenseDatabaseMixin:
         self.set_database_based_on_license()
 
     def set_database_based_on_license(self):
-        # Obtém a licença da sessão
-        licenca_nome = self.request.session.get("licenca_lice_nome")
-        if not licenca_nome:
-            raise Http404("Licença não encontrada na sessão.")
+        # Obtém o slug atual priorizando usuário e depois sessão
+        slug = current_slug(self.request)
+        if not slug:
+            raise Http404("Licença não encontrada para roteamento.")
+        lic_map = {x["slug"]: x for x in carregar_licencas_dict()}
+        info = lic_map.get(slug)
+        if not info:
+            raise Http404("Licença não mapeada para roteamento.")
 
-        # Carrega as configurações do banco de dados do campo db_config da licença
-        licenca = Licencas.objects.using('default').get(lice_nome=licenca_nome)
-        if licenca and licenca.db_config:
-            # Atualiza a conexão do banco de dados
-            connections['default'].settings_dict.update(licenca.db_config)
-        else:
-            raise Http404("Configuração de banco de dados não encontrada para a licença.")
+        alias = current_alias(self.request)
+        if alias not in connections.databases:
+            connections.databases[alias] = {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": info["db_name"],
+                "HOST": info["db_host"],
+                "PORT": info["db_port"],
+                "USER": settings.DATABASES["default"]["USER"],
+                "PASSWORD": settings.DATABASES["default"]["PASSWORD"],
+            "OPTIONS": {"options": "-c TimeZone=UTC"},
+            }
+
+        # Disponibiliza o alias para as views
+        self.request.db_alias = alias
 
     def form_valid(self, form):
         """

@@ -2,11 +2,15 @@
 {% block content %}
 {% load static %}
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
-
-<div class="container">
-  <h1 class="my-4">Licenças</h1>
+<div class="container page-container">
+  <div class="page-header">
+    <h2 class="page-title">Licenças</h2>
+    <div class="page-actions">
+      <a href="{% url 'licenca_create' %}" class="btn btn-success">
+        <i class="bi bi-plus"></i> Nova Licença
+      </a>
+    </div>
+  </div>
   {% if messages %}
   <div class="alert alert-{{ messages.0.tags }}">
     {% for message in messages %}
@@ -14,8 +18,8 @@
     {% endfor %}
   </div>
   {% endif %}
-  <div class="container-search">
-    <form method="get" class="search-form mb-4">
+  <div class="container-search card card-corporate mb-3 p-3">
+    <form method="get" class="search-form">
       <div class="form-row">
         <div class="form-group col-md-3">
           <label for="lice_nome"></label>
@@ -27,17 +31,14 @@
           <input type="number" id="lice_id" name="lice_id" class="form-control" value="{{ request.GET.lice_id }}"
             placeholder="Filtrar por ID">
         </div>
-        <div class="form-group col-md-4 d-flex align-items-end">
+        <div class="form-group col-md-4 d-flex align-items-end gap-2">
           <button type="submit" class="btn btn-primary">Filtrar</button>
+          <a href="{% url 'licenca_list' %}" class="btn btn-secondary">Limpar</a>
         </div>
       </div>
     </form>
   </div>
-  <div class="container-btn">
-    <a href="{% url 'licenca_create' %}" class="btn btn-success mb-4 mt-2 float-end"><i class="bi bi-plus"></i> Nova
-      Licença</a>
-  </div>
-  <div class="table-responsive">
+  <div class="table-responsive card card-corporate">
     <table class="table table-bordered table-striped">
       <thead class="thead-dark">
         <tr>

@@ -1,0 +1,101 @@
+/* Navbar & Offcanvas component styles for SPS PLUS */
+
+/* Ocultar setinhas (carets) dos dropdowns no navbar/offcanvas */
+.navbar .dropdown-toggle::after,
+.offcanvas .nav-link.dropdown-toggle::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Navbar base */
+.navbar {
+  min-height: 60px;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-brand {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+.navbar .navbar-brand img {
+  height: 40px;
+}
+
+/* Logo na barra */
+.logo {
+  height: 55px;
+  vertical-align: middle;
+  margin-right: 8%;
+  margin-left: 5%;
+}
+
+.navbar .logo {
+  height: 42px;
+  margin-left: 12px;
+  margin-right: 12px;
+}
+
+/* Links do menu */
+.navbar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+}
+.navbar-nav .nav-link:hover {
+  background-color: #3398af;
+  border-radius: 5px;
+  color: #ffffff;
+}
+.navbar-nav .nav-link i {
+  margin-right: 4px;
+}
+.navbar-nav .nav-link.active {
+  color: #59a9a4;
+}
+.navbar-nav .nav-link.active:hover {
+  color: rgb(254, 255, 255);
+}
+
+/* Dropdowns e itens do menu */
+.dropdown-item,
+.item {
+  background-color: #254d56;
+  color: #ffffff;
+}
+
+/* Offcanvas ajustes */
+.offcanvas-body {
+  padding: 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.offcanvas .navbar-nav {
+  gap: 0.25rem;
+}
+.offcanvas .navbar-nav .nav-link {
+  padding: 0.6rem 0.75rem;
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+}
+
+/* Cores dos ícones usados no menu */
+.bi-house { color: #4a99b0; }
+.bi-patch-check { color: #2b6ebf; }
+.bi-person-gear { color: #ceadf0; }
+.bi-phone-flip { color: #1e90ff; }
+.bi-graph-up { color: #3b7556; }
+.bi-wrench-adjustable { color: #683c58; }
+.bi-file-break-fill { color: darkmagenta; }

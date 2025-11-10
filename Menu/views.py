@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.db import connection
+from licencas.utils import current_connection
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 import json
 
 @login_required
@@ -16,8 +18,8 @@ def home(request):
     data_inicio = request.GET.get('data_inicio', '')
     data_fim = request.GET.get('data_fim', '')
 
-    # Obter lista de vendedores
-    with connection.cursor() as cursor:
+    # Obter lista de vendedores usando conexão do cliente
+    with current_connection(request).cursor() as cursor:
         cursor.execute("""
             SELECT DISTINCT e1.enti_clie, e1.enti_nome
             FROM pedidosvenda 
@@ -63,7 +65,7 @@ def home(request):
             e1.enti_nome ASC;
     """
 
-    with connection.cursor() as cursor:
+    with current_connection(request).cursor() as cursor:
         cursor.execute(query, params)
         data = dictfetchall(cursor)  # Usa a função dictfetchall para converter o resultado
 
@@ -94,3 +96,19 @@ def dictfetchall(cursor):
         dict(zip(columns, row))  # Converte cada linha em um dicionário
         for row in cursor.fetchall()
     ]
+
+
+def whoami(request):
+    """Endpoint de diagnóstico para verificar estado de autenticação e sessão."""
+    data = {
+        "authenticated": bool(getattr(request.user, "is_authenticated", False)),
+        "user_id": getattr(request.user, "pk", None),
+        "username": getattr(request.user, "nome", None),
+        "session_keys": list(request.session.keys()),
+        "auth_backend": request.session.get("_auth_user_backend"),
+        "auth_user_id": request.session.get("_auth_user_id"),
+        "auth_user_hash": request.session.get("_auth_user_hash"),
+        "licenca_lice_nome": request.session.get("licenca_lice_nome"),
+        "banco_usuario": request.session.get("banco_usuario"),
+    }
+    return JsonResponse(data)

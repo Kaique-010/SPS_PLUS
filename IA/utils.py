@@ -3,17 +3,15 @@ from django.shortcuts import render
 from datetime import datetime, timedelta
 from django.db import connections, connection
 import logging
+from licencas.utils import current_alias
 
 logger = logging.getLogger(__name__)
 
 def obter_insight_vendas(request):
-    banco_usuario = request.session.get('banco_usuario') or request.session.get('licenca_nome')
-
-    if not banco_usuario:
-        logger.error("Banco de dados do usuário não encontrado na sessão!")
+    alias = current_alias(request)
+    if not alias:
+        logger.error("Alias de banco não resolvido para o usuário!")
         return {}
-
-    logger.info(f"🎯 Utilizando banco de dados: {banco_usuario}")
 
     data_inicio = (datetime.today() - timedelta(days=3000)).strftime('%Y-%m-%d')
 
@@ -27,11 +25,11 @@ def obter_insight_vendas(request):
             p.pedi_clie AS cliente,
             e.enti_nome AS nome_cliente,
             p.pedi_data AS data_pedido
-        FROM {banco_usuario}.public.pedidospisos p
-        JOIN {banco_usuario}.public.itenspedidospisos i ON p.pedi_nume = i.item_pedi
-        JOIN {banco_usuario}.public.produtos pr ON pr.prod_codi = i.item_prod
-        LEFT JOIN {banco_usuario} .public.entidades e ON pedi_clie = e.enti_clie AND pedi_empr = e.enti_empr
-        LEFT JOIN {banco_usuario} .public.entidades v ON pedi_vend = v.enti_clie AND pedi_empr = v.enti_empr
+        FROM pedidospisos p
+        JOIN itenspedidospisos i ON p.pedi_nume = i.item_pedi
+        JOIN produtos pr ON pr.prod_codi = i.item_prod
+        LEFT JOIN entidades e ON pedi_clie = e.enti_clie AND pedi_empr = e.enti_empr
+        LEFT JOIN entidades v ON pedi_vend = v.enti_clie AND pedi_empr = v.enti_empr
         WHERE p.pedi_data >= '{data_inicio}'
         GROUP BY pr.prod_nome, p.pedi_vend, p.pedi_clie, p.pedi_data, v.enti_nome, e.enti_nome
         ORDER BY total_venda DESC
@@ -39,7 +37,7 @@ def obter_insight_vendas(request):
     """
 
     try:
-        with connections[banco_usuario].cursor() as cursor:
+        with connections[alias].cursor() as cursor:
             cursor.execute(query_vendas)
             colunas = [col[0] for col in cursor.description]
             dados = cursor.fetchall()
@@ -58,13 +56,10 @@ def obter_insight_vendas(request):
 
 
 def obter_insight_estoque(request):
-    banco_usuario = request.session.get('banco_usuario') or request.session.get('licenca_nome')
-
-    if not banco_usuario:
-        logger.error("Banco de dados do usuário não encontrado na sessão!")
+    alias = current_alias(request)
+    if not alias:
+        logger.error("Alias de banco não resolvido para o usuário!")
         return {}
-
-    logger.info(f"🎯 Utilizando banco de dados: {banco_usuario}")
 
     query_estoque = f"""
        SELECT 
@@ -94,7 +89,7 @@ def obter_insight_estoque(request):
     """
 
     try:
-        with connections[banco_usuario].cursor() as cursor:
+        with connections[alias].cursor() as cursor:
             cursor.execute(query_estoque)
             colunas = [col[0] for col in cursor.description]
             dados = cursor.fetchone()
@@ -118,13 +113,10 @@ def obter_insight_estoque(request):
 
 
 def obter_insight_clientes_inativos(request):
-    banco_usuario = request.session.get('banco_usuario') or request.session.get('licenca_nome')
-
-    if not banco_usuario:
-        logger.error("Banco de dados do usuário não encontrado na sessão!")
+    alias = current_alias(request)
+    if not alias:
+        logger.error("Alias de banco não resolvido para o usuário!")
         return {}
-
-    logger.info(f"🎯 Utilizando banco de dados: {banco_usuario}")
 
     # Data limite: Clientes que não compram há mais de 6 meses
     data_limite = (datetime.today() - timedelta(days=180)).strftime('%Y-%m-%d')
@@ -151,7 +143,7 @@ def obter_insight_clientes_inativos(request):
     """
 
     try:
-        with connections[banco_usuario].cursor() as cursor:
+        with connections[alias].cursor() as cursor:
             cursor.execute(query_clientes_inativos, [data_limite])
             colunas = [col[0] for col in cursor.description]
             dados = cursor.fetchall()
@@ -168,13 +160,10 @@ def obter_insight_clientes_inativos(request):
 
 
 def obter_insight_contato_aniversario(request):
-    banco_usuario = request.session.get('banco_usuario') or request.session.get('licenca_nome')
-
-    if not banco_usuario:
-        logger.error("Banco de dados do usuário não encontrado na sessão!")
+    alias = current_alias(request)
+    if not alias:
+        logger.error("Alias de banco não resolvido para o usuário!")
         return {}
-
-    logger.info(f"🎯 Utilizando banco de dados: {banco_usuario}")
 
     query_aniversario = """
         SELECT 
@@ -200,7 +189,7 @@ def obter_insight_contato_aniversario(request):
     """
 
     try:
-        with connections[banco_usuario].cursor() as cursor:
+        with connections[alias].cursor() as cursor:
             cursor.execute(query_aniversario)
             dados = cursor.fetchall()
 

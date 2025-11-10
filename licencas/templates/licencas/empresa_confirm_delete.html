@@ -1,51 +1,20 @@
-{% extends 'base.html' %} {% block content %}
-{% load static %}
-<style>
-  .container p {
-    color: antiquewhite;
-    font-weight: bold;
-  }
-
-  .btn-container {
-
-    gap: 50px;
-    margin-top: 20px;
-    align-items: center;
-  }
-
-  .btn-container form,
-  .btn-container a {
-    display: inline-block;
-  }
-
-  button {
-    background-color: rgb(20, 95, 23);
-    color: aliceblue;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-  }
-
-  button:hover {
-    background-color: rgb(15, 75, 18);
-  }
-</style>
-
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
-
-<div class="container">
-  <h1>Excluir Empresa</h1>
-  <p>Tem certeza que deseja excluir a empresa "{{ object.empr_nome }}"?</p>
-
-  <div class="btn-container">
-    <form method="post">
-      {% csrf_token %}
-      <button type="submit">Sim, Excluir</button>
-    </form>
-    <a href="{% url 'empresa_list' %}" class="btn btn-info">Cancelar</a>
+{% extends 'base.html' %}
+{% block content %}
+<div class="container page-container">
+  <div class="card card-corporate">
+    <div class="card-body">
+      <div class="page-header">
+        <h2 class="page-title">Excluir Empresa</h2>
+      </div>
+      <p class="text-muted">Tem certeza que deseja excluir a empresa "{{ object.empr_nome }}"?</p>
+      <div class="d-flex align-items-center gap-3 mt-3">
+        <form method="post" class="me-2">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+        </form>
+        <a href="{% url 'empresa_list' %}" class="btn btn-outline-primary">Cancelar</a>
+      </div>
+    </div>
   </div>
-</div>
+  </div>
 {% endblock %}

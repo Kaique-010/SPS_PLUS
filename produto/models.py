@@ -27,13 +27,13 @@ class GrupoProduto(models.Model):
 
 class SubgrupoProduto(models.Model):
     codigo = models.AutoField(
-        db_column='grup_codi', 
+        db_column='sugr_codi', 
         primary_key=True,
         verbose_name='Código'
     )
     descricao = models.CharField(
         max_length=255, 
-        db_column='grup_desc', 
+        db_column='sugr_desc', 
         verbose_name='Descrição'
     )
 
@@ -47,13 +47,13 @@ class SubgrupoProduto(models.Model):
 
 class FamiliaProduto(models.Model):
     codigo = models.AutoField(
-        db_column='grup_codi', 
+        db_column='fami_codi', 
         primary_key=True,
         verbose_name='Código'
     )
     descricao = models.CharField(
         max_length=255, 
-        db_column='grup_desc', 
+        db_column='fami_desc', 
         verbose_name='Descrição'
     )
 
@@ -67,13 +67,13 @@ class FamiliaProduto(models.Model):
 
 class Marca(models.Model):
     codigo = models.AutoField(
-        db_column='grup_codi', 
+        db_column='marc_codi', 
         primary_key=True,
         verbose_name='Código'
     )
     nome = models.CharField(
         max_length=255, 
-        db_column='grup_desc', 
+        db_column='marc_nome', 
         verbose_name='Nome'
     )
 
@@ -89,7 +89,7 @@ class Tabelaprecos(models.Model):
     id = None
     tabe_empr = models.IntegerField(default=1)  
     tabe_fili = models.IntegerField(default=1)
-    tabe_prod = models.ForeignKey(
+    tabe_prod = models.OneToOneField(
         "Produtos", verbose_name="Produto", on_delete=models.CASCADE, default=1, db_column="tabe_prod", primary_key=True)
     
     tabe_prco = models.DecimalField(max_digits=15, decimal_places=2, blank=True, null=True)
@@ -162,7 +162,7 @@ class SaldoProduto(models.Model):
     id = None
     sapr_empr = models.ForeignKey(Empresas, on_delete=models.CASCADE, db_column='sapr_empr')
     sapr_fili = models.ForeignKey(Filiais, on_delete=models.CASCADE, db_column='sapr_fili')
-    sapr_prod = models.ForeignKey(Produtos, on_delete=models.CASCADE, db_column='sapr_prod', primary_key=True)
+    sapr_prod = models.OneToOneField(Produtos, on_delete=models.CASCADE, db_column='sapr_prod', primary_key=True)
     sapr_sald = models.DecimalField(max_digits=15, decimal_places=4, blank=True, null=True, db_column='sapr_sald')
 
     class Meta:

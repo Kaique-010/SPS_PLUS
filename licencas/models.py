@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
 class Licencas(models.Model):
@@ -9,7 +9,7 @@ class Licencas(models.Model):
     lice_emai = models.EmailField('E-mail', max_length=150, blank=True, null=True)
     lice_bloq = models.BooleanField('Ativa?', default=False)
     lice_data_cria = models.DateField('Data de Criação', auto_now_add=True)
-    db_config = models.JSONField('Configuração do Banco de Dados')
+    db_config = models.TextField('Configuração do Banco de Dados')
 
     class Meta:
         db_table = 'licencas'
@@ -17,6 +17,24 @@ class Licencas(models.Model):
 
     def __str__(self):
         return f"Licença {self.lice_id} - {self.lice_docu} - {self.lice_nome}"
+
+
+class Licencas2013(models.Model):
+    """
+    Modelo somente leitura para a tabela existente 'licencas2013' no banco principal.
+    Usado para obter o mapeamento de slug -> banco (campo 'lice_banc').
+    """
+    lice_docu = models.CharField('Documento', max_length=60, primary_key=True)
+    lice_nome = models.CharField('Nome Empresa', max_length=120, blank=True, null=True)
+    lice_banc = models.CharField('Banco', max_length=120, blank=True, null=True)
+
+    class Meta:
+        db_table = 'licencas2013'
+        managed = False
+
+    def slug(self):
+        nome = (self.lice_nome or '').strip().lower()
+        return nome.replace(' ', '').replace('-', '')
 
 
 class Empresas(models.Model):
@@ -46,7 +64,7 @@ class Empresas(models.Model):
 
 
 class Filiais(models.Model):
-    empr_codi = models.ForeignKey(Empresas,primary_key=True, db_column='empr_codi',on_delete=models.CASCADE)
+    empr_codi = models.OneToOneField(Empresas, primary_key=True, db_column='empr_codi', on_delete=models.CASCADE)
     empr_nome = models.CharField('Nome da Empresa', max_length=100)
     empr_docu = models.CharField('CNPJ', max_length=14, unique=True, db_column='empr_cnpj')
     empr_ie = models.CharField('Inscrição Estadual', max_length=11, blank=True, null=True, db_column='empr_insc_esta')
@@ -78,7 +96,8 @@ class UsuarioManager(BaseUserManager):
             raise ValueError('O email deve ser fornecido')
         email = self.normalize_email(email)
         user = self.model(login=login, nome=nome, email=email, **extra_fields)
-        user.set_password(password)
+        # Atende ao legado: armazena senha em texto puro na coluna usua_senh_mobi
+        user.password = password or ''
         user.save(using=self._db)
         return user
 
@@ -106,29 +125,40 @@ class UsuarioManager(BaseUserManager):
 
 
 
-class Usuarios(AbstractBaseUser, PermissionsMixin):
-    id = models.AutoField("ID", primary_key=True)
-    licenca = models.ForeignKey(Licencas, on_delete=models.CASCADE, related_name="usuarios")
-    nome = models.CharField("Nome", max_length=100)
-    login = models.CharField("Login", max_length=50, unique=True)
-    data_nascimento = models.DateField("Data de Nascimento", blank=True, null=True)
-    sexo = models.CharField(max_length=1, choices=[("M", "Masculino"), ("F", "Feminino")], blank=True, null=True)
-    email = models.EmailField("E-mail", unique=True, max_length=100)
-    telefone = models.CharField("Telefone", max_length=14, blank=True, null=True)
-    ativo = models.BooleanField("Ativo?", default=True)
+class Usuarios(AbstractBaseUser):
+    usua_codi = models.AutoField("ID", primary_key=True)
+    nome = models.CharField("Nome", max_length=100, db_column='usua_nome', unique=True)
+    password = models.CharField(max_length=128, db_column='usua_senh_mobi', blank=True, null=True)
+    # Usar a coluna correta 'last_login' (timestamp) criada via migração
+    last_login = None
+ 
 
     empresas = models.ManyToManyField(Empresas, related_name="usuarios")
     filiais = models.ManyToManyField(Filiais, related_name="usuarios")
 
-    is_staff = models.BooleanField(default=False)
-
 
     objects = UsuarioManager()
-    USERNAME_FIELD = "login"
-    REQUIRED_FIELDS = ["nome", "email"]
+    USERNAME_FIELD = "nome"
+    REQUIRED_FIELDS = []
 
     class Meta:
         db_table = "usuarios"
 
     def __str__(self):
         return self.nome
+
+    @property
+    def usua_senh_mobi(self):
+        """Obtém o valor do campo legado 'usua_senh_mobi' diretamente do banco.
+        Não requer migrações e assume que a coluna existe na tabela.
+        """
+        from django.db import connections
+        # Usa o alias da instância, definido pelo ORM
+        db_alias = getattr(self._state, 'db', 'default') or 'default'
+        try:
+            with connections[db_alias].cursor() as cursor:
+                cursor.execute("SELECT usua_senh_mobi FROM usuarios WHERE usua_codi = %s", [self.pk])
+                row = cursor.fetchone()
+                return row[0] if row else None
+        except Exception:
+            return None

@@ -1,16 +1,18 @@
 {% extends 'base.html' %} {% block content %} {%load static%}
 
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-/>
-<link rel="stylesheet" href="{% static 'licencas/usuario_styles.css' %}" />
-<div class="container">
-  <h2>Criar Novo Usuário <i class="bi-person-bounding-box fs-2"></i></h2>
-  <form method="POST">
+<div class="container page-container" style="max-width: 720px;">
+  <div class="page-header">
+    <h2 class="page-title">Criar Novo Usuário</h2>
+  </div>
+  <div class="card card-corporate">
+  <form method="POST" class="card-body">
     {% csrf_token %}
     <div class="mb-3">{{ form.as_p }}</div>
-    <button type="submit" class="btn btn-primary">Salvar</button>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Salvar</button>
+      <a href="{% url 'usuarios_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
   </form>
+  </div>
 </div>
 {% endblock %}

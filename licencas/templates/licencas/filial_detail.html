@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container page-container">
+  <div class="page-header">
+    <h2 class="page-title">Detalhe da Filial</h2>
+    <div class="page-actions">
+      <a href="{% url 'filial_update' object.pk %}" class="btn btn-warning">
+        <i class="bi bi-pencil"></i> Editar
+      </a>
+      <a href="{% url 'filial_delete' object.pk %}" class="btn btn-danger ml-2">
+        <i class="bi bi-trash"></i> Excluir
+      </a>
+      <a href="{% url 'filial_list' %}" class="btn btn-secondary ml-2">
+        Voltar
+      </a>
+    </div>
+  </div>
+
+  <div class="card card-corporate">
+    <div class="card-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-2"><strong>ID:</strong> {{ object.empr_codi }}</div>
+          <div class="mb-2"><strong>Nome:</strong> {{ object.empr_nome }}</div>
+          <div class="mb-2"><strong>Documento:</strong> {{ object.empr_docu }}</div>
+          <div class="mb-2"><strong>Inscrição Estadual:</strong> {{ object.empr_ie }}</div>
+          <div class="mb-2"><strong>Regime:</strong> {{ object.empr_regi }}</div>
+          <div class="mb-2"><strong>E-mail:</strong> {{ object.empr_emai }}</div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-2"><strong>CEP:</strong> {{ object.empr_cep }}</div>
+          <div class="mb-2"><strong>Endereço:</strong> {{ object.empr_ende }}, {{ object.empr_nume }}</div>
+          <div class="mb-2"><strong>Bairro:</strong> {{ object.empr_bair }}</div>
+          <div class="mb-2"><strong>Cidade:</strong> {{ object.empr_cida }}</div>
+          <div class="mb-2"><strong>Estado:</strong> {{ object.empr_esta }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -8,6 +8,7 @@ from .views import saldo
 
 urlpatterns = [
     path('home', views.home, name='home'),
+    path('whoami/', views.whoami, name='whoami'),
     path('admin/', admin.site.urls),
     path('', include ('Entidades.urls')),
     path('', include('Pedidos.urls')),

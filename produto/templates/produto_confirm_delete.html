@@ -4,34 +4,43 @@
 
 {% block content %}
 <style>
-  h2 {
-    text-align: center;
-    font-size: 2rem;
-    color: aliceblue;
-  }
-
-  h6 {
-    text-align: center;
-    font-weight: bold;
-    color: aliceblue;
-
-  }
-
-  form {
-    text-align: center;
-    font-weight: bold;
-  }
+  .container.page-container { padding-top: 34px; padding-bottom: 34px; }
+  .page-header-custom { margin-top: 10px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #e9ecef; display:flex; justify-content:space-between; align-items:center; }
+  .page-title { font-size: 24px; font-weight: bold; color: #343a40; margin:0; }
+  .confirm-text { font-weight: 500; }
+  .form-actions { display:flex; gap:12px; justify-content:center; }
 </style>
-<br><br><br><br><br><br><br><br><br>
-<h2 class="mb-4">
-  <i class="bi bi-person-gear fs-3"></i> Exclusão de Produto
-</h2>
-<h6>Você tem certeza que deseja excluir o produto - "{{ produto.produto_codigo }}" - "{{ produto.nome_produto }}"?</h6>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Excluir</button>
-  <a href="{% url 'produtos_lista.html' %}" class="btn btn-secondary">Cancelar</a>
-</form>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<div class="container page-container">
+  <div class="page-header-custom">
+    <h2 class="page-title"><i class="bi bi-trash"></i> Exclusão de Produto</h2>
+    <div class="page-actions">
+      <a href="{% url 'produtos_lista.html' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i> Voltar à Lista
+      </a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <p class="confirm-text text-center mb-4">
+        Você tem certeza que deseja excluir o produto
+        <strong>"{{ object.prod_codi }}"</strong> - <strong>"{{ object.prod_nome }}"</strong>?
+      </p>
+
+      <form method="post" class="text-center">
+        {% csrf_token %}
+        <div class="form-actions">
+          <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Excluir</button>
+          <a href="{% url 'produtos_lista.html' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="text-center mt-4">
+    <p class="text-muted">&copy; {{ current_year }} Spartacus Sistemas</p>
+  </footer>
+</div>
+
 {% endblock %}

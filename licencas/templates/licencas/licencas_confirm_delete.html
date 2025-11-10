@@ -1,25 +1,17 @@
 {% extends 'base.html' %} {% block content %}
 {%load static%}
-<style>
-  .container p {
-    color: bisque;
-  }
-</style>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
-<div class="container">
-  <h1>Confirmar Exclusão</h1>
 
-
-  <p>Você tem certeza que deseja excluir a licença "{{ licenca.lice_nome }} - {{licenca.lice_docu}}"?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-success mb-4 mt-4">Sim, excluir</button>
-
-  </form>
-  <div class="container-btn">
-    <a href="{% url 'licenca_list' %}" class="btn btn-danger mb-4 mt-4">Cancelar</a>
+<div class="container page-container" style="max-width: 640px;">
+  <div class="card card-corporate">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Confirmar Exclusão</h2>
+      <p>Você tem certeza que deseja excluir a licença "{{ licenca.lice_nome }} - {{licenca.lice_docu}}"?</p>
+      <form method="post" class="d-flex gap-2 mt-3">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Sim, excluir</button>
+        <a href="{% url 'licenca_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+      </form>
+    </div>
   </div>
-</div>
 </div>
 {% endblock %}

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ProdutosViewSet, buscar_produtos, exportar_produtos,ProdutoListView, ProdutoCreateView, ProdutoUpdateView, ProdutoDeleteView
+from .views import ProdutosViewSet, buscar_produtos, exportar_produtos,ProdutoListView, ProdutoCreateView, ProdutoUpdateView, ProdutoDeleteView, produto_foto
 from .views import GrupoListView, GrupoCreateView, GrupoUpdateView, GrupoDeleteView
 from .views import SubgrupoListView, SubgrupoCreateView, SubgrupoUpdateView, SubgrupoDeleteView
 from .views import (
@@ -19,6 +19,7 @@ urlpatterns = [
     path('produto/update/<str:prod_codi>/', ProdutoUpdateView.as_view(), name='produtos_update'),
     path('produto/delete/<str:prod_codi>/', ProdutoDeleteView.as_view(), name='produto_delete'),
     path('exportar-produtos/',exportar_produtos, name='exportar_produtos'),
+    path('produto/foto/<str:prod_codi>/', produto_foto, name='produto_foto'),
     
     path('grupos_list', GrupoListView.as_view(), name='grupos_list'),
     path('grupo_create/', GrupoCreateView.as_view(), name='grupo_create'),

@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 from datetime import datetime
 from django.db.models import Sum
 from django.db import connection, transaction
+from licencas.utils import current_alias
 from django.db.models import OuterRef, Subquery
 from django.core.paginator import Paginator
 from django.forms import ValidationError
@@ -32,17 +33,19 @@ class ProdutosViewSet(viewsets.ModelViewSet):
     serializer_class = ProdutosSerializers
     filterset_fields = ['nome_produto', 'prod_codi']
     search_fields = ['nome_produto', 'prod_codi']
+    ordering_fields = ['prod_codi', 'nome_produto']
+    ordering = ['prod_codi']  # Ordenação padrão
+
 class ProdutoListView( ListView):
     model = Produtos
     template_name = 'produtos_lista.html'
-    context_object_name = 'page_obj'
     paginate_by = 10
 
     def get_queryset(self):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
+        alias = current_alias(self.request)
         
-        nome = self.request.GET.get('nome_produto', '')
+        # Aceita ambos os nomes de parâmetro para compatibilidade com a template
+        nome = self.request.GET.get('prod_nome') or self.request.GET.get('nome_produto', '')
         id_prod = self.request.GET.get('prod_codi', '')
 
         # Tenta converter o valor de id_prod para número
@@ -53,12 +56,12 @@ class ProdutoListView( ListView):
                 id_prod = None  # Se não for numérico, define como None
 
         # Consulta para obter o saldo de cada produto (usando o banco de dados da licença)
-        saldo_produtos = SaldoProduto.objects.using(db_name).all()
+        saldo_produtos = SaldoProduto.objects.using(alias).all()
         if id_prod:
             saldo_produtos = saldo_produtos.filter(sapr_prod__prod_codi=id_prod)
 
         # Subquery para adicionar o saldo no queryset de Produtos (usando o banco de dados da licença)
-        produtos = Produtos.objects.using(db_name).all()
+        produtos = Produtos.objects.using(alias).all()
         if nome:
             produtos = produtos.filter(prod_nome__icontains=nome)
 
@@ -69,6 +72,13 @@ class ProdutoListView( ListView):
 
         return produtos_com_saldo.order_by('prod_codi')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Repassa os parâmetros usados nos filtros para manter os valores na UI e nos links de paginação
+        context['prod_nome'] = self.request.GET.get('prod_nome') or self.request.GET.get('nome_produto', '')
+        context['prod_codi'] = self.request.GET.get('prod_codi', '')
+        return context
+
 
 
 
@@ -78,8 +88,7 @@ class ProdutoCreateView( CreateView):
     template_name = 'produtos_form.html'
 
     def form_valid(self, form):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
+        alias = current_alias(self.request)
         formset = TabelaprecosFormSet(self.request.POST)
         if form.is_valid() and formset.is_valid():
             cleaned_data = form.cleaned_data
@@ -87,24 +96,26 @@ class ProdutoCreateView( CreateView):
             with transaction.atomic():
                 if not cleaned_data.get('prod_codi'):
                     max_prod_codi = None
-                    with connection.cursor() as cursor:
+                    # Calcular prximo cdigo no banco do tenant
+                    from django.db import connections
+                    with connections[alias].cursor() as cursor:
                         cursor.execute("SELECT MAX(prod_codi) FROM produtos WHERE prod_empr = %s", [cleaned_data.get('prod_empr')])
                         max_prod_codi = cursor.fetchone()[0] or 0
                     
                     produto_codigo = max_prod_codi + 1
-                    while Produtos.objects.filter(prod_codi=produto_codigo).exists():
+                    while Produtos.objects.using(alias).filter(prod_codi=produto_codigo).exists():
                         produto_codigo += 1
                     
                     cleaned_data['prod_codi'] = str(produto_codigo)
 
                 novo_produto = form.save(commit=False)                
-                novo_produto.save(using=db_name)
+                novo_produto.save(using=alias)
 
                 tabelaprecos_instances = formset.save(commit=False)
                 for instance in tabelaprecos_instances:
                     instance.tabe_prod = novo_produto
                     instance.tabe_empr = novo_produto.prod_empr
-                    instance.save()
+                    instance.save(using=alias)
 
                 messages.success(self.request, f"Produto criado com sucesso! Código: {novo_produto.prod_codi}")
                 return redirect('produtos_lista')
@@ -119,13 +130,12 @@ class ProdutoUpdateView( UpdateView):
     template_name = 'produtos_update.html'
 
     def get_object(self, queryset=None):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
+        alias = current_alias(self.request)
         prod_codi = self.kwargs.get("prod_codi")
 
-        print(f"[DEBUG] Buscando produto  com prod_codi={prod_codi} no banco {db_name}")
+        print(f"[DEBUG] Buscando produto  com prod_codi={prod_codi} no alias {alias}")
 
-        produtos= Produtos.objects.using(db_name).filter(prod_codi=prod_codi).first()
+        produtos= Produtos.objects.using(alias).filter(prod_codi=prod_codi).first()
         
         if not produtos:
             raise Http404("Entidade não encontrada.")
@@ -133,23 +143,22 @@ class ProdutoUpdateView( UpdateView):
         return produtos
 
     def form_valid(self, form):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
+        alias = current_alias(self.request)
 
-        formset = TabelaprecosFormSet(self.request.POST, instance=self.object, queryset=Tabelaprecos.objects.using(db_name).filter(tabe_prod=self.object))
+        formset = TabelaprecosFormSet(self.request.POST, instance=self.object, queryset=Tabelaprecos.objects.using(alias).filter(tabe_prod=self.object))
 
         if form.is_valid() and formset.is_valid():
-            with transaction.atomic(using=db_name):
+            with transaction.atomic(using=alias):
                 produto = form.save(commit=False)
-                produto.save(using=db_name)
+                produto.save(using=alias)
 
                 tabelaprecos_instances = formset.save(commit=False)
                 for instance in tabelaprecos_instances:
                     instance.tabe_prod = produto
-                    instance.save(using=db_name)
+                    instance.save(using=alias)
 
                 tabelaprecos_ids = [instance.id for instance in tabelaprecos_instances]
-                Tabelaprecos.objects.using(db_name).filter(tabe_prod=produto).exclude(id__in=tabelaprecos_ids).delete()
+                Tabelaprecos.objects.using(alias).filter(tabe_prod=produto).exclude(id__in=tabelaprecos_ids).delete()
 
             messages.success(self.request, "Produto atualizado com sucesso!")
             return redirect('produtos_lista')
@@ -158,10 +167,9 @@ class ProdutoUpdateView( UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
+        alias = current_alias(self.request)
         
-        context['formset'] = TabelaprecosFormSet(instance=self.object, queryset=Tabelaprecos.objects.using(db_name).filter(tabe_prod=self.object))
+        context['formset'] = TabelaprecosFormSet(instance=self.object, queryset=Tabelaprecos.objects.using(alias).filter(tabe_prod=self.object))
         
         return context
 
@@ -474,6 +482,53 @@ def exportar_produtos(request):
         ])
 
     return response
+
+def produto_foto(request, prod_codi: str):
+    alias = current_alias(request)
+    # Busca o valor bruto do campo prod_foto (pode ser caminho relativo, bytes ou None)
+    foto_val = Produtos.objects.using(alias).filter(prod_codi=prod_codi).values_list('prod_foto', flat=True).first()
+    if not foto_val:
+        raise Http404("Foto não encontrada")
+
+    data = None
+    content_type = 'image/jpeg'
+
+    # Quando for ImageField normalmente é caminho relativo dentro de MEDIA_ROOT
+    if isinstance(foto_val, str):
+        from django.conf import settings
+        import os
+        import mimetypes
+        path = os.path.join(settings.MEDIA_ROOT, foto_val)
+        if not os.path.exists(path):
+            raise Http404("Arquivo de imagem não encontrado")
+        with open(path, 'rb') as f:
+            data = f.read()
+        guessed = mimetypes.guess_type(path)[0]
+        if guessed:
+            content_type = guessed
+    else:
+        # Pode ser bytes/memoryview (BLOB no banco)
+        import imghdr
+        if isinstance(foto_val, memoryview):
+            data = foto_val.tobytes()
+        elif isinstance(foto_val, bytes):
+            data = foto_val
+        else:
+            # Último recurso: tentar acessar como FieldFile
+            try:
+                file_obj = getattr(foto_val, 'file', None)
+                if file_obj:
+                    data = file_obj.read()
+            except Exception:
+                pass
+        kind = imghdr.what(None, h=data)
+        if kind:
+            content_type = f'image/{kind}'
+
+    if not data:
+        raise Http404("Conteúdo da imagem indisponível")
+
+    return HttpResponse(data, content_type=content_type)
 
 def dictfetchall(cursor):
     "Converte os resultados da consulta para uma lista de dicionários."

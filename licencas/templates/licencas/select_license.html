@@ -1,34 +1,27 @@
+{% extends 'base.html' %}
 {% load static %}
-
-<!DOCTYPE html>
-<html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Selecionar Licença</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-
-<body>
-    <div class="container">
-        <h1>Selecionar Licença</h1>
-
-        {% if licencas %}
-        <form method="POST" action="{% url 'select_license' %}"> <!-- Corrija a URL -->
-            {% csrf_token %}
-            <label for="licenca">Escolha uma licença:</label>
-            <select name="lice_nome" id="licenca" required>
-                {% for licenca in licencas %}
-                <option value="{{ licenca.lice_nome }}">{{ licenca.lice_nome }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit">Selecionar Licença</button>
-        </form>
-        {% else %}
-        <p>Nenhuma licença disponível.</p>
-        {% endif %}
+{% block content %}
+<div class="container page-container" style="max-width: 640px;">
+  <div class="card card-corporate">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Selecionar Licença</h2>
+      {% if licencas %}
+      <form method="POST" action="{% url 'select_license' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="licenca" class="form-label">Escolha uma licença:</label>
+          <select name="lice_nome" id="licenca" class="form-select" required>
+            {% for licenca in licencas %}
+            <option value="{{ licenca.lice_nome }}">{{ licenca.lice_nome }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Selecionar</button>
+      </form>
+      {% else %}
+      <p class="text-muted">Nenhuma licença disponível.</p>
+      {% endif %}
     </div>
-</body>
-
-</html>
+  </div>
+</div>
+{% endblock %}

@@ -1,22 +1,22 @@
-<!-- licencas/templates/licencas/select_database.html -->
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Seleção de Banco de Dados</title>
-</head>
-
-<body>
-    <h2>Selecione o Banco de Dados</h2>
-    <form method="post">
+{% extends 'base.html' %}
+{% block content %}
+<div class="container page-container" style="max-width: 640px;">
+  <div class="card card-corporate">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Selecione o Banco de Dados</h2>
+      <form method="post" class="d-flex gap-2 align-items-end">
         {% csrf_token %}
-        <select name="db_name">
+        <div class="flex-grow-1">
+          <label for="db_name" class="form-label">Banco de Dados</label>
+          <select id="db_name" name="db_name" class="form-select">
             {% for db in databases %}
             <option value="{{ db }}">{{ db }}</option>
             {% endfor %}
-        </select>
-        <button type="submit">Selecionar</button>
-    </form>
-</body>
-
-</html>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Selecionar</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

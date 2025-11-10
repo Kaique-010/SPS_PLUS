@@ -1,33 +1,35 @@
-<!-- licencas/templates/licencas/select_company_branch.html -->
-<!DOCTYPE html>
-<html>
-
-<head>
-    <title>Seleção de Empresa e Filial</title>
-</head>
-
-<body>
-    <h2>Selecione a Empresa e a Filial</h2>
-    <form method="post">
+{% extends 'base.html' %}
+{% block content %}
+<div class="container page-container" style="max-width: 720px;">
+  <div class="card card-corporate">
+    <div class="card-body">
+      <h2 class="h5 mb-3">Selecione a Empresa e a Filial</h2>
+      <form method="post" class="row g-3">
         {% csrf_token %}
-        <label for="empresa">Empresa:</label>
-        <select name="empresa" id="empresa">
+        <div class="col-md-6">
+          <label for="empresa" class="form-label">Empresa</label>
+          <select name="empresa" id="empresa" class="form-select">
             {% for empresa in empresas %}
             <option value="{{ empresa.pk }}">{{ empresa.empr_nome }}</option>
             {% endfor %}
-        </select>
-        <!-- Aqui, você pode implementar uma lógica (via JavaScript ou via view) para carregar as filiais relacionadas à empresa selecionada -->
-        <label for="filial">Filial:</label>
-        <select name="filial" id="filial">
-            <!-- Exemplo: Pode-se carregar inicialmente as filiais da primeira empresa -->
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="filial" class="form-label">Filial</label>
+          <select name="filial" id="filial" class="form-select">
             {% if empresas %}
             {% for filial in empresas.0.filiais.all %}
             <option value="{{ filial.pk }}">{{ filial.fili_nome }}</option>
             {% endfor %}
             {% endif %}
-        </select>
-        <button type="submit">Selecionar</button>
-    </form>
-</body>
-
-</html>
+          </select>
+        </div>
+        <div class="col-12 d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Selecionar</button>
+          <a href="{% url 'empresa_list' %}" class="btn btn-outline-secondary">Voltar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

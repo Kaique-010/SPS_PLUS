@@ -1,150 +1,92 @@
-import json
-from django.conf import settings
-from django.db import connections, connection, OperationalError
-from django.core.management import call_command
-from threading import local
-import psycopg2
+from django.db import connections
+import os
+from licencas.utils.licencas_loader import carregar_licencas_dict
 
-_local = local()
 
-class LicenseDatabaseRouter:
+def _slug_variants(slug: str):
+    s = (slug or "").upper()
+    variants = [s]
+    # Remover sufixos societários comuns para casar chaves como CASAEALMA
+    for suf in ("LTDA", "ME", "EPP", "SA", "S/A", "EIRELI"):
+        if s.endswith(suf):
+            variants.append(s[: -len(suf)])
+    return [v for v in variants if v]
+
+
+def _resolve_client_env(info: dict):
+    """Resolve USER/PASSWORD/HOST/PORT por cliente a partir do .env.
+    Prioridade:
+    1) <SLUG>_DB_* (com variantes sem sufixos societários)
+    2) <DBNAME>_DB_*
+    3) globais DB_*
+    """
+    slug = (info.get("slug") or "").strip()
+    dbname = (info.get("db_name") or "").strip()
+    variants = _slug_variants(slug)
+
+    def first_env(keys):
+        for k in keys:
+            val = os.getenv(k)
+            if val:
+                return k, val
+        return None, None
+
+    # USER
+    user_key, user_val = first_env([f"{v}_DB_USER" for v in variants] + [f"{dbname.upper()}_DB_USER"] + ["DB_USER"])
+    # PASSWORD
+    pass_key, pass_val = first_env([f"{v}_DB_PASSWORD" for v in variants] + [f"{dbname.upper()}_DB_PASSWORD"] + ["DB_PASSWORD"])
+    # HOST/PORT
+    host_key, host_val = first_env([f"{v}_DB_HOST" for v in variants] + [f"{dbname.upper()}_DB_HOST"] + ["DB_HOST"])
+    port_key, port_val = first_env([f"{v}_DB_PORT" for v in variants] + [f"{dbname.upper()}_DB_PORT"] + ["DB_PORT"])
+
+    return {
+        "USER": user_val or os.getenv("DB_USER", "savexml"),
+        "PASSWORD": pass_val or os.getenv("DB_PASSWORD", ""),
+        "HOST": host_val or os.getenv("DB_HOST", "base.rtalmeida.com.br"),
+        "PORT": port_val or os.getenv("DB_PORT", "5432"),
+        "_sources": {
+            "USER": user_key or "DB_USER",
+            "PASSWORD": pass_key or "DB_PASSWORD",
+            "HOST": host_key or "DB_HOST",
+            "PORT": port_key or "DB_PORT",
+        },
+    }
+
+class LicencaDBRouter:
+    _cache = None
+
+    def _get_licenca(self, slug):
+        if not self._cache:
+            self._cache = {x["slug"]: x for x in carregar_licencas_dict()}
+        return self._cache.get(slug)
+
     def db_for_read(self, model, **hints):
-        return getattr(_local, "db_alias", "default")
+        slug = hints.get("slug")
+        if not slug:
+            return "default"
 
-    def db_for_write(self, model, **hints):
-        return getattr(_local, "db_alias", "default")
+        lic = self._get_licenca(slug)
+        if not lic:
+            return "default"
 
-    def allow_relation(self, obj1, obj2, **hints):
-        return True  # Permitir relações entre bancos
+        alias = f"cliente_{slug}"
+        if alias not in connections.databases:
+            env_conf = _resolve_client_env({"slug": slug, "db_name": lic["db_name"]})
+            connections.databases[alias] = {
+                "ENGINE": "django.db.backends.postgresql",
+                "NAME": lic["db_name"],
+                "HOST": env_conf["HOST"],
+                "PORT": env_conf["PORT"],
+                "USER": env_conf["USER"],
+                "PASSWORD": env_conf["PASSWORD"],
+            "OPTIONS": {"options": "-c TimeZone=UTC"},
+            }
+            try:
+                print(
+                    f"[ROUTER] Alias {alias} usando USER={env_conf['USER']} via {env_conf['_sources']['USER']} HOST={env_conf['HOST']} PORT={env_conf['PORT']}"
+                )
+            except Exception:
+                pass
+        return alias
 
-    def allow_migrate(self, db, app_label, model_name=None, **hints):
-        return db == "default"  # Só faz migrações no default
-
-# ✅ Agora a função `set_db_for_request` está acessível
-def set_db_for_request(db_name):
-    """Define o banco de dados para a requisição atual"""
-    _local.db_alias = db_name
-
-class LicenseDatabaseManager:
-    @staticmethod
-    def ensure_database_exists(licenca):
-        db_name = licenca.lice_nome
-        if LicenseDatabaseManager.database_exists(db_name):
-            print(f"Banco {db_name} já existe.")
-            return
-
-        LicenseDatabaseManager.create_database(db_name)
-        LicenseDatabaseManager.apply_migrations_to_new_db(db_name)
-        licenca.save()
-        save_database(db_name)
-
-    @staticmethod
-    def database_exists(db_name):
-        """Verifica se um banco já existe no PostgreSQL."""
-        try:
-            with connection.cursor() as cursor:
-                cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", [db_name])
-                return cursor.fetchone() is not None
-        except OperationalError:
-            return False
-
-    @staticmethod
-    def create_database(db_name):
-        """Cria um novo banco de dados no PostgreSQL fora de qualquer transação."""
-        try:
-            # Conexão direta ao PostgreSQL (sem transação)
-            connection = psycopg2.connect(
-                dbname='postgres',  # banco de dados default do PostgreSQL
-                user=settings.DATABASES['default']['USER'],
-                password=settings.DATABASES['default']['PASSWORD'],
-                host=settings.DATABASES['default']['HOST'],
-                port=settings.DATABASES['default']['PORT']
-            )
-            connection.autocommit = True  # Necessário para criar o banco fora de transações
-            cursor = connection.cursor()
-            cursor.execute(f'CREATE DATABASE "{db_name}"')
-            print(f"Banco de dados {db_name} criado com sucesso!")
-            cursor.close()
-            connection.close()
-
-            save_database(db_name)
-
-        except Exception as e:
-            print(f"Erro ao criar o banco {db_name}: {e}")
-
-    @staticmethod
-    def apply_migrations_to_new_db(db_name):
-        """Aplica as migrações no banco recém-criado."""
-
-        default_db = settings.DATABASES.get('default')
-        if not default_db:
-            raise KeyError("Configuração 'default' não encontrada em DATABASES.")
-
-        # Adicionando a configuração para o novo banco de dados
-        settings.DATABASES[db_name] = {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': db_name,
-            'USER': default_db['USER'],
-            'PASSWORD': default_db['PASSWORD'],
-            'HOST': default_db['HOST'],
-            'PORT': default_db['PORT'],
-            'TIME_ZONE': 'America/Sao_Paulo',  
-            'CONN_HEALTH_CHECKS': True,  
-            'CONN_MAX_AGE': 600, 
-            'AUTOCOMMIT': True,  
-            'ATOMIC_REQUESTS': True,  
-            'OPTIONS': {},  
-        }
-
-        # Forçando a recarga da configuração de banco de dados
-        connections.databases[db_name] = settings.DATABASES[db_name]
-
-        try:
-            # Agora, podemos aplicar as migrações no banco recém-criado
-            call_command('migrate', database=db_name)
-            print(f"Migrações aplicadas no banco {db_name}")
-        except Exception as e:
-            print(f"Erro ao aplicar migrações no banco {db_name}: {e}")
-
-
-def save_database(db_name):
-    """
-    Salva o nome do banco de dados no arquivo de configuração de bancos de dados JSON.
-    """
-    # Verifica se DATABASES já está carregado corretamente
-    if settings.DATABASES is None:
-        raise ValueError("As configurações de DATABASES não foram carregadas corretamente.")
-
-    # Verifica se o banco já está presente
-    databases = settings.DATABASES
-
-    # Tentativa de carregar o arquivo JSON existente
-    try:
-        with open('databases.json', 'r') as f:
-            databases = json.load(f)
-    except (json.JSONDecodeError, FileNotFoundError) as e:
-        # Se o arquivo não existir ou estiver vazio, inicializa como um dicionário vazio
-        print("Arquivo 'databases.json' não encontrado ou corrompido. Criando novo arquivo.")
-        databases = {}
-
-    if db_name not in databases:
-        databases[db_name] = {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': db_name,
-            'USER': settings.DATABASES['default']['USER'],
-            'PASSWORD': settings.DATABASES['default']['PASSWORD'],
-            'HOST': settings.DATABASES['default']['HOST'],
-            'PORT': settings.DATABASES['default']['PORT'],
-            'TIME_ZONE': 'America/Sao_Paulo', 
-            'CONN_HEALTH_CHECKS': True,  
-            'CONN_MAX_AGE': 600, 
-            'AUTOCOMMIT': True,  
-            'ATOMIC_REQUESTS': True,  
-            'OPTIONS': {},  
-        }
-
-       
-        with open('databases.json', 'w') as f:
-            json.dump(databases, f, indent=4)
-    else:
-        print(f"O banco {db_name} já está configurado.")
+    db_for_write = db_for_read

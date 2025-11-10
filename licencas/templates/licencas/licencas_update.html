@@ -1,14 +1,22 @@
 {% extends 'base.html' %} {% block content %}
 {%load static%}
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
-<div class="container">
-  <h1>Editar Licença</h1>
-  <form method="post">
-    {% csrf_token %} {{ form.as_p }}
-    <button type="submit">Salvar Alterações</button>
-  </form>
-  <a href="{% url 'licenca_list' %}">Voltar para a lista de licenças</a>
+<div class="container page-container">
+  <div class="page-header">
+    <h2 class="page-title">Editar Licença</h2>
+    <div class="page-actions">
+      <a href="{% url 'licenca_list' %}" class="btn btn-secondary">Voltar</a>
+    </div>
+  </div>
+  <div class="card card-corporate">
+    <form method="post" class="card-body">
+      {% csrf_token %}
+      <div class="form-group">{{ form.as_p }}</div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+        <a href="{% url 'licenca_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
 </div>
 {% endblock %}

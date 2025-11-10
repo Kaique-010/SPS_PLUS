@@ -1,15 +1,26 @@
-{% extends 'base.html' %} {% block content %}
-{%load static%}
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
-<div class="container">
-  <h1>Excluir Filial</h1>
-  <p>Tem certeza que deseja excluir a filial "{{ object.fili_nome }}"?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit">Sim, Excluir</button>
-  </form>
-  <a href="{% url 'filial_list' %}">Cancelar</a>
+<div class="container page-container">
+  <div class="page-header">
+    <h2 class="page-title">Excluir Filial</h2>
+  </div>
+
+  <div class="card card-corporate">
+    <div class="card-body">
+      <p>Tem certeza que deseja excluir a filial "{{ object.fili_nome }}"?</p>
+      <form method="post" class="d-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">
+          <i class="bi bi-trash"></i> Sim, Excluir
+        </button>
+      </form>
+      <a href="{% url 'filial_list' %}" class="btn btn-secondary ml-2">
+        Cancelar
+      </a>
+    </div>
+  </div>
 </div>
+
 {% endblock %}

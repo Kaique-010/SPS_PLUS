@@ -3,53 +3,12 @@
 {% block title %}Métricas{% endblock %}
 
 {% block content %}
-<br><br><br><br><br>
-<style>
-    h2 {
-        text-align: center;
-        color: rgb(255, 255, 255);
-    }
-
-    .btn-primary {
-
-        text-align: center;
-        background-color: rgb(84, 126, 104);
-    }
-    
-    .btn-primary:hover{
-        background-color: #000000;
-    }
-    .card {
-        background:linear-gradient(#0a2b2e,#000000);
-        border-radius: 25px;
-        box-shadow: 0 10px 16px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .card:hover {
-        transform: scale(1.02); /* Efeito de zoom ao passar o mouse */
-        box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2); /* Sombra mais intensa */
-    }
-
-    .card-body {
-        backdrop-filter: blur(55px); /* Efeito de desfoque */
-        padding: 20px;
-    }
-
-    .form-select, 
-    .form-control {
-        border-radius: 10px;
-    }
-    /* Aumentando o container */
-    .container {
-        max-width: 75%; /* Aumenta a largura do container */
-    }
-</style>
-
-<div class="container mt-12">
-    <div class="card">
+<div class="container page-container">
+    <div class="card card-corporate">
         <div class="card-body">
-            <h2 class="mb-4"><i class="bi bi-graph-up fs-3"></i> OVERVIEW </h2>
+            <div class="page-header">
+                <h2 class="page-title"><i class="bi bi-graph-up fs-3"></i> Overview</h2>
+            </div>
 
             <form method="get" action="{% url 'dashboard' %}">
                 <div class="row mb-3">
@@ -79,11 +38,11 @@
             </form>
             <div class="row mt-4">
                 <div class="col-lg-6">
-                    <h2>Pedidos por Vendedor</h2>
+                    <h3 class="h5 text-muted">Pedidos por Vendedor</h3>
                     <canvas id="totalPedidosChart"></canvas>
                 </div>
                 <div class="col-lg-6">
-                    <h2>Valor Pedidos por Vendedor</h2>
+                    <h3 class="h5 text-muted">Valor Pedidos por Vendedor</h3>
                     <canvas id="totalValorPedidoChart"></canvas>
                 </div>
             </div>

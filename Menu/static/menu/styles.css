@@ -1,0 +1,213 @@
+/* Corporate theme for SPS PLUS */
+
+:root {
+  --brand-primary: #356b54;
+  --brand-secondary: #2f4858;
+  --brand-accent: #4fb3a4;
+  --brand-danger: #c0392b;
+  --text-color: #1b1f24;
+  --muted-text: #6c757d;
+  --card-bg: #ffffff;
+  --page-bg: linear-gradient(#f3f4f6, #ffffff);
+  --navbar-height: 60px; /* altura usada para compensar conteúdo */
+}
+
+html[data-bs-theme="dark"] {
+  --brand-primary: #4fb3a4;
+  --brand-secondary: #121a21;
+  --brand-accent: #66d1c6;
+  --text-color: #e5e7eb;
+  --muted-text: #9aa4af;
+  --card-bg: #0f1419;
+  --page-bg: linear-gradient(#0b0e11, #0f1419);
+}
+
+
+
+body {
+  background: linear-gradient(#363851, #ffffff);
+}
+
+
+
+
+.form-select {
+  background-image: none !important;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  padding-right: .75rem;
+}
+  
+.btn-flutuante {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-flutuante:hover {
+  background-color: #0056b3;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close:hover {
+  color: black;
+}
+body {
+  color: var(--text-color);
+  background: var(--page-bg);
+  min-height: 100vh;
+}
+
+
+
+
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 150px;
+}
+
+.page-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.page-actions .btn {
+  margin-left: 8px;
+}
+
+.card-corporate.card {
+  background: var(--card-bg);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.card-corporate .card-body {
+  padding: 20px;
+}
+
+/* estilos de navbar foram movidos para menu/navbar.css para componentização */
+
+
+
+.btn-primary {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+.btn-primary:hover {
+  background-color: #274f3e;
+  border-color: #274f3e;
+}
+
+.btn-outline-primary {
+  color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+.btn-outline-primary:hover {
+  color: #fff;
+  background-color: var(--brand-primary);
+}
+
+.btn-danger {
+  background-color: var(--brand-danger);
+  border-color: var(--brand-danger);
+}
+
+.filter-form .form-control,
+.filter-form .form-select {
+  border-radius: 10px;
+}
+
+.table thead th {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+.table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.pagination .page-link {
+  color: var(--brand-secondary);
+}
+.pagination .page-item.active .page-link {
+  background-color: var(--brand-primary);
+  border-color: var(--brand-primary);
+}
+
+/* Floating Insights */
+.btn-flutuante {
+  background-color: var(--brand-primary);
+  border-radius: 999px;
+}
+.btn-flutuante:hover {
+  background-color: #274f3e;
+}
+
+.modal-content {
+  border-radius: 14px;
+}
+
+/* Utility spacing */
+.mt-12 { margin-top: 3rem; }
+.mb-12 { margin-bottom: 3rem; }
+
+/* Evitar que o conteúdo fique escondido sob a navbar fixa */
+.content-wrapper {
+  padding-top: calc(var(--navbar-height) + 12px);
+}
+
+/* Bloco fixo no rodapé para Sair e Trocar cor */
+.page-end-actions {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 1040; /* abaixo do offcanvas, acima do conteúdo */
+}
+
+/* Opcional: ocultar o botão de Insights para deixar só os dois botões no fim */
+.btn-flutuante {
+  display: none !important;
+}

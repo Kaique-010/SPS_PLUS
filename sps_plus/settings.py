@@ -2,7 +2,6 @@ from pathlib import Path
 import os
 from dotenv import load_dotenv
 from django.db import connections
-from licencas.database_utils import load_databases
 import time
 STATIC_VERSION = str(int(time.time()))
 
@@ -11,9 +10,6 @@ load_dotenv()
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-DATABASES_FILE = BASE_DIR / "databases.json"
-
 
 
 SECRET_KEY = os.getenv('SECRET_KEY')
@@ -55,19 +51,6 @@ INSTALLED_APPS = [
     
 ]
 
-MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware', 
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',  
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware', 
-    'licencas.middleware.LicenseDatabaseMiddleware', 
-
-]
-
-
 LOGIN_REDIRECT_URL ='home'
 
 ROOT_URLCONF = 'sps_plus.urls'
@@ -94,24 +77,30 @@ WSGI_APPLICATION = 'sps_plus.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'default_db_name'),
-        'USER': os.getenv('DB_USER', 'default_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'default_password'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5433'),
-        'ATOMIC_REQUESTS': True, 
-        'OPTIONS': {}, 
-        'CONN_MAX_AGE': 600,
-        'AUTOCOMMIT': True,
-        'CONN_HEALTH_CHECKS': False,
-    },
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),   # banco 1
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": "base.rtalmeida.com.br",
+        "PORT": "5432",
+        "OPTIONS": {"options": "-c TimeZone=UTC"},
+    }
 }
 
-from licencas.database_utils import load_databases
+DATABASE_ROUTERS = ["licencas.db_router.LicencaDBRouter"]
 
-DATABASES.update(load_databases())
+MIDDLEWARE = [
+    "django.middleware.security.SecurityMiddleware",
+    "licencas.timezone_middleware.TimezoneUTCEnforcer",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "licencas.middleware.LicencaMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+]
 
 
 # Password validation
@@ -135,8 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 #modelos de autenticação
 AUTHENTICATION_BACKENDS = [ 
-    'django.contrib.auth.backends.ModelBackend',  
-    'licencas.auth_backends.GlobalAuthBackend',  
+    'licencas.auth_backends.GlobalAuthBackend',
 ]
 
 
@@ -148,10 +136,8 @@ AUTH_USER_MODEL = 'licencas.Usuarios'
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
-USE_TZ = True
+USE_TZ = False
 
-DATABASE_ROUTERS = [ "licencas.db_router.LicenseDatabaseManager",
- "licencas.db_router.LicenseDatabaseRouter"]
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'

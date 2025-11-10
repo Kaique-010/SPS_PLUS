@@ -33,10 +33,9 @@ urlpatterns = [
     #usuarios
     path('usuarios/', UsuariosListView.as_view(), name='usuarios_list'),
     path("usuario/", UsuarioCreateView.as_view(), name="usuario_create"),
+    # Login único usando a view personalizada
     path('', UsuarioLoginView.as_view(), name='login'),
-    path("licencas/login/", LoginView.as_view(template_name="licencas/login.html"), name="login"),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('teste', test_session, name='teste'),
 
 
 ]

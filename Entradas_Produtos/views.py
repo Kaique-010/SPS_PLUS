@@ -4,6 +4,7 @@ from . import models, forms
 from django.urls import reverse_lazy
 from Entidades.models  import Entidades
 from produto.models import Produtos
+from licencas.utils import current_alias
 
 class EntradasListView(ListView):
     model = models.EntradaEstoque
@@ -12,10 +13,9 @@ class EntradasListView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
+        alias = current_alias(self.request)
 
-        queryset = models.EntradaEstoque.objects.using(db_name)  # Utiliza o banco correto para a consulta
+        queryset = models.EntradaEstoque.objects.using(alias)  # Utiliza o banco correto para a consulta
         produto = self.request.GET.get('produto')
 
         if produto:
@@ -32,11 +32,9 @@ class EntradasCreateView(CreateView):
     success_url = reverse_lazy('entradaslistas')
 
     def form_valid(self, form):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-        
+        alias = current_alias(self.request)
         # Definir o banco de dados para a instância
-        form.instance._state.db = db_name
+        form.instance._state.db = alias
 
         return super().form_valid(form)
 
@@ -46,12 +44,9 @@ class EntradasDeleteView(DeleteView):
     success_url = reverse_lazy('entradaslistas')
 
     def get_object(self, queryset=None):
-
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-
+        alias = current_alias(self.request)
         # Garantir que a consulta use o banco correto
-        return super().get_object(queryset).using(db_name)
+        return super().get_object(queryset).using(alias)
 
 
 
@@ -66,24 +61,12 @@ class EntradasDetailView(DetailView):
     template_name = 'entradasdetalhe.html'
 
     def get_object(self, queryset=None):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-
+        alias = current_alias(self.request)
         # Garantir que a consulta use o banco correto
-        return super().get_object(queryset).using(db_name)
+        return super().get_object(queryset).using(alias)
 
 
-class EntradasDeleteView(DeleteView):
-    model = models.EntradaEstoque
-    template_name = 'entradasexcluir.html'
-    success_url = reverse_lazy('entradaslistas')
-
-    def get_object(self, queryset=None):
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-
-        # Garantir que a consulta use o banco correto
-        return super().get_object(queryset).using(db_name)
+# Removido bloco duplicado de EntradasDeleteView com lógica antiga baseada em request.user.licenca
 
 
 

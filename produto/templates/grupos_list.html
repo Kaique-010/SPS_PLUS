@@ -4,16 +4,20 @@
 
 {% block content %}
 
-<br><br><br>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="{% static 'produtos/style.css' %}">
+<div class="container page-container">
+    <div class="page-header">
+        <h2 class="page-title"><i class="bi bi-boxes"></i> Grupos</h2>
+        <div class="page-actions">
+            <a href="{% url 'grupo_create' %}" class="btn btn-success">
+                <i class="bi bi-plus"></i> Novo Grupo
+            </a>
+        </div>
+    </div>
 
-<div class="container mt-5">
+<div class="container mt-3">
     <div class="card">
         <div class="card-body">
-            <h2 class="mb-4">
-                <i class="bi bi-boxes fs-3"></i> Lista de Grupos
-            </h2>
+            
             
             {% if messages %}
             <div class="alert-container">
@@ -25,22 +29,18 @@
             </div>
             {% endif %}
 
-            <form method="get" class="search-form mb-4">
-                <div class="form-row">
-                    <div class="form-group col-md-6">
-                        <label for="nome">Nome do Grupo</label>
+            <form method="get" class="mb-0">
+                <div class="row">
+                    <div class="col-md-8">
+                        <label for="nome" class="form-label">Nome do Grupo</label>
                         <input type="text" id="nome" name="nome" class="form-control" value="{{ nome }}"
-                            placeholder="Filtrar por nome">
+                               placeholder="Filtrar por nome">
                     </div>
-                    <div class="form-group col-md-4 d-flex align-items-end">
+                    <div class="col-md-4 d-flex align-items-end">
                         <button type="submit" class="btn btn-primary">Filtrar</button>
                     </div>
                 </div>
             </form>
-
-            <a href="{% url 'grupo_create' %}" class="btn btn-success float-end mb-3">
-                <i class="bi bi-plus"></i> Novo Grupo
-            </a>
 
             {% if page_obj %}
             <div class="table-responsive">
@@ -56,11 +56,11 @@
                         {% for grupo in page_obj %}
                         <tr>
                             <td>
-                                <a href="{% url 'grupo_update' grupo.pk %}" class="btn btn-sm btn-info">
-                                    <i class="bi bi-pencil"></i> Editar
+                                <a href="{% url 'grupo_update' grupo.pk %}" class="btn btn-warning btn-sm">
+                                    <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{% url 'grupo_delete' grupo.pk %}" class="btn btn-sm btn-danger">
-                                    <i class="bi bi-trash"></i> Excluir
+                                <a href="{% url 'grupo_delete' grupo.pk %}" class="btn btn-danger btn-sm">
+                                    <i class="bi bi-trash"></i>
                                 </a>
                             </td>
                             <td>{{ grupo.codigo }}</td>
@@ -116,10 +116,5 @@
         <p>&copy; {{ current_year }} Spartacus Sistemas</p>
     </footer>
 </div>
-
-
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 {% endblock %}

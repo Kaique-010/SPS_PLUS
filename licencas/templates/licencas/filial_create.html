@@ -1,22 +1,24 @@
-{% extends 'base.html' %} {% block content %} {%load static%}
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
 
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-/>
-<link rel="stylesheet" href="{% static 'licencas/empr_styles.css' %}" />
-<div class="container">
-  <h1>Criar Filial</h1>
+<div class="container page-container">
+  <div class="page-header">
+    <h2 class="page-title">Criar Filial</h2>
+    <div class="page-actions">
+      <a href="{% url 'filial_list' %}" class="btn btn-secondary">Voltar para a lista</a>
+    </div>
+  </div>
 
-  <form method="post" class="mt-4 p-4">
-    {% csrf_token %}
-    <div class="form-group">{{ form.as_p }}</div>
-    <button type="submit" class="btn btn-primary">Salvar</button>
-  </form>
-
-  <a href="{% url 'filial_list' %}" class="btn btn-info"
-    >Voltar para a lista de filiais</a
-  >
+  <div class="card card-corporate">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Salvar</button>
+      </form>
+    </div>
+  </div>
 </div>
 
 <script>

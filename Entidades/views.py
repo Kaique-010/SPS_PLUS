@@ -20,6 +20,7 @@ from rest_framework import viewsets
 from rest_framework import filters
 from django.core.paginator import Paginator
 from Entidades import models
+from licencas.utils import current_alias
 
 
     
@@ -39,11 +40,8 @@ class EntidadesListView( ListView):
     paginate_by = 15
 
     def get_queryset(self):
-        # Obtém a licença do usuário a partir do mixin
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-
-        queryset = Entidades.objects.using(db_name).order_by('enti_clie')
+        alias = current_alias(self.request)
+        queryset = Entidades.objects.using(alias).order_by('enti_clie')
 
         nome = self.request.GET.get('enti_nome')
         enti_clie = self.request.GET.get('enti_clie')
@@ -74,10 +72,8 @@ class EntidadeUpdateView(UpdateView):
     success_url = reverse_lazy('entidades')  # URL para redirecionar após a atualização
 
     def get_object(self, queryset=None):
-        # Obtém o objeto a ser editado do banco de dados ativo
-        db_alias = self.request.db_alias
-        if not db_alias:
-            raise ValueError("Erro: banco de dados não definido. Verifique se o middleware configurou o db_alias corretamente.")
+        # Obtém o objeto do banco de dados do cliente atual
+        db_alias = current_alias(self.request)
 
         # Captura o pk da URL
         enti_clie = self.kwargs.get('enti_clie')
@@ -85,7 +81,7 @@ class EntidadeUpdateView(UpdateView):
             raise ValueError("Erro: Enti_clie não encontrado na URL.")
 
         # Busca o objeto no banco de dados ativo
-        obj = get_object_or_404(Entidades.objects.using(db_alias), enti_clie= enti_clie)
+        obj = get_object_or_404(Entidades.objects.using(db_alias), enti_clie=enti_clie)
         return obj
 
     def get_form_kwargs(self):
@@ -100,10 +96,8 @@ class EntidadeDeleteView(DeleteView):
     success_url = reverse_lazy('entidades')  # URL para redirecionar após a exclusão
 
     def get_object(self, queryset=None):
-        # Obtém o objeto a ser editado do banco de dados ativo
-        db_alias = self.request.db_alias
-        if not db_alias:
-            raise ValueError("Erro: banco de dados não definido. Verifique se o middleware configurou o db_alias corretamente.")
+        # Obtém o objeto do banco de dados do cliente atual
+        db_alias = current_alias(self.request)
 
         # Captura o pk da URL
         pk = self.kwargs.get('enti_clie')

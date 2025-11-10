@@ -10,6 +10,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from sps_plus import settings
 from .models import CategoriaProduto, Fazenda, Talhao, ProdutoAgro, EstoqueFazenda, MovimentacaoEstoque, AplicacaoInsumos, Animal, EventoAnimal, CicloFlorestal
 from .forms import CategoriaProdutoForm, FazendaForm, TalhaoForm, ProdutoAgroForm, EstoqueFazendaForm, MovimentacaoEstoqueForm, AplicacaoInsumosForm, AnimalForm, EventoAnimalForm, CicloFlorestalForm
+from licencas.utils import current_alias
 
 
 
@@ -19,11 +20,8 @@ class FazendaListView( ListView):
     context_object_name = 'fazendas'
     
     def get_queryset(self):
-        # Obtém a licença do usuário a partir do mixin
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-
-        queryset = Fazenda.objects.using(db_name).order_by('empr_faze')
+        alias = current_alias(self.request)
+        queryset = Fazenda.objects.using(alias).order_by('empr_faze')
 
         
 
@@ -36,11 +34,8 @@ class FazendaCreateView( CreateView):
     success_url = reverse_lazy("fazenda_list")
     
     def get_queryset(self):
-        # Obtém a licença do usuário a partir do mixin
-        user_licenca = self.request.user.licenca
-        db_name = user_licenca.lice_nome if user_licenca else "default"
-
-        queryset = Fazenda.objects.using(db_name).order_by('empr_faze')
+        alias = current_alias(self.request)
+        queryset = Fazenda.objects.using(alias).order_by('empr_faze')
 
         
 

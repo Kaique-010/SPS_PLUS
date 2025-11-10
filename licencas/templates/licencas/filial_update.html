@@ -1,21 +1,23 @@
 {% extends 'base.html' %} {% block content %}
 {%load static%}
 
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="{% static 'licencas/empr_styles.css' %}" />
-<div class="container">
-  <h1>Editar Filial</h1>
-
-  <form method="post" class="mt-4 p-4 ">
-    {% csrf_token %}
-    <div class="form-group">
-      {{ form.as_p }}
+<div class="container page-container">
+  <div class="page-header">
+    <h2 class="page-title">Editar Filial</h2>
+    <div class="page-actions">
+      <a href="{% url 'filial_list' %}" class="btn btn-secondary">Voltar</a>
     </div>
-    <button type="submit" class="btn btn-primary">Confirmar</button>
-  </form>
-
-
-  <a href="{% url 'filial_list' %}" class="btn btn-info ">Cancelar Alterações</a>
+  </div>
+  <div class="card card-corporate">
+    <form method="post" class="card-body">
+      {% csrf_token %}
+      <div class="form-group">{{ form.as_p }}</div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Confirmar</button>
+        <a href="{% url 'filial_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
 </div>
 
 <script>

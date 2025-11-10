@@ -10,7 +10,7 @@ class EntradaEstoque(models.Model):
     entr_sequ = models.IntegerField()
     entr_empr = models.CharField(max_length=100)
     entr_fili = models.CharField(max_length=100)
-    entr_prod = models.ForeignKey(Produtos, on_delete=models.PROTECT, blank=False, null=False, related_name='entradas_produtos', db_column='entr_prod', primary_key=True)
+    entr_prod = models.OneToOneField(Produtos, on_delete=models.PROTECT, blank=False, null=False, related_name='entradas_produtos', db_column='entr_prod', primary_key=True)
     entr_enti = models.ForeignKey(Entidades, on_delete=models.PROTECT, blank=False, null=False, related_name='entradas', db_column='entr_enti')
     entr_data = models.DateField()
     entr_quan = models.DecimalField(max_digits=10, decimal_places=2)

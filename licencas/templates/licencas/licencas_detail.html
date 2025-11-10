@@ -1,23 +1,24 @@
 {% extends 'base.html' %} {% block content %}
 {%load static%}
-<style>
-    a {
-        color: antiquewhite !important;
-    }
 
-    .container p {
-        color: aliceblue;
-    }
-</style>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
-<link rel="stylesheet" href="{% static 'licencas/styles.css' %}" />
-<div class="container">
-    <h1>Detalhes da Licença</h1>
-    <p><strong>Nome:</strong> {{ licenca.lice_nome }}</p>
-    <p><strong>Data de Criação:</strong> {{ licenca.lice_nome }}</p>
-    <p><strong>Status:</strong> {{ object.status }}</p>
-    <a href="{% url 'licenca_update' object.pk %}" class="btn btn-info">Editar</a> |
-    <a href="{% url 'licenca_delete' object.pk %}" class="btn btn-danger">Excluir</a> |
-    <a href="{% url 'licenca_list' %}" class="btn btn-success">Voltar para a lista de licenças</a>
+<div class="container page-container">
+  <div class="page-header">
+    <h2 class="page-title">Detalhes da Licença</h2>
+    <div class="page-actions">
+      <a href="{% url 'licenca_list' %}" class="btn btn-secondary">Voltar</a>
+    </div>
+  </div>
+
+  <div class="card card-corporate">
+    <div class="card-body">
+      <p><strong>Nome:</strong> {{ licenca.lice_nome }}</p>
+      <p><strong>Data de Criação:</strong> {{ licenca.lice_data_cria|date:"d/m/Y" }}</p>
+      <p><strong>Ativa?</strong> {% if licenca.lice_bloq %}Sim{% else %}Não{% endif %}</p>
+      <div class="d-flex gap-2">
+        <a href="{% url 'licenca_update' licenca.pk %}" class="btn btn-info">Editar</a>
+        <a href="{% url 'licenca_delete' licenca.pk %}" class="btn btn-danger">Excluir</a>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

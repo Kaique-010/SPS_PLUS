@@ -4,18 +4,18 @@
 
 {% block content %}
 
-<br><br><br>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="{% static 'Entidades/styles.css' %}">
+<div class="container page-container">
+    <div class="page-header">
+        <h2 class="page-title"><i class="bi bi-person-gear"></i> Entidades</h2>
+        <div class="page-actions">
+            <a href="{% url 'entidade_form' %}" class="btn btn-success">
+                <i class="bi bi-plus"></i> Nova pessoa
+            </a>
+        </div>
+    </div>
 
-<div class="container mt-5">
-    <div class="card">
+    <div class="card card-corporate mb-3">
         <div class="card-body">
-            <center>
-                <h2 class="mb-4">
-                    <i class="bi bi-person-gear fs-3"></i> Lista de Entidades
-                </h2>
-            </center>
             <!-- Mensagens de Sucesso e Erro -->
             {% if messages %}
             {% for message in messages %}
@@ -24,34 +24,28 @@
             </div>
             {% endfor %}
             {% endif %}
-            <div class="container-search">
-                <form method="get" class="search-form mb-4">
-                    <div class="form-row">
-                        <div class="form-group col-md-3">
-                            <label for="enti_nome"></label>
-                            <input type="text" id="enti_nome" name="enti_nome" class="form-control"
-                                value="{{ request.GET.enti_nome }}" placeholder="Filtrar por nome">
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="enti_clie"></label>
-                            <input type="text" id="enti_clie" name="enti_clie" class="form-control"
-                                value="{{ request.GET.enti_clie }}" placeholder="Filtrar por ID">
-                        </div>
-                        <div class="form-group col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary">Filtrar</button>
-                        </div>
+            <form method="get" class="mb-0">
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="enti_nome" class="form-label">Nome</label>
+                        <input type="text" id="enti_nome" name="enti_nome" class="form-control"
+                               value="{{ request.GET.enti_nome }}" placeholder="Filtrar por nome">
                     </div>
-                </form>
-            </div>
-            <div class="container-fluid"></div>
-            <div class="col md-4">
-                <div class="row mb-4"></div>
-                <a href="{% url 'entidade_form' %}" class="btn btn-success-custom float-end">
-                    <i class="bi bi-plus"></i> Nova pessoa
-                </a>
-            </div>
+                    <div class="col-md-4">
+                        <label for="enti_clie" class="form-label">ID</label>
+                        <input type="text" id="enti_clie" name="enti_clie" class="form-control"
+                               value="{{ request.GET.enti_clie }}" placeholder="Filtrar por ID">
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Filtrar</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="container">
+    </div>
+
+    <div class="card card-corporate">
+        <div class="card-body">
             {% if entidades %}
             <div class="table-responsive">
                 <table class="table table-bordered table-striped">
@@ -76,12 +70,10 @@
                         <tr>
                             <td>
                                 {% if entidade.enti_clie %}
-                                <a href="{% url 'entidade_update' enti_clie=entidade.enti_clie %}" class="btn btn-sm"
-                                    style="background-color: #7ab1ec; color: white;">
+                                <a href="{% url 'entidade_update' enti_clie=entidade.enti_clie %}" class="btn btn-warning btn-sm">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="{% url 'entidade_delete' enti_clie=entidade.enti_clie %}" class="btn btn-sm"
-                                    style="background-color: #e7a0a7; color: white;">
+                                <a href="{% url 'entidade_delete' enti_clie=entidade.enti_clie %}" class="btn btn-danger btn-sm">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             {% else %}
@@ -164,14 +156,12 @@
             <p>Não há entidades para exibir.</p>
             {% endif %}
             <a href="{% url 'exportar_entidades' %}" class="btn btn-success mb-2">Exportar para Excel</a>
-            </main>
         </div>
-        <center>
-            <footer>
-                <p>&copy; {{ current_year }} Spartacus Sistemas</p>
-            </footer>
-        </center>
     </div>
+
+    <footer class="text-center mt-3">
+        <p>&copy; {{ current_year }} Spartacus Sistemas</p>
+    </footer>
 </div>
 
 {% endblock %}
